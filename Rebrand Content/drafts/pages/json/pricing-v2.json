@@ -1,0 +1,213 @@
+{
+  "title": "Here's what it costs",
+  "seoDescription": "What programmatic advertising costs, what drives the price, and how Genius Monkey charges. Straight answers before you ever talk to anyone.",
+  "sections": [
+    {
+      "type": "meta",
+      "draftLabel": "Pricing page, V2 (braver register, V1 untouched)",
+      "url": "/pricing",
+      "metaTitle": "Programmatic Advertising Pricing | Genius Monkey"
+    },
+    {
+      "type": "hero",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Most platforms make you book a meeting to learn what a meeting costs. This page does the opposite job. Programmatic advertising pricing, real numbers, published where anyone can read them."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "How much does programmatic advertising cost",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Programmatic advertising is typically priced on CPM, the cost per 1,000 impressions, or CPA, where you pay when someone takes an action. On the Genius Monkey platform, effective CPMs run $2 to $4 for display, $10 to $22 for video, $25 to $40 for OTT, and $21 to $37 for audio, all-inclusive, with no long-term contracts."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "The four dials",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Budget, placement, audience, and format. Those four move your number. Everything else on a pricing call is packaging."
+        }
+      ],
+      "subsections": [
+        {
+          "heading": "How long you run",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Optimization compounds. Country Thunder's conversion cycle reporting found a sweet spot of 25 to 60 days of carefully placed ads before a ticket sale. Cut the flight early and you pay the tuition without collecting the diploma."
+            }
+          ]
+        },
+        {
+          "heading": "Where it runs",
+          "content": [
+            {
+              "kind": "p",
+              "text": "CPM is the cost per 1,000 ad impressions, useful for planning and never the whole story. A $3 CPM and a $30 CPM are different animals. One is a glance at a banner, the other is a completed 15-second spot on the living room TV. We judge both against real conversion data."
+            }
+          ]
+        },
+        {
+          "heading": "Who you want",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Auctions are auctions. The more advertisers chasing the same person, the more each impression costs. Good targeting means you bid on the people worth winning and skip the rest."
+            }
+          ]
+        },
+        {
+          "heading": "What the ad is",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Video costs more to serve than a banner, and OTT more than both. On OTT you can pay per completed view, $0.04 to $0.08, so you're buying a finished message instead of a maybe."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What we charge",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Everything is in the rate. The platform, the expert on your account, the optimization, the reporting. No setup fees, no fee tiers, no long-term contract. We can price this way because our network relationships are first-party and long-standing, so nobody's margin is hiding between you and the inventory."
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Channel",
+            "Published benchmark"
+          ],
+          "rows": [
+            [
+              "Display",
+              "$0.60 to $1.09 average cost per click, $2 to $4 effective CPM"
+            ],
+            [
+              "Video",
+              "$0.70 to $1.60 average cost per click, $10 to $22 effective CPM"
+            ],
+            [
+              "OTT",
+              "$25 to $40 effective CPM, $0.04 to $0.08 per completed view"
+            ],
+            [
+              "Audio",
+              "$21 to $37 effective CPM"
+            ]
+          ]
+        },
+        {
+          "kind": "p",
+          "text": "If the numbers stop earning it, you can leave. That keeps everyone honest, mostly us."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What the price buys",
+      "content": [
+        {
+          "kind": "p",
+          "text": "BrickHouse Nutrition arrived at $83 per acquisition and sat under $28 three months later. Freed-Hardeman University cut cost per conversion 89% in nine months. onsemi came in at $2,000 per conversion, dropped to $8, and two years later paid under $1.",
+          "links": [
+            "/programmatic-case-studies"
+          ]
+        },
+        {
+          "kind": "p",
+          "text": "The cheapest impression is the one that converts."
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "heading": "The questions everyone asks anyway",
+      "content": [],
+      "subsections": [
+        {
+          "heading": "How much does programmatic advertising cost?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "It scales with budget and channel mix. On Genius Monkey, effective CPMs run $2 to $4 for display, $10 to $22 for video, $25 to $40 for OTT, and $21 to $37 for audio, all-inclusive. Display clicks average $0.60 to $1.09. Those are the real rates, published on purpose."
+            }
+          ]
+        },
+        {
+          "heading": "What is a typical programmatic CPM?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Between $2 and $40, depending on channel. Display runs $2 to $4, video $10 to $22, OTT $25 to $40, and audio $21 to $37 on the Genius Monkey platform. The number matters less than what it buys, which is why we report conversions next to it."
+            }
+          ]
+        },
+        {
+          "heading": "What's included in the price?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "All of it. The platform, the expert running your account, the optimization, and the reporting that ties spend to results, inside one all-inclusive rate. Setup fees don't exist here, and neither do surprise charges that wander in after you've committed."
+            }
+          ]
+        },
+        {
+          "heading": "CPM vs CPA, which will I pay?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "CPM prices the impressions, CPA prices the outcome. CPM is the cost per 1,000 ad impressions, useful for planning and never the whole story. CPA charges only when a desired action, a purchase, form fill, or signup, is completed, so you pay when it works. We plan on CPM and judge on conversions."
+            }
+          ]
+        },
+        {
+          "heading": "Do I have to sign a long-term contract?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "No. There's no long-term contract at Genius Monkey. Campaigns earn their renewal, and the reporting makes that decision obvious in either direction. Clients who stay do it because the numbers keep arguing for it, which is the only retention strategy we respect."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Get your number",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Rate cards guess. Bring the goal and the budget range, and we'll show you what your channels cost and where the money would go first."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "draftNotes",
+      "items": [
+        "V2 terms. Braver H1 (\"Here's what it costs\", keyword moved to the first body paragraph). Committed register, zero \"X, not Y\" constructions by deliberate self-ban. The CPA key term is used close rather than verbatim (\"so you pay when it works\" replaces \"You pay for results, not just exposure\") specifically to honor the self-ban; V1 carries the verbatim version, so pick per preference.",
+        "Benchmark ranges must be reconfirmed against the live https://geniusmonkey.com/pricing/ before each publish (facts.md rule). All ranges match facts.md as of 2026-07-06.",
+        "Minimum-budget FAQ still cut (fact unconfirmed, same as V1).",
+        "Register commitments to react to: \"pay the tuition without collecting the diploma\", \"That keeps everyone honest, mostly us.\", \"The cheapest impression is the one that converts.\", \"the only retention strategy we respect\", \"nobody's margin is hiding between you and the inventory\", \"The questions everyone asks anyway\" as an FAQ header.",
+        "\"Nobody's margin is hiding between you and the inventory\" leans on the first-party network fact plus the all-inclusive framing; if the reviewer reads it as a stronger supply-chain claim than facts.md supports, cut the clause and keep the sentence.",
+        "Facts: identical set to V1. Pricing benchmarks, all-inclusive, no long-term contracts (facts.md, live pricing page). Country Thunder 25-to-60-day sweet spot (case-study-proof.md). BrickHouse, Freed-Hardeman, onsemi (correct $2,000 to $8, then under $1 two years later sequence).",
+        "AEO: answer block identical to V1 (56 words). FAQ answers checked at 40 to 60 words each with standalone first sentences (49, 46, 40, 53, 42)."
+      ]
+    }
+  ]
+}

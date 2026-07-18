@@ -1,0 +1,45 @@
+---
+/**
+ * Editorial image block. Standard variant: raspberry figure tick + caption below.
+ * Scrim variant: dark gradient overlay with label + caption on the image.
+ */
+interface Props {
+  variant?: "standard" | "scrim";
+  caption: string;
+  credit?: string;
+  /** scrim variant eyebrow, e.g. "LIVE SYSTEM DATA" */
+  label?: string;
+  class?: string;
+}
+
+const { variant = "standard", caption, credit, label = "Live System Data", class: className = "" } = Astro.props;
+---
+
+{
+  variant === "standard" ? (
+    <figure class={className}>
+      <div class="aspect-[16/9] w-full overflow-hidden border border-line bg-white">
+        <slot>
+          <div class="size-full bg-[linear-gradient(160deg,#161b24,#2b3342_50%,#10131a),radial-gradient(ellipse_at_70%_30%,rgb(124_77_255/0.5),transparent_60%)] bg-blend-screen" />
+        </slot>
+      </div>
+      <figcaption class="mt-3 flex gap-2.5 text-sm">
+        <span class="mt-0.5 h-4 w-1 shrink-0 bg-raspberry" />
+        <span>
+          <span class="font-bold">{caption}</span>
+          {credit && <span class="block text-slate">{credit}</span>}
+        </span>
+      </figcaption>
+    </figure>
+  ) : (
+    <figure class:list={["relative aspect-[16/9] w-full overflow-hidden bg-ink", className]}>
+      <slot>
+        <div class="size-full bg-[radial-gradient(ellipse_at_50%_40%,rgb(124_77_255/0.7),transparent_65%),radial-gradient(ellipse_at_20%_80%,rgb(247_0_78/0.4),transparent_50%)]" />
+      </slot>
+      <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink via-ink/80 to-transparent p-6 pt-14">
+        <p class="gm-label text-[10px] text-raspberry">{label}</p>
+        <p class="mt-1.5 font-bold text-white">{caption}</p>
+      </figcaption>
+    </figure>
+  )
+}

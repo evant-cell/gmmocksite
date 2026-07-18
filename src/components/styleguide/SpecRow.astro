@@ -1,0 +1,16 @@
+---
+/** Labeled demo row - uppercase key at left, rendered examples at right. */
+interface Props {
+  label: string;
+  class?: string;
+}
+
+const { label, class: className = "" } = Astro.props;
+---
+
+<div class:list={["grid items-center gap-4 py-4 md:grid-cols-[180px_1fr]", className]}>
+  <p class="gm-label text-[10px] text-slate">{label}</p>
+  <div class="flex flex-wrap items-center gap-4">
+    <slot />
+  </div>
+</div>

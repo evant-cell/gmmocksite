@@ -1,0 +1,25 @@
+---
+/** Dark feature card - raspberry icon disc, title, body, accent link. */
+import Icon from "../ui/Icon.astro";
+import type { IconName } from "../ui/Icon.astro";
+import TextLink from "../ui/TextLink.astro";
+
+interface Props {
+  icon?: IconName;
+  title: string;
+  href?: string;
+  linkLabel?: string;
+  class?: string;
+}
+
+const { icon = "target", title, href = "#", linkLabel = "Explore Infrastructure", class: className = "" } = Astro.props;
+---
+
+<article class:list={["flex flex-col items-start gap-4 bg-ink p-7 text-white", className]}>
+  <span class="grid size-11 place-items-center rounded-full bg-raspberry text-white">
+    <Icon name={icon} size={20} />
+  </span>
+  <h3 class="text-lg font-bold">{title}</h3>
+  <p class="text-sm leading-relaxed text-white/60"><slot /></p>
+  <TextLink {href} arrow class="mt-auto pt-1">{linkLabel}</TextLink>
+</article>

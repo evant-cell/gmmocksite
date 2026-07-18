@@ -1,0 +1,194 @@
+{
+  "section": "colors",
+  "title": "Color Palette",
+  "exportedAt": "2026-07-17T23:00:06.533Z",
+  "content": {
+    "intro": "Color carries the brand. Use the primary palette for the majority of surfaces and reserve accents for emphasis.",
+    "groups": [
+      {
+        "name": "Primary",
+        "swatches": [
+          {
+            "cmyk": "0, 100, 60, 0",
+            "pantone": "192 C",
+            "rgb": "247, 0, 78",
+            "name": "Vivid Raspberry",
+            "hex": "#f7004e"
+          },
+          {
+            "name": "Black Hole",
+            "hex": "#020112",
+            "rgb": "2, 1, 18",
+            "pantone": "Black 6 C",
+            "cmyk": "89, 94, 0, 93"
+          },
+          {
+            "name": "White",
+            "hex": "#FFFFFF",
+            "rgb": "255, 255, 255",
+            "pantone": "11-0601 TPG",
+            "cmyk": "0, 0, 0, 0"
+          }
+        ]
+      },
+      {
+        "swatches": [
+          {
+            "rgb": "16, 19, 26",
+            "name": "Ink",
+            "hex": "#10131A"
+          },
+          {
+            "name": "Slate",
+            "hex": "#5B6472",
+            "rgb": "91, 100, 114"
+          },
+          {
+            "hex": "#F6F7FB",
+            "name": "Cloud",
+            "rgb": "246, 247, 251"
+          }
+        ],
+        "name": "Neutrals"
+      },
+      {
+        "name": "Secondary",
+        "swatches": [
+          {
+            "pantone": "2728 C",
+            "cmyk": "76, 65, 0, 0",
+            "hex": "#3D5AFE",
+            "name": "Brand Blue",
+            "rgb": "61, 90, 254"
+          },
+          {
+            "cmyk": "51, 70, 0, 0",
+            "pantone": "2095 C",
+            "rgb": "124, 77, 255",
+            "hex": "#7C4DFF",
+            "name": "Brand Violet"
+          },
+          {
+            "hex": "#52e0b6",
+            "name": "Brand Green"
+          }
+        ]
+      }
+    ],
+    "gradients": [
+      {
+        "usage": "Hero backgrounds, key calls-to-action, and brand moments.",
+        "angle": 135,
+        "type": "linear",
+        "name": "Brand Gradient",
+        "stops": [
+          {
+            "position": 0,
+            "color": "#3D5AFE"
+          },
+          {
+            "position": 100,
+            "color": "#7C4DFF"
+          }
+        ]
+      },
+      {
+        "name": "BG Dark Purple",
+        "type": "linear",
+        "stops": [
+          {
+            "position": 0,
+            "color": "#10131A"
+          },
+          {
+            "color": "#7C4DFF",
+            "position": 100
+          }
+        ],
+        "usage": "",
+        "angle": 135
+      },
+      {
+        "angle": 135,
+        "usage": "",
+        "stops": [
+          {
+            "position": 0,
+            "color": "#10131A"
+          },
+          {
+            "position": 100,
+            "color": "#52e0b6"
+          }
+        ],
+        "type": "linear",
+        "name": "BG Dark Green"
+      },
+      {
+        "usage": "",
+        "angle": 135,
+        "type": "linear",
+        "name": "New BG Dark Raspberry",
+        "stops": [
+          {
+            "color": "#0c0326",
+            "position": 0
+          },
+          {
+            "position": 100,
+            "color": "#f7004e"
+          }
+        ]
+      }
+    ],
+    "balances": [
+      {
+        "entries": [
+          {
+            "share": 70,
+            "hex": "#F6F7FB"
+          },
+          {
+            "share": 20,
+            "hex": "#10131A"
+          },
+          {
+            "hex": "#f7004e",
+            "share": 7
+          },
+          {
+            "share": 1.5,
+            "hex": "#3D5AFE"
+          },
+          {
+            "hex": "#52e0b6",
+            "share": 1.5
+          }
+        ],
+        "name": "Light theme"
+      },
+      {
+        "entries": [
+          {
+            "share": 55,
+            "hex": "#10131A"
+          },
+          {
+            "hex": "#5B6472",
+            "share": 15
+          },
+          {
+            "hex": "#FFFFFF",
+            "share": 20
+          },
+          {
+            "hex": "#f7004e",
+            "share": 7
+          }
+        ],
+        "name": "Dark theme"
+      }
+    ],
+    "usageNote": "Aim for roughly 60% neutrals, 30% primary, and 10% accent across any given layout."
+  }
+}

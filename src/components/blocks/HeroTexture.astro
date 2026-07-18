@@ -1,0 +1,42 @@
+---
+/**
+ * Logo-as-background-texture hero - tiled wordmark rows as an engineered
+ * back-pattern behind a centered message. "Unconscious brand recall."
+ */
+import Badge from "../ui/Badge.astro";
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  wordmark?: string;
+  class?: string;
+}
+
+const { eyebrow, title, wordmark = "Genius Monkey", class: className = "" } = Astro.props;
+const rows = 6;
+---
+
+<section class:list={["relative overflow-hidden bg-ink px-6 py-24 text-white", className]}>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 flex flex-col justify-between py-4 select-none">
+    {
+      Array.from({ length: rows }).map((_, i) => (
+        <p
+          class:list={[
+            "font-display text-6xl font-extrabold tracking-tight whitespace-nowrap text-white/6 uppercase",
+            i % 2 ? "-translate-x-24" : "translate-x-4",
+          ]}
+        >
+          {`${wordmark} `.repeat(6)}
+        </p>
+      ))
+    }
+  </div>
+  <div class="relative mx-auto max-w-2xl text-center">
+    {eyebrow && <Badge tone="solid">{eyebrow}</Badge>}
+    <h1 class="mt-5 text-4xl font-extrabold text-balance md:text-5xl">{title}</h1>
+    <p class="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-white/60"><slot /></p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-5">
+      <slot name="actions" />
+    </div>
+  </div>
+</section>

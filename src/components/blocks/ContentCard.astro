@@ -1,0 +1,31 @@
+---
+/** Editorial card - media area, category badge, title, excerpt, action link. */
+import Badge from "../ui/Badge.astro";
+import TextLink from "../ui/TextLink.astro";
+
+interface Props {
+  tag?: string;
+  title: string;
+  href?: string;
+  linkLabel?: string;
+  class?: string;
+}
+
+const { tag, title, href = "#", linkLabel = "Read Case Study", class: className = "" } = Astro.props;
+---
+
+<article class:list={["flex flex-col overflow-hidden border border-line bg-white", className]}>
+  <div class="aspect-[16/9] w-full overflow-hidden bg-ink">
+    <slot name="media">
+      <div class="size-full bg-[radial-gradient(ellipse_at_30%_20%,#7c4dff_0%,transparent_55%),radial-gradient(ellipse_at_80%_80%,#f7004e_0%,transparent_55%)] opacity-80"></div>
+    </slot>
+  </div>
+  <div class="flex grow flex-col items-start gap-4 p-6">
+    {tag && <Badge tone="info">{tag}</Badge>}
+    <h3 class="text-lg leading-snug font-bold text-balance">{title}</h3>
+    <p class="text-sm leading-relaxed text-slate"><slot /></p>
+    <div class="mt-auto pt-2">
+      <TextLink {href} arrow>{linkLabel}</TextLink>
+    </div>
+  </div>
+</article>

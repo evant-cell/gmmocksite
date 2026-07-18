@@ -1,0 +1,38 @@
+---
+/** High-contrast micro tooltip revealed on hover/focus of the wrapped trigger. */
+interface Props {
+  text: string;
+  position?: "top" | "bottom" | "left" | "right";
+  class?: string;
+}
+
+const { text, position = "top", class: className = "" } = Astro.props;
+
+const positions = {
+  top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
+  bottom: "top-full left-1/2 mt-2 -translate-x-1/2",
+  left: "right-full top-1/2 mr-2 -translate-y-1/2",
+  right: "left-full top-1/2 ml-2 -translate-y-1/2",
+};
+
+const arrows = {
+  top: "top-full left-1/2 -translate-x-1/2 border-t-ink border-x-transparent border-b-transparent",
+  bottom: "bottom-full left-1/2 -translate-x-1/2 border-b-ink border-x-transparent border-t-transparent",
+  left: "left-full top-1/2 -translate-y-1/2 border-l-ink border-y-transparent border-r-transparent",
+  right: "right-full top-1/2 -translate-y-1/2 border-r-ink border-y-transparent border-l-transparent",
+};
+---
+
+<span class:list={["group/tip relative inline-flex", className]} tabindex="0">
+  <slot />
+  <span
+    role="tooltip"
+    class:list={[
+      "pointer-events-none absolute z-20 whitespace-nowrap bg-ink px-3 py-2 gm-label text-[9px] text-white opacity-0 transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-visible/tip:opacity-100",
+      positions[position],
+    ]}
+  >
+    {text}
+    <span class:list={["absolute border-4", arrows[position]]}></span>
+  </span>
+</span>

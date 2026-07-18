@@ -1,0 +1,44 @@
+---
+/** Multiline input with live character-count metadata, per Forms spec. */
+interface Props {
+  label: string;
+  name: string;
+  placeholder?: string;
+  value?: string;
+  maxlength?: number;
+  rows?: number;
+  disabled?: boolean;
+  class?: string;
+}
+
+const { label, name, placeholder, value = "", maxlength = 250, rows = 4, disabled = false, class: className = "" } =
+  Astro.props;
+---
+
+<div class:list={["flex flex-col gap-2", className]} data-textarea-field>
+  <div class="flex items-end justify-between">
+    <label for={name} class="gm-label">{label}</label>
+    <span class="text-xs font-medium text-mist" data-count>{value.length} / {maxlength}</span>
+  </div>
+  <textarea
+    id={name}
+    {name}
+    {rows}
+    {maxlength}
+    {placeholder}
+    {disabled}
+    class="w-full resize-y border-2 border-line bg-white px-4 py-3 font-medium outline-none transition-colors placeholder:text-mist focus:border-cobalt disabled:bg-cloud disabled:text-mist"
+    >{value}</textarea
+  >
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-textarea-field]").forEach((field) => {
+    const textarea = field.querySelector("textarea");
+    const count = field.querySelector("[data-count]");
+    if (!textarea || !count) return;
+    textarea.addEventListener("input", () => {
+      count.textContent = `${textarea.value.length} / ${textarea.maxLength}`;
+    });
+  });
+</script>

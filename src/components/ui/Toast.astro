@@ -1,0 +1,39 @@
+---
+/** Notification toast card - premium shadow, colored status icon, dismissible. */
+import Icon from "./Icon.astro";
+import type { IconName } from "./Icon.astro";
+
+interface Props {
+  tone?: "success" | "pending" | "error" | "info";
+  title: string;
+  class?: string;
+}
+
+const { tone = "success", title, class: className = "" } = Astro.props;
+
+const tones: Record<string, { icon: IconName; color: string }> = {
+  success: { icon: "check", color: "text-success" },
+  pending: { icon: "clock", color: "text-raspberry" },
+  error: { icon: "alert-triangle", color: "text-error" },
+  info: { icon: "info", color: "text-cobalt" },
+};
+
+const t = tones[tone];
+---
+
+<div class:list={["w-full max-w-xs border border-line bg-white p-4 shadow-toast", className]} data-toast>
+  <div class="flex items-center gap-2.5">
+    <Icon name={t.icon} size={16} class:list={["shrink-0 stroke-3", t.color]} />
+    <p class="grow gm-label text-[10px]">{title}</p>
+    <button type="button" class="shrink-0 text-mist transition-colors hover:text-ink" aria-label="Dismiss" data-toast-dismiss>
+      <Icon name="close" size={14} />
+    </button>
+  </div>
+  <p class="mt-2 text-sm text-slate"><slot /></p>
+</div>
+
+<script>
+  document.querySelectorAll("[data-toast-dismiss]").forEach((btn) => {
+    btn.addEventListener("click", () => btn.closest("[data-toast]")?.remove());
+  });
+</script>

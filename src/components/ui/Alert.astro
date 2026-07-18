@@ -1,0 +1,40 @@
+---
+/** Full-width system banner - left accent bar, tinted field, dismissible. */
+import Icon from "./Icon.astro";
+import type { IconName } from "./Icon.astro";
+
+interface Props {
+  tone?: "info" | "success" | "warning" | "error";
+  dismissible?: boolean;
+  class?: string;
+}
+
+const { tone = "info", dismissible = true, class: className = "" } = Astro.props;
+
+const tones: Record<string, { bar: string; bg: string; icon: IconName; iconColor: string }> = {
+  info: { bar: "border-cobalt", bg: "bg-info-100", icon: "info", iconColor: "text-cobalt" },
+  success: { bar: "border-success", bg: "bg-success-100", icon: "check", iconColor: "text-success" },
+  warning: { bar: "border-raspberry", bg: "bg-raspberry-100/60", icon: "alert-triangle", iconColor: "text-raspberry" },
+  error: { bar: "border-error-deep", bg: "bg-error-100", icon: "alert-circle", iconColor: "text-error-deep" },
+};
+
+const t = tones[tone];
+---
+
+<div role="status" class:list={["flex items-center gap-4 border-l-4 px-5 py-3.5", t.bar, t.bg, className]} data-alert>
+  <Icon name={t.icon} size={18} class:list={["shrink-0", t.iconColor]} />
+  <p class="grow text-sm font-medium"><slot /></p>
+  {
+    dismissible && (
+      <button type="button" class="shrink-0 text-slate transition-colors hover:text-ink" aria-label="Dismiss" data-alert-dismiss>
+        <Icon name="close" size={16} />
+      </button>
+    )
+  }
+</div>
+
+<script>
+  document.querySelectorAll("[data-alert-dismiss]").forEach((btn) => {
+    btn.addEventListener("click", () => btn.closest("[data-alert]")?.remove());
+  });
+</script>

@@ -1,0 +1,41 @@
+---
+/**
+ * Experimental type + logo collision - massive display title crashing off-axis
+ * into a media panel and a bleeding raspberry monogram stamp.
+ */
+interface Props {
+  code?: string;
+  title: string;
+  stamp?: string;
+  class?: string;
+}
+
+const { code = "GRID_VIOLATION_LOGIC_01", title, stamp = "GM.", class: className = "" } = Astro.props;
+---
+
+<section class:list={["relative overflow-hidden bg-ink px-6 py-20 text-white md:px-14 md:py-28", className]}>
+  <p class="gm-label text-[9px] text-raspberry">{code}</p>
+
+  <div class="relative mt-6 max-w-4xl">
+    <h1 class="relative z-10 font-display text-[clamp(2.75rem,8vw,6.5rem)] leading-[0.95] font-extrabold tracking-tight text-balance">
+      {title}
+    </h1>
+    <div class="relative z-0 mt-8 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+      <p class="max-w-sm text-sm leading-relaxed text-white/60"><slot /></p>
+      <div class="h-44 w-full border border-white/15 bg-[linear-gradient(150deg,#1f2530,#10131a),repeating-linear-gradient(90deg,rgb(255_255_255/0.05)_0_2px,transparent_2px_14px)] bg-blend-screen md:-mt-24 md:w-64">
+        <slot name="media" />
+      </div>
+    </div>
+  </div>
+
+  <p
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-6 -bottom-10 font-display text-[clamp(8rem,22vw,18rem)] leading-none font-extrabold tracking-tighter text-raspberry select-none md:-right-10"
+  >
+    {stamp}
+  </p>
+
+  <div class="relative z-10 mt-12">
+    <slot name="actions" />
+  </div>
+</section>

@@ -1,0 +1,79 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import ImageCaption from "../../components/blocks/ImageCaption.astro";
+import LogoCloud from "../../components/blocks/LogoCloud.astro";
+import Icon from "../../components/ui/Icon.astro";
+import type { IconName } from "../../components/ui/Icon.astro";
+
+const icons: IconName[] = [
+  "arrow-right",
+  "arrow-left",
+  "chevron-down",
+  "chevron-up",
+  "plus",
+  "minus",
+  "close",
+  "check",
+  "search",
+  "settings",
+  "user",
+  "heart",
+  "star",
+  "bell",
+  "mail",
+  "link",
+  "external-link",
+  "download",
+  "upload",
+  "menu",
+];
+---
+
+<SpecShell sheet="Media Components Spec Sheet" version="V1.2.0">
+  <SpecSection
+    number="01"
+    title="Image with Caption"
+    description="Responsive layout variants featuring technical credit lines and dark high-contrast scrim overlays."
+  >
+    <div class="grid gap-8 lg:grid-cols-2">
+      <ImageCaption
+        caption="Programmatic ad server distribution node cluster visualization."
+        credit="Photo by Genius Monkey Engineering Group · 2026"
+      />
+      <ImageCaption
+        variant="scrim"
+        label="Live System Data"
+        caption="Dynamic visualization of active algorithmic real-time audience matching."
+      />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="02"
+    title="Logo Cloud / Partner Strip"
+    description="Flexible partner branding bands for bright and deep viewport zones."
+  >
+    <div class="flex flex-col gap-8">
+      <LogoCloud class="border border-line" />
+      <LogoCloud theme="dark" />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="03"
+    title="Icon Set"
+    description="The programmatic UI vector pack - stroke icons optimized for sharp rendering at 24px."
+  >
+    <div class="grid grid-cols-2 gap-4 border border-line bg-cloud p-8 sm:grid-cols-3 lg:grid-cols-5">
+      {
+        icons.map((name) => (
+          <div class="flex flex-col items-center gap-3 border border-line bg-white py-6">
+            <Icon {name} size={24} />
+            <p class="text-xs font-medium text-slate">{name}</p>
+          </div>
+        ))
+      }
+    </div>
+  </SpecSection>
+</SpecShell>

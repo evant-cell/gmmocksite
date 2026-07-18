@@ -1,0 +1,48 @@
+---
+/** Status pill / metadata tag. `removable` renders a dismiss dot (filter-tag style). */
+import Icon from "./Icon.astro";
+
+interface Props {
+  tone?: "default" | "success" | "warning" | "info" | "neutral" | "raspberry" | "solid";
+  removable?: boolean;
+  class?: string;
+}
+
+const { tone = "default", removable = false, class: className = "" } = Astro.props;
+
+const tones = {
+  default: "bg-ink text-white",
+  success: "bg-success-100 text-success",
+  warning: "bg-warning-100 text-warning",
+  info: "bg-info-100 text-info",
+  neutral: "bg-line text-slate",
+  raspberry: "bg-raspberry-100 text-raspberry",
+  solid: "bg-raspberry text-white",
+};
+---
+
+<span
+  class:list={[
+    "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 gm-label text-[10px]",
+    tones[tone],
+    className,
+  ]}
+  data-removable={removable || undefined}
+>
+  <slot />
+  {
+    removable && (
+      <button type="button" class="-mr-0.5 opacity-70 transition-opacity hover:opacity-100" aria-label="Remove filter">
+        <Icon name="close" size={10} class="stroke-3" />
+      </button>
+    )
+  }
+</span>
+
+{removable && (
+  <script>
+    document.querySelectorAll("[data-removable] button").forEach((btn) => {
+      btn.addEventListener("click", () => btn.closest("[data-removable]")?.remove());
+    });
+  </script>
+)}

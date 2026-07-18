@@ -1,0 +1,103 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import SpecRow from "../../components/styleguide/SpecRow.astro";
+import Alert from "../../components/ui/Alert.astro";
+import Toast from "../../components/ui/Toast.astro";
+import Tooltip from "../../components/ui/Tooltip.astro";
+import Modal from "../../components/ui/Modal.astro";
+import Button from "../../components/ui/Button.astro";
+---
+
+<SpecShell sheet="Overlays & Feedback Specs">
+  <SpecSection
+    number="01"
+    title="System Banner Alerts"
+    description="Full-width notification bars for global system updates. Dismiss controls are live."
+  >
+    <div class="flex flex-col gap-4">
+      <Alert tone="info">
+        <strong>CREATIVE AUDIT:</strong> 3 active HTML5 display ads require manual click-tag review.
+      </Alert>
+      <Alert tone="success">
+        <strong>CONVERSION BOOST:</strong> Smart algorithm optimization completed. CTR has increased by 14%.
+      </Alert>
+      <Alert tone="warning">
+        <strong>SPEND WARNING:</strong> Daily budget allocation threshold reached (90%) for Retargeting campaign.
+      </Alert>
+      <Alert tone="error">
+        <strong>INTEGRATION FAIL:</strong> Segment API handshake rejected. Check credentials and retry connection.
+      </Alert>
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="02"
+    title="Notification Toasts"
+    description="Contextual, transient alert cards with clean premium card shadows."
+  >
+    <div class="flex flex-wrap gap-6 bg-cloud py-4">
+      <Toast tone="success" title="Audiences Parsed">
+        Matched 145,000 lookup profiles to your High-LTV segment.
+      </Toast>
+      <Toast tone="pending" title="Handshake Pending">
+        LinkedIn API is taking longer than usual to respond to verification.
+      </Toast>
+      <Toast tone="error" title="Publish Denied">
+        Unable to write to programmatic inventory. Verification failed.
+      </Toast>
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="03"
+    title="Micro Tooltips"
+    description="High-contrast helpers revealing contextual metrics on hover or keyboard focus."
+  >
+    <div class="flex flex-wrap items-center justify-center gap-16 bg-white px-6 py-16">
+      <Tooltip text="Top Tooltip" position="top"><span class="text-sm font-medium text-slate">Hover Source</span></Tooltip>
+      <Tooltip text="Bottom Alert Tooltip" position="bottom"><span class="text-sm font-medium text-slate">Hover Source</span></Tooltip>
+      <Tooltip text="Left Context Tip" position="left"><span class="text-sm font-medium text-slate">Hover Source</span></Tooltip>
+      <Tooltip text="Right Hint" position="right"><span class="text-sm font-medium text-slate">Hover Source</span></Tooltip>
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="04"
+    title="Overlays & Modal Dialogs"
+    description="Semi-transparent viewport backdrops with actionable overlays. Both triggers open live dialogs."
+  >
+    <SpecRow label="Confirmation Pattern">
+      <Button variant="destructive" data-modal-open="modal-pause">Pause Campaign</Button>
+    </SpecRow>
+    <SpecRow label="Acknowledge Pattern">
+      <Button variant="secondary" data-modal-open="modal-info">Programmatic Optimization</Button>
+    </SpecRow>
+
+    <Modal id="modal-pause" title="Pause Campaign?">
+      Pausing the <strong class="text-ink">Q4 Retargeting Blast</strong> will instantly halt active
+      auctions and bid streams. This may impact your pacing and overall target frequency goals.
+      <Fragment slot="actions">
+        <Button variant="secondary" data-modal-close>Dismiss</Button>
+        <Button>Confirm Pause</Button>
+      </Fragment>
+    </Modal>
+
+    <Modal id="modal-info" title="Programmatic Optimization">
+      Genius Monkey's smart routing operates on a real-time path validation protocol. This ensures
+      your marketing budget is dynamically funneled only into platforms demonstrating active consumer
+      intent signals.
+      <ul class="mt-4 flex flex-col gap-2">
+        <li class="flex items-center gap-2.5 text-sm font-semibold text-ink">
+          <span class="size-1.5 rounded-full bg-raspberry"></span>Dynamic Inventory Tracking
+        </li>
+        <li class="flex items-center gap-2.5 text-sm font-semibold text-ink">
+          <span class="size-1.5 rounded-full bg-raspberry"></span>Fraud Protection Verification Layer
+        </li>
+      </ul>
+      <Fragment slot="actions">
+        <Button variant="secondary" data-modal-close>Acknowledge</Button>
+      </Fragment>
+    </Modal>
+  </SpecSection>
+</SpecShell>

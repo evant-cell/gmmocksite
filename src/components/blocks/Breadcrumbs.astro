@@ -1,0 +1,51 @@
+---
+/** Path trace - light or dark context; last item renders active in raspberry. */
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  items: { label: string; href?: string }[];
+  theme?: "light" | "dark";
+  class?: string;
+}
+
+const { items, theme = "light", class: className = "" } = Astro.props;
+const dark = theme === "dark";
+---
+
+<nav
+  aria-label="Breadcrumb"
+  class:list={["px-6 py-4", dark ? "bg-ink text-white" : "bg-cloud text-ink", className]}
+>
+  <ol class="flex flex-wrap items-center gap-2 text-sm font-medium">
+    {
+      items.map((item, i) => {
+        const last = i === items.length - 1;
+        return (
+          <li class="flex items-center gap-2">
+            {i > 0 && <Icon name="chevron-right" size={13} class={dark ? "text-white/40" : "text-mist"} />}
+            {last ? (
+              <span aria-current="page" class="font-semibold text-raspberry">
+                {item.label}
+              </span>
+            ) : (
+              <a
+                href={item.href ?? "#"}
+                class:list={[
+                  "transition-colors",
+                  i === 0
+                    ? dark
+                      ? "text-white/60 hover:text-white"
+                      : "text-slate hover:text-ink"
+                    : "underline decoration-1 underline-offset-4 " +
+                      (dark ? "text-white/80 hover:text-white" : "text-ink hover:text-raspberry"),
+                ]}
+              >
+                {item.label}
+              </a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>

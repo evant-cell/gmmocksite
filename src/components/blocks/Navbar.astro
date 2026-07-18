@@ -1,0 +1,101 @@
+---
+/** Responsive top navigation - dark or light variant, mobile disclosure menu. */
+import Logo from "../ui/Logo.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  theme?: "dark" | "light";
+  links?: { label: string; href: string }[];
+  class?: string;
+}
+
+const {
+  theme = "dark",
+  links = [
+    { label: "Products", href: "#" },
+    { label: "Solutions", href: "#" },
+    { label: "Resources", href: "#" },
+    { label: "Pricing", href: "#" },
+  ],
+  class: className = "",
+} = Astro.props;
+
+const dark = theme === "dark";
+const navId = `nav-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<header class:list={[dark ? "bg-ink text-white" : "bg-white text-ink", className]} data-navbar>
+  <nav class="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-10">
+    <a href="/" class="shrink-0"><Logo class="text-lg" inverted={dark} /></a>
+
+    <ul class="hidden items-center gap-8 md:flex">
+      {
+        links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={[
+                "text-sm font-semibold transition-colors",
+                dark ? "text-white/80 hover:text-white" : "text-slate hover:text-ink",
+              ]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="hidden items-center gap-6 md:flex">
+      <a
+        href="#"
+        class:list={[
+          "text-sm font-semibold transition-colors",
+          dark ? "text-white/80 hover:text-white" : "text-slate hover:text-ink",
+        ]}>Login</a
+      >
+      <Button size="sm">Get Started</Button>
+    </div>
+
+    <button
+      type="button"
+      class:list={["md:hidden", dark ? "text-white" : "text-ink"]}
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls={navId}
+      data-nav-toggle
+    >
+      <Icon name="menu" size={24} />
+    </button>
+  </nav>
+
+  <div id={navId} class:list={["hidden border-t px-6 py-6 md:hidden", dark ? "border-line-dark" : "border-line"]} data-nav-menu>
+    <ul class="flex flex-col gap-4">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} class:list={["text-base font-semibold", dark ? "text-white/90" : "text-ink"]}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+      <li class="mt-2 flex items-center gap-5">
+        <a href="#" class:list={["text-base font-semibold", dark ? "text-white/90" : "text-ink"]}>Login</a>
+        <Button size="sm">Get Started</Button>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-navbar]").forEach((nav) => {
+    const toggle = nav.querySelector<HTMLButtonElement>("[data-nav-toggle]");
+    const menu = nav.querySelector<HTMLElement>("[data-nav-menu]");
+    toggle?.addEventListener("click", () => {
+      const open = menu?.classList.toggle("hidden") === false;
+      toggle.setAttribute("aria-expanded", String(open));
+    });
+  });
+</script>

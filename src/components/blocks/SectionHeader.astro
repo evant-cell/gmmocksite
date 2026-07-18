@@ -1,0 +1,19 @@
+---
+/** Editorial section header - raspberry eyebrow, bold title, supporting line. */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  align?: "left" | "center";
+  class?: string;
+}
+
+const { eyebrow, title, align = "left", class: className = "" } = Astro.props;
+---
+
+<header class:list={[align === "center" && "mx-auto max-w-2xl text-center", className]}>
+  {eyebrow && <p class="gm-label text-raspberry">{eyebrow}</p>}
+  <h2 class="mt-3 text-3xl font-bold tracking-tight text-balance md:text-4xl">{title}</h2>
+  <p class:list={["mt-4 max-w-2xl text-[15px] leading-relaxed", "text-slate", align === "center" && "mx-auto"]}>
+    <slot />
+  </p>
+</header>

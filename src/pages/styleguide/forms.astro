@@ -1,0 +1,131 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import SpecRow from "../../components/styleguide/SpecRow.astro";
+import Input from "../../components/ui/Input.astro";
+import Textarea from "../../components/ui/Textarea.astro";
+import Select from "../../components/ui/Select.astro";
+import Checkbox from "../../components/ui/Checkbox.astro";
+import Radio from "../../components/ui/Radio.astro";
+---
+
+<SpecShell sheet="Forms & Inputs Spec">
+  <SpecSection
+    number="01"
+    title="Text Inputs"
+    description="Unbounded uppercase labels with Outfit interaction text. High-contrast 2px borders scale on focus."
+  >
+    <div class="grid max-w-4xl gap-8 md:grid-cols-2">
+      <Input
+        label="Campaign Name"
+        name="campaign-default"
+        placeholder="e.g. Q3 Brand Awareness Campaign"
+        hint="Use a distinct name to categorize your programmatic bids."
+      />
+      <Input
+        label="Campaign Name"
+        name="campaign-error"
+        value="Invalid_Campaign!#$"
+        error="Special characters are not supported in campaign names."
+      />
+      <Input
+        label="Campaign Name"
+        name="campaign-disabled"
+        value="Programmatic Campaign A"
+        hint="Locked for editing during live programmatic flight."
+        disabled
+      />
+      <Input label="Daily Budget (USD)" name="budget" size="md" value="2,500.00" suffix="USD" />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="02"
+    title="Textarea / Multiline Input"
+    description="Extensive custom descriptors with explicit character-count metadata."
+  >
+    <div class="max-w-2xl">
+      <Textarea
+        label="Targeting Description"
+        name="targeting"
+        placeholder="e.g. Focus on digital marketers, tech decision makers, and programmatic media buyers based in metropolitan regions..."
+      />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="03"
+    title="Select / Dropdown"
+    description="Bidding strategy and channel criteria selection with custom chevron affordance."
+  >
+    <div class="grid max-w-2xl gap-8 md:grid-cols-2">
+      <Select
+        label="Bidding Strategy"
+        name="bidding"
+        options={[
+          { value: "cpa", label: "Cost Per Acquisition (CPA)", selected: true },
+          { value: "cpc", label: "Cost Per Click (CPC)" },
+          { value: "cpm", label: "Cost Per Mille (CPM)" },
+          { value: "dcpm", label: "Dynamic CPM (dCPM)" },
+        ]}
+      />
+      <Select
+        label="Channel Criteria"
+        name="channel"
+        disabled
+        options={[{ value: "all", label: "All Channels", selected: true }]}
+      />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="04"
+    title="Checkbox Controls"
+    description="Heavy raster styling with cobalt fill triggers and clean disabled states."
+  >
+    <SpecRow label="Unchecked"><Checkbox name="c1" label="Enable Retargeting Pixel" /></SpecRow>
+    <SpecRow label="Checked"><Checkbox name="c2" label="Enable Retargeting Pixel" checked /></SpecRow>
+    <SpecRow label="Indeterminate"><Checkbox name="c3" label="Select All Geographies" indeterminate /></SpecRow>
+    <SpecRow label="Disabled"><Checkbox name="c4" label="Opt-In to Beta Channels" disabled /></SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="05"
+    title="Radio Button Group"
+    description="Circular option indicators with contrasting double-ring fills on active selection."
+  >
+    <div class="max-w-md border border-line bg-white p-6">
+      <p class="gm-label mb-4 text-[10px] text-slate">Device Optimization</p>
+      <div class="flex flex-col gap-4">
+        <Radio name="device" value="cross" label="Cross-Device All Platforms" checked />
+        <Radio name="device" value="mobile" label="Mobile Only Optimization" />
+        <Radio name="device" value="ctv" label="Connected TV (CTV) Screens Only" />
+      </div>
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="06"
+    title="Composed Form Field Group"
+    description="Structural labels, inputs, metadata, and state messaging combined."
+  >
+    <div class="grid max-w-4xl gap-8 md:grid-cols-2">
+      <div class="bg-success-100/60 p-6">
+        <Input
+          label="Daily CPM Bid Target"
+          name="bid-success"
+          value="12.50"
+          hint="Your targeted programmatic budget is competitive enough to secure 92% tier-1 publisher inventory."
+        />
+      </div>
+      <div class="bg-error-100/60 p-6">
+        <Input
+          label="Daily CPM Bid Target"
+          name="bid-error"
+          value="0.25"
+          error="Your bid is below the minimum threshold ($0.50) required for live display bidding."
+        />
+      </div>
+    </div>
+  </SpecSection>
+</SpecShell>

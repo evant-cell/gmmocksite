@@ -1,0 +1,103 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import Navbar from "../../components/blocks/Navbar.astro";
+import Footer from "../../components/blocks/Footer.astro";
+import Breadcrumbs from "../../components/blocks/Breadcrumbs.astro";
+import Hero from "../../components/blocks/Hero.astro";
+import Section from "../../components/blocks/Section.astro";
+import Button from "../../components/ui/Button.astro";
+
+const crumbs = [
+  { label: "Home", href: "/" },
+  { label: "Products", href: "#" },
+  { label: "Programmatic Platform" },
+];
+---
+
+<SpecShell sheet="Navigation & Layout Spec" version="V1.3.0">
+  <SpecSection
+    number="01"
+    title="Navigation Bar"
+    description="Responsive top navigation for desktop and mobile states, in dark and light variants. Resize the window to preview the mobile menu."
+  >
+    <div class="flex flex-col gap-6 overflow-hidden border border-line">
+      <Navbar theme="dark" />
+      <Navbar theme="light" class="border-t border-line" />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="02"
+    title="Footer"
+    description="Global dark footer with multi-column navigation, brand messaging, and social channel anchors."
+  >
+    <Footer />
+  </SpecSection>
+
+  <SpecSection
+    number="03"
+    title="Breadcrumbs"
+    description="Clear path traces for complex advertising dashboard hierarchies."
+  >
+    <div class="flex flex-col gap-4">
+      <Breadcrumbs items={crumbs} class="border border-line" />
+      <Breadcrumbs items={crumbs} theme="dark" />
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="04"
+    title="Hero Sections"
+    description="High-converting modular hero blocks for core platform solutions or technical spec sheets."
+  >
+    <div class="flex flex-col gap-8">
+      <Hero eyebrow="Programmatic Power" title="Launch Campaigns That Convert">
+        Reach millions with targeted programmatic distribution. Genius Monkey leverages intelligent
+        routing and real-time bid logic to deliver maximum performance.
+        <Fragment slot="actions">
+          <Button size="lg">Launch App</Button>
+          <Button size="lg" variant="secondary" class="border-white text-white hover:bg-white hover:text-ink">Learn More</Button>
+        </Fragment>
+        <div
+          slot="media"
+          class="aspect-[4/3] w-full max-w-md border border-white/10 bg-[linear-gradient(150deg,#1f2530,#10131a),radial-gradient(ellipse_at_70%_30%,rgb(124_77_255/0.5),transparent_60%)] bg-blend-screen"
+        >
+        </div>
+      </Hero>
+
+      <Hero theme="light" eyebrow="Data Precision" title="Smart Audience Segmentation">
+        Isolate high-intent behaviors instantly. Access real-time multi-channel behavioral insights
+        to scale your targeting precisely where conversion lives.
+        <Fragment slot="actions">
+          <Button size="lg">Explore Tools</Button>
+          <Button size="lg" variant="secondary">Get Specs</Button>
+        </Fragment>
+        <div slot="media" class="aspect-[4/3] w-full max-w-md border border-line bg-white"></div>
+      </Hero>
+    </div>
+  </SpecSection>
+
+  <SpecSection
+    number="05"
+    title="Container / Section Wrapper"
+    description="Consistent max-width containment with safe-zone horizontal padding across light and dark contexts."
+  >
+    <div class="flex flex-col gap-6">
+      <Section theme="dark" spacing="md">
+        <h3 class="text-2xl font-bold">Platform Analytics Dashboard</h3>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-white/60">
+          Inside this safe zone, content remains perfectly center-aligned and readable regardless of
+          wide-viewport expansion. High contrast layout guides prevent layout spills.
+        </p>
+      </Section>
+      <Section theme="light" spacing="md" class="border border-line">
+        <h3 class="text-2xl font-bold">Flexible Campaign Control</h3>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate">
+          Layout guidelines provide predictable boundaries across varying breakpoints. This standard
+          container guarantees correct grid scaling for media buys and visual dashboards.
+        </p>
+      </Section>
+    </div>
+  </SpecSection>
+</SpecShell>

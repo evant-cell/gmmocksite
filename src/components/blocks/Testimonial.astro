@@ -1,0 +1,30 @@
+---
+/** Quote block - light or dark, raspberry quote marks, attribution row. */
+import Avatar from "../ui/Avatar.astro";
+
+interface Props {
+  theme?: "light" | "dark";
+  name: string;
+  role: string;
+  src?: string;
+  initials?: string;
+  class?: string;
+}
+
+const { theme = "light", name, role, src, initials, class: className = "" } = Astro.props;
+const dark = theme === "dark";
+---
+
+<figure class:list={["p-8 md:p-10", dark ? "bg-ink text-white" : "bg-cloud text-ink", className]}>
+  <span aria-hidden="true" class="font-display text-5xl leading-none font-extrabold text-raspberry/50">&ldquo;&rdquo;</span>
+  <blockquote class="mt-4 text-xl leading-relaxed font-bold text-balance md:text-2xl">
+    &ldquo;<slot />&rdquo;
+  </blockquote>
+  <figcaption class="mt-8 flex items-center gap-4">
+    <Avatar {src} {initials} alt={`Portrait of ${name}`} />
+    <div>
+      <p class="text-sm font-bold">{name}</p>
+      <p class:list={["text-sm", dark ? "text-white/55" : "text-slate"]}>{role}</p>
+    </div>
+  </figcaption>
+</figure>

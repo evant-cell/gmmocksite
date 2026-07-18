@@ -1,0 +1,148 @@
+cluster,keyword,volume,kd,intent,target_page,role,notes
+Fundamentals,programmatic advertising,7900,30,commercial,/platform (Programmatic Advertising Platform),primary-hub,aspirational head; support with cluster
+Fundamentals,what is programmatic advertising,1900,31,informational,/resources/guides/what-is-programmatic-advertising,primary,definitive guide
+Fundamentals,programmatic media buying,800,19,informational,/platform/how-it-works,primary,
+Fundamentals,programmatic advertising examples,450,12,informational,/resources/guides/what-is-programmatic-advertising,secondary,traffic potential 11k
+Fundamentals,real time bidding,700,27,informational,/glossary/rtb + /platform/how-it-works,secondary,
+Fundamentals,what is rtb,450,19,informational,/glossary/rtb,primary,TP 2100
+Fundamentals,how does programmatic advertising work,350,24,informational,/resources/guides/what-is-programmatic-advertising,secondary,FAQ + guide
+Fundamentals,how to do programmatic advertising,200,28,informational,/resources/guides/what-is-programmatic-advertising,supporting,
+Fundamentals,automated media buying,150,0,informational,/platform/how-it-works,supporting,winnable
+Fundamentals,how much does programmatic advertising cost,100,19,informational,FAQ Hub + guide,supporting,AEO
+Fundamentals,why is programmatic advertising important,150,11,informational,guide,supporting,AEO
+Fundamentals,the future of programmatic advertising,40,5,informational,blog: Industry Trends,supporting,
+Fundamentals,programmatic advertising vs display,80,-,commercial,/resources/comparisons,supporting,
+DSP,what is a dsp,5400,14,informational,/glossary/dsp + /platform,primary,TP 5700; top AEO win
+DSP,demand side platform,1600,39,informational,/platform (DSP),primary,aspirational
+DSP,dsp advertising,900,28,informational,/platform/how-it-works,primary,
+DSP,programmatic dsp,400,12,informational,/platform/how-it-works,secondary,
+DSP,dsp ads,450,30,commercial,/platform,secondary,
+DSP,programmatic advertising dsp,200,13,informational,/platform,supporting,
+DSP,dsp media buying,200,10,informational,/platform/how-it-works,supporting,
+DSP,what is a dsp advertising,200,16,informational,/glossary/dsp,supporting,
+DSP,what is dsp advertising,150,23,informational,/glossary/dsp,supporting,
+DSP,dsp programmatic advertising,150,16,informational,/platform,supporting,
+DSP,programmatic dsps,150,15,informational,/platform,supporting,
+DSP,dsp programmatic,200,10,informational,/glossary/dsp,supporting,
+DSP,supply side platform,700,8,informational,/glossary/ssp,primary,TP 1400
+DSP,sell side platform,60,9,informational,/glossary/ssp,supporting,TP 1200
+DSP,self service dsp,150,2,commercial,/solutions/by-business/agency,supporting,
+DSP,white label dsp,100,1,commercial,/solutions/by-business/agency,secondary,
+Comparisons,best dsp,300,0,commercial,/resources/comparisons/best-dsp,primary,KD 0
+Comparisons,best demand side platform,200,4,commercial,/resources/comparisons/best-dsp,secondary,
+Comparisons,dsp comparison,40,-,commercial,/resources/comparisons/best-dsp,supporting,
+Comparisons,programmatic advertising platform,600,9,commercial,/platform,primary,money term low KD
+Comparisons,best programmatic advertising platforms,-,-,commercial,/resources/comparisons,primary,parent of above
+Comparisons,the trade desk alternative,10,-,commercial,/resources/comparisons/trade-desk-alternative,primary,low vol high intent
+CTV-OTT-Video,what is ctv,3000,9,informational,/glossary/ctv + /solutions/by-channel/ott-ctv,primary,TP 5900; top AEO win
+CTV-OTT-Video,ctv advertising,2100,17,commercial,/solutions/by-channel/ott-ctv,primary,
+CTV-OTT-Video,ott advertising,1500,21,commercial,/solutions/by-channel/ott-ctv,primary,TP 4000
+CTV-OTT-Video,connected tv advertising,900,28,commercial,/solutions/by-channel/ott-ctv,secondary,TP 7000
+CTV-OTT-Video,what is ctv advertising,900,17,informational,/solutions/by-channel/ott-ctv,secondary,
+CTV-OTT-Video,what does ctv stand for,300,20,informational,/glossary/ctv,secondary,
+CTV-OTT-Video,addressable tv,450,0,informational,/solutions/by-channel/ott-ctv,secondary,
+CTV-OTT-Video,addressable tv advertising,300,1,commercial,/solutions/by-channel/ott-ctv,secondary,
+CTV-OTT-Video,programmatic video advertising,400,3,informational,/solutions/by-channel/video,primary,
+CTV-OTT-Video,ctv digital advertising,200,11,informational,/solutions/by-channel/ott-ctv,supporting,
+CTV-OTT-Video,ctv strategy,150,0,informational,blog: CTV OTT Video,supporting,
+CTV-OTT-Video,how does ctv advertising work,200,13,informational,FAQ + page,supporting,AEO
+CTV-OTT-Video,ctv advertising cost,150,3,informational,FAQ + page,supporting,AEO
+CTV-OTT-Video,programmatic video advertising platform,150,4,commercial,/solutions/by-channel/video,supporting,
+CTV-OTT-Video,programmatic video buying,150,2,informational,/solutions/by-channel/video,supporting,
+CTV-OTT-Video,ctv retargeting,100,0,informational,blog,supporting,
+CTV-OTT-Video,video pre roll advertising,80,0,informational,/solutions/by-channel/video,supporting,
+CTV-OTT-Video,what is linear content,200,0,informational,/glossary,supporting,
+Native,native advertising,7900,65,informational,/solutions/by-channel/native,primary-hub,aspirational head
+Native,native ads,1600,46,informational,/solutions/by-channel/native,secondary,
+Native,what is native advertising,1400,49,informational,/solutions/by-channel/native,secondary,
+Native,native advertising examples,800,6,informational,blog/guide: native examples,primary,winnable; StackAdapt ranks
+Native,native digital advertising,700,49,informational,/solutions/by-channel/native,supporting,
+Native,native ad examples,200,3,informational,blog: native examples,secondary,
+Native,native display advertising,200,19,informational,/solutions/by-channel/native,supporting,
+Native,native ads vs display ads,150,7,informational,/resources/comparisons/native-vs-display,primary,winnable comparison
+Native,benefits of native ads,100,10,informational,/solutions/by-channel/native,supporting,
+Native,native advertising advantages,150,7,informational,/solutions/by-channel/native,supporting,
+Native,native advertising technology,90,6,informational,/solutions/by-channel/native,supporting,
+Display,programmatic display advertising,900,28,informational,/solutions/by-channel/display,primary,
+Display,display advertising platforms,150,10,commercial,/solutions/by-channel/display,secondary,
+Display,display ad platforms,150,11,commercial,/solutions/by-channel/display,supporting,
+Display,programmatic retargeting,150,0,informational,/solutions/by-channel/display,supporting,winnable
+Display,programmatic guaranteed,300,8,informational,/glossary + display,supporting,
+Display,dsp retargeting,70,0,informational,/solutions/by-channel/display,supporting,
+DOOH,dooh,1900,15,informational,/solutions/by-channel/dooh (NEW),primary-hub,sitemap gap; recommend adding
+DOOH,dooh advertising,1100,7,informational,/solutions/by-channel/dooh (NEW),primary,winnable
+DOOH,digital out of home,900,7,informational,/solutions/by-channel/dooh (NEW),secondary,
+DOOH,digital out of home advertising,1100,16,commercial,/solutions/by-channel/dooh (NEW),secondary,
+DOOH,digital out-of-home,500,10,informational,/solutions/by-channel/dooh (NEW),supporting,
+DOOH,programmatic dooh,400,8,informational,/solutions/by-channel/dooh (NEW),secondary,
+DOOH,programmatic ooh,450,6,informational,/solutions/by-channel/dooh (NEW),secondary,
+DOOH,digital ooh advertising,300,10,informational,/solutions/by-channel/dooh (NEW),supporting,
+DOOH,digital out of home media,250,6,informational,/solutions/by-channel/dooh (NEW),supporting,
+DOOH,dooh advertising examples,150,9,informational,blog,supporting,
+Audio,programmatic audio advertising,450,4,commercial,/solutions/by-channel/audio,primary,winnable
+Audio,audio advertising,-,-,commercial,/solutions/by-channel/audio,secondary,price later
+Targeting,audience targeting,1600,64,informational,/platform/behavioral-targeting,primary,SERP polluted (Target retailer); hard
+Targeting,behavioral targeting,1200,9,informational,/platform/behavioral-targeting,primary,winnable
+Targeting,first party data,1400,25,informational,/platform/targeting + blog Privacy,primary,
+Targeting,geofencing marketing,1800,4,commercial,/platform/targeting (geofencing) or blog,primary,winnable high vol
+Targeting,geofencing advertising,600,3,commercial,/platform/targeting,secondary,
+Targeting,contextual advertising,700,16,informational,/platform/targeting,secondary,
+Targeting,cookieless advertising,350,8,commercial,blog: Targeting Data Privacy,primary,
+Targeting,cookieless identity solution,200,4,informational,blog,supporting,
+Targeting,addressable advertising,250,0,informational,/platform/targeting,secondary,
+Targeting,addressable targeting,100,0,informational,/platform/targeting,supporting,
+Targeting,addressable geofencing,200,0,informational,/platform/targeting,supporting,
+Targeting,lookalike audiences,200,28,informational,/platform/targeting,supporting,
+Targeting,cross device targeting,100,6,informational,/platform/device-agnostic-targeting,primary,
+Targeting,sequential retargeting,80,0,informational,/platform/targeting,supporting,
+Targeting,sequential messaging,100,1,informational,/platform/targeting,supporting,
+Targeting,hyperlocal ads,100,9,commercial,/platform/targeting,supporting,
+Measurement,roas,12000,34,informational,/glossary/roas + blog Attribution,primary,GM ranks #1 mer vs roas
+Measurement,marketing attribution,2100,33,informational,/platform/measurement-validation,primary,
+Measurement,multi touch attribution,1000,22,commercial,/platform/measurement-validation,secondary,
+Measurement,media mix modeling,1100,12,informational,blog: Attribution Measurement,primary,winnable
+Measurement,incrementality testing,500,10,informational,blog: Attribution Measurement,secondary,
+Measurement,conversion tracking,700,31,informational,/platform/measurement-validation,secondary,
+Measurement,cpm meaning,7800,48,informational,/glossary/cpm,primary,aspirational
+Measurement,ad viewability,250,7,informational,/glossary/viewability + measurement,secondary,
+Measurement,impression tracking,90,0,informational,/platform/measurement-validation,supporting,GM ranks already
+Measurement,mer marketing,200,12,informational,/glossary/mer + blog,secondary,GM ranks #1 mer vs roas
+AdFraud-BrandSafety,click fraud,1200,45,informational,blog: Ad Fraud Brand Safety,primary,aspirational
+AdFraud-BrandSafety,ad fraud,450,12,informational,blog: Ad Fraud Brand Safety,primary,winnable
+AdFraud-BrandSafety,brand safety,600,17,informational,blog: Ad Fraud Brand Safety,primary,
+AdFraud-BrandSafety,brand safety digital advertising,100,1,informational,/platform/brand-safety section,secondary,
+Industries-Automotive,automotive advertising,800,12,commercial,/industries/automotive,primary,
+Industries-Automotive,automotive digital advertising,-,-,commercial,/industries/automotive,secondary,price later
+Industries-Medical,healthcare advertising,1800,33,commercial,/industries/medical,primary,
+Industries-Medical,healthcare digital marketing,2200,11,informational,/industries/medical,secondary,easier entry
+Industries-Finance,financial services advertising,300,5,commercial,/industries/finance,primary,winnable
+Industries-Legal,legal advertising,1200,5,commercial,/industries/legal,primary,winnable high vol
+Industries-Education,higher education advertising,200,31,commercial,/industries/education,primary,
+Industries-Political,political advertising,400,44,informational,/industries/political,primary,seasonal
+Industries-Political,political advertising strategies,200,7,informational,/industries/political,secondary,winnable
+Industries-Travel,travel advertising,300,2,commercial,/industries/travel,primary,winnable
+Industries-Travel,digital marketing for travel industry,250,3,informational,/industries/travel,secondary,
+Industries-Nonprofit,nonprofit advertising,250,43,commercial,/industries/nonprofit,primary,
+Industries-HomeServices,home services advertising,250,4,commercial,/industries/home-services,primary,winnable
+Industries-Retail,retail advertising,700,0,commercial,/industries/retail-ecommerce,primary,KD 0
+Industries-Retail,retail media,2300,6,informational,/industries/retail-ecommerce + guide,primary,winnable high vol
+Industries-Retail,retail media network,800,14,informational,/industries/retail-ecommerce,secondary,
+ByBusiness-Agency,programmatic advertising agency,3000,1,commercial,/solutions/by-business/agency,primary,KD 1 high value
+ByBusiness-Agency,programmatic advertising for agencies,0,-,commercial,/solutions/by-business/agency,secondary,
+ByBusiness-Business,programmatic advertising company,400,6,commercial,/solutions/by-business/business,primary,
+ByBusiness-Enterprise,enterprise advertising platform,100,-,commercial,/solutions/by-business/enterprise,primary,thin data
+ByBusiness-Ecommerce,programmatic advertising for ecommerce,70,-,commercial,/solutions/by-business/ecommerce,primary,
+Platform-Features,real time optimization,80,0,commercial,/platform/real-time-optimization,primary,brand-feature page
+Platform-Features,programmatic reporting,150,0,commercial,/platform/the-dashboard,primary,winnable
+Platform-Features,programmatic campaign management,100,-,commercial,/platform/the-dashboard,secondary,
+Platform-Features,managed programmatic advertising,40,-,commercial,/platform + /solutions,primary,GM differentiator term
+AI,ai in advertising,1700,58,informational,blog: Industry Trends,primary,aspirational
+AI,ai advertising,3200,56,informational,blog: Industry Trends,secondary,
+AI,ai ad targeting,200,0,informational,blog,supporting,winnable
+AI,generative ai in advertising,200,19,informational,blog,supporting,
+Seasonal,holiday marketing,700,5,informational,blog: Seasonal Holiday,primary,winnable; GM has assets
+Seasonal,biggest retail holidays,60,2,informational,blog: Seasonal Holiday,secondary,GM ranks already
+Glossary-Cross,what is cpm,-,-,informational,/glossary/cpm,primary,part of cpm meaning 7800
+Glossary-Cross,what is an ssp,-,-,informational,/glossary/ssp,primary,
+Glossary-Cross,omnichannel marketing platform,450,7,commercial,concept page,primary,BRAND TENSION: GM avoids omnichannel; use cross-channel in body
+Glossary-Cross,omnichannel platform,500,25,commercial,concept page,secondary,brand tension

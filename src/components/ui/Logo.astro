@@ -1,0 +1,31 @@
+---
+/** Genius Monkey wordmark. Stacked (two-line) or inline, with raspberry period. */
+interface Props {
+  variant?: "stacked" | "inline";
+  /** Tailwind text-size class controlling overall scale */
+  class?: string;
+  inverted?: boolean;
+}
+
+const { variant = "stacked", class: className = "text-xl", inverted = false } = Astro.props;
+---
+
+<span
+  class:list={[
+    "font-display font-extrabold uppercase leading-[0.9] tracking-tight select-none",
+    inverted ? "text-white" : "text-ink",
+    className,
+  ]}
+>
+  {
+    variant === "stacked" ? (
+      <>
+        Genius<br />Monkey<span class="text-raspberry">.</span>
+      </>
+    ) : (
+      <>
+        Genius Monkey<span class="text-raspberry">.</span>
+      </>
+    )
+  }
+</span>

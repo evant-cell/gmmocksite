@@ -1,0 +1,62 @@
+---
+/**
+ * Modal dialog built on <dialog>. Open it from any element with
+ * data-modal-open="<id>". Actions slot renders the footer buttons.
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  class?: string;
+}
+
+const { id, title, class: className = "" } = Astro.props;
+---
+
+<dialog
+  {id}
+  class:list={[
+    "m-auto w-full max-w-md bg-white p-8 shadow-toast backdrop:bg-ink/60 open:animate-[gm-modal-in_0.2s_ease-out]",
+    className,
+  ]}
+>
+  <div class="flex items-start justify-between gap-6">
+    <h3 class="text-xl font-bold">{title}</h3>
+    <button type="button" class="mt-1 shrink-0 text-slate transition-colors hover:text-ink" aria-label="Close" data-modal-close>
+      <Icon name="close" size={18} />
+    </button>
+  </div>
+  <div class="mt-4 text-[15px] leading-relaxed text-slate">
+    <slot />
+  </div>
+  <div class="mt-7 flex justify-end gap-3">
+    <slot name="actions" />
+  </div>
+</dialog>
+
+<style>
+  @keyframes gm-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-modal-open]").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      const dialog = document.getElementById(trigger.dataset.modalOpen ?? "");
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+    });
+  });
+  document.querySelectorAll("dialog").forEach((dialog) => {
+    dialog.querySelectorAll("[data-modal-close]").forEach((btn) => {
+      btn.addEventListener("click", () => dialog.close());
+    });
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>

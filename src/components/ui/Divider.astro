@@ -1,0 +1,18 @@
+---
+/** Editorial divider - full-bleed or inset, cloud / slate / dark-context tints. */
+interface Props {
+  tone?: "cloud" | "slate" | "dark";
+  inset?: boolean;
+  class?: string;
+}
+
+const { tone = "cloud", inset = false, class: className = "" } = Astro.props;
+
+const tones = {
+  cloud: "border-line",
+  slate: "border-slate",
+  dark: "border-line-dark",
+};
+---
+
+<hr class:list={["border-t", tones[tone], inset && "mx-12", className]} />

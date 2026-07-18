@@ -1,0 +1,36 @@
+---
+/** Partner logo strip - raspberry trust line over a muted brand row, light or dark. */
+interface Props {
+  theme?: "light" | "dark";
+  heading?: string;
+  brands?: string[];
+  class?: string;
+}
+
+const {
+  theme = "light",
+  heading = "Trusted by leading programmatic brands globally",
+  brands = ["Intel", "Cisco", "Audi", "Nike", "Salesforce", "Sonos"],
+  class: className = "",
+} = Astro.props;
+
+const dark = theme === "dark";
+---
+
+<div class:list={["px-6 py-12 text-center", dark ? "bg-ink" : "bg-cloud", className]}>
+  <p class="gm-label text-[10px] text-raspberry">{heading}</p>
+  <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-14 gap-y-6">
+    {
+      brands.map((brand) => (
+        <li
+          class:list={[
+            "font-display text-xl font-bold transition-colors",
+            dark ? "text-white/30 hover:text-white/70" : "text-mist/70 hover:text-slate",
+          ]}
+        >
+          {brand}
+        </li>
+      ))
+    }
+  </ul>
+</div>

@@ -1,0 +1,44 @@
+---
+/** Circular identifier - image fill or typographic initials fallback, optional presence dot. */
+interface Props {
+  src?: string;
+  alt?: string;
+  initials?: string;
+  size?: "lg" | "md" | "sm";
+  tone?: "violet" | "ink";
+  status?: boolean;
+  class?: string;
+}
+
+const { src, alt = "", initials = "GM", size = "md", tone = "violet", status = false, class: className = "" } =
+  Astro.props;
+
+const sizes = { lg: "size-14 text-base", md: "size-11 text-sm", sm: "size-8 text-[10px]" };
+const dotSizes = { lg: "size-3.5", md: "size-3", sm: "size-2.5" };
+const tones = { violet: "bg-violet-100 text-violet", ink: "bg-ink text-white" };
+---
+
+<span class:list={["relative inline-flex shrink-0", className]}>
+  {
+    src ? (
+      <img {src} {alt} class:list={["rounded-full object-cover", sizes[size]]} />
+    ) : (
+      <span
+        class:list={[
+          "inline-flex items-center justify-center rounded-full font-label font-semibold uppercase",
+          sizes[size],
+          tones[tone],
+        ]}
+      >
+        {initials}
+      </span>
+    )
+  }
+  {
+    status && (
+      <span
+        class:list={["absolute right-0 bottom-0 rounded-full border-2 border-white bg-success", dotSizes[size]]}
+      />
+    )
+  }
+</span>

@@ -1,0 +1,27 @@
+---
+/**
+ * Logo-as-image-mask hero - the wordmark acts as a clipping aperture exposing
+ * a vivid generative field (pure CSS gradients, no image assets needed).
+ */
+interface Props {
+  title: string;
+  wordmark?: string;
+  class?: string;
+}
+
+const { title, wordmark = "Genius Monkey", class: className = "" } = Astro.props;
+---
+
+<section class:list={["bg-ink px-6 py-16 text-center text-white md:py-24", className]}>
+  <p
+    aria-hidden="true"
+    class="mx-auto max-w-6xl bg-[radial-gradient(ellipse_at_20%_60%,#7c4dff,transparent_55%),radial-gradient(ellipse_at_70%_30%,#f7004e,transparent_55%),radial-gradient(ellipse_at_90%_90%,#3d5afe,transparent_45%),linear-gradient(160deg,#e8e4da,#b9b2a4)] bg-clip-text font-display text-[clamp(3rem,10.5vw,9rem)] leading-[0.9] font-extrabold tracking-tight text-transparent uppercase select-none"
+  >
+    {wordmark}
+  </p>
+  <h1 class="mx-auto mt-10 max-w-2xl text-3xl font-bold text-balance md:text-4xl">{title}</h1>
+  <p class="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/60"><slot /></p>
+  <div class="mt-9 flex flex-wrap items-center justify-center gap-5">
+    <slot name="actions" />
+  </div>
+</section>

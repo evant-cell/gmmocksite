@@ -1,0 +1,24 @@
+---
+/** Extreme-type data callout - giant display figure with raspberry label bar and side spec note. */
+interface Props {
+  value: string;
+  label: string;
+  noteTitle?: string;
+  class?: string;
+}
+
+const { value, label, noteTitle = "Data Spec", class: className = "" } = Astro.props;
+---
+
+<div class:list={["grid gap-10 bg-ink p-8 text-white md:grid-cols-[1fr_auto] md:items-center md:p-14", className]}>
+  <div>
+    <p class="font-display text-[clamp(5rem,16vw,11rem)] leading-[0.85] font-extrabold tracking-tighter">
+      {value}
+    </p>
+    <p class="mt-2 inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px] text-white">{label}</p>
+  </div>
+  <aside class="max-w-52">
+    <p class="gm-label text-[9px] text-white/50">{noteTitle}</p>
+    <p class="mt-2 text-xs leading-relaxed text-white/60"><slot /></p>
+  </aside>
+</div>

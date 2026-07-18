@@ -1,0 +1,25 @@
+---
+/** Radio option - double-ring cobalt fill on selection. */
+interface Props {
+  name: string;
+  value: string;
+  label: string;
+  checked?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const { name, value, label, checked = false, disabled = false, class: className = "" } = Astro.props;
+---
+
+<label class:list={["inline-flex items-center gap-3", disabled ? "cursor-not-allowed" : "cursor-pointer", className]}>
+  <input type="radio" {name} {value} {checked} {disabled} class="peer sr-only" />
+  <span
+    class="grid size-5 shrink-0 place-items-center rounded-full border-2 border-ink bg-white transition-colors
+      peer-checked:border-cobalt
+      peer-disabled:border-line
+      peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cobalt
+      after:size-2.5 after:scale-0 after:rounded-full after:bg-cobalt after:transition-transform peer-checked:after:scale-100"
+  ></span>
+  <span class:list={["text-sm font-medium", disabled && "text-mist"]}>{label}</span>
+</label>

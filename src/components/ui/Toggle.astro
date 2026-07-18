@@ -1,0 +1,26 @@
+---
+/** Sliding toggle switch - raspberry when active, per Atomic spec. */
+interface Props {
+  name: string;
+  label: string;
+  checked?: boolean;
+  disabled?: boolean;
+  /** visually hide the label (still read by screen readers) */
+  hideLabel?: boolean;
+  class?: string;
+}
+
+const { name, label, checked = false, disabled = false, hideLabel = false, class: className = "" } = Astro.props;
+---
+
+<label class:list={["inline-flex items-center gap-3", disabled ? "cursor-not-allowed" : "cursor-pointer", className]}>
+  <input type="checkbox" {name} {checked} {disabled} class="peer sr-only" />
+  <span
+    class="relative h-7 w-12 shrink-0 rounded-full bg-ink-600 transition-colors duration-200
+      after:absolute after:top-1 after:left-1 after:size-5 after:rounded-full after:bg-white after:shadow-sm after:transition-transform after:duration-200
+      peer-checked:bg-raspberry peer-checked:after:translate-x-5
+      peer-disabled:bg-line peer-disabled:peer-checked:bg-raspberry-200
+      peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-cobalt"
+  ></span>
+  <span class:list={["text-sm font-medium", disabled && "text-mist", hideLabel && "sr-only"]}>{label}</span>
+</label>

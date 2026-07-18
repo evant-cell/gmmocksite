@@ -1,0 +1,106 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import ContentCard from "../../components/blocks/ContentCard.astro";
+import FeatureCard from "../../components/blocks/FeatureCard.astro";
+import TeamCard from "../../components/blocks/TeamCard.astro";
+import SectionHeader from "../../components/blocks/SectionHeader.astro";
+import Testimonial from "../../components/blocks/Testimonial.astro";
+import FAQAccordion from "../../components/blocks/FAQAccordion.astro";
+import ImageCaption from "../../components/blocks/ImageCaption.astro";
+import LogoCloud from "../../components/blocks/LogoCloud.astro";
+
+const faqs = [
+  {
+    question: "How does the programmatic bid engine maintain real-time speeds?",
+    answer:
+      "Our proprietary bidding engine relies on decentralized cloud nodes co-located near global exchange routes. This ensures latency profiles consistently floor at less than 50 milliseconds.",
+    open: true,
+  },
+  {
+    question: "Is it possible to exclude certain publishers or regions?",
+    answer:
+      "Yes. Publisher allowlists and blocklists, plus geographic exclusions down to the DMA level, are configurable per campaign.",
+  },
+  {
+    question: "What reporting transparency parameters are standard?",
+    answer:
+      "Every impression is logged with placement, cost, and outcome data, exposed through the reporting dashboard and API.",
+  },
+];
+---
+
+<SpecShell sheet="Content Spec Sheet">
+  <SpecSection
+    number="01"
+    title="Card Components"
+    description="Modular card patterns for editorial, feature, and team content."
+  >
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <ContentCard tag="Programmatic" title="The Death of the Third-Party Cookie is Your Biggest Opportunity">
+        Discover how bold challenger brands are leveraging contextual intelligence and behavioral
+        mapping to scale during the modern identity shift.
+      </ContentCard>
+      <FeatureCard icon="target" title="Instantaneous Bidding Engine">
+        Deploy programmatic ads across premium inventories globally within 50 milliseconds of search
+        triggers. Configured for maximum conversions.
+      </FeatureCard>
+      <TeamCard name="Sarah Jenkins" role="Director of Audience Architecture" />
+    </div>
+  </SpecSection>
+
+  <SpecSection number="02" title="Section Headers" description="Editorial section headers with optional centered alignment.">
+    <div class="flex flex-col gap-14 py-2">
+      <SectionHeader eyebrow="Targeting Intelligence" title="Smarter programmatic delivery for high-velocity brands">
+        Harness real-time bidding intelligence built for high-growth firms looking to disrupt
+        traditional ad-spend frameworks.
+      </SectionHeader>
+      <SectionHeader
+        align="center"
+        eyebrow="Audience Integrity"
+        title="Reach genuine consumers in their natural digital habit"
+      >
+        We optimize placement parameters across millions of premium publishers globally to bypass ad
+        fatigue instantly.
+      </SectionHeader>
+    </div>
+  </SpecSection>
+
+  <SpecSection number="03" title="Testimonial & Quote Blocks" description="Quote layouts for customer validation and social proof.">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <Testimonial name="Marcus Thorne" role="VP of Digital Growth, Apex Global" initials="MT">
+        Genius Monkey completely shattered our expectation benchmarks. Within the first ninety days
+        of transition, our cost-per-acquisition plummeted by forty-one percent.
+      </Testimonial>
+      <Testimonial theme="dark" name="Marcus Thorne" role="VP of Digital Growth, Apex Global" initials="MT">
+        Genius Monkey completely shattered our expectation benchmarks. Within the first ninety days
+        of transition, our cost-per-acquisition plummeted by forty-one percent.
+      </Testimonial>
+    </div>
+  </SpecSection>
+
+  <SpecSection number="04" title="FAQ Accordion" description="Expandable FAQ rows with state-based chevron controls.">
+    <FAQAccordion items={faqs} />
+  </SpecSection>
+
+  <SpecSection number="05" title="Image with Caption" description="Editorial image blocks with numbered figure captions.">
+    <div class="grid gap-8 lg:grid-cols-2">
+      <ImageCaption
+        caption="Fig 12.4 - Visualizing audience delivery metrics across decentralized real-time networks."
+        credit="Photo by Genius Monkey Engineering Group · 2026"
+      />
+      <ImageCaption
+        variant="scrim"
+        label="Live System Data"
+        caption="Dynamic visualization of active algorithmic real-time audience matching."
+      />
+    </div>
+  </SpecSection>
+
+  <SpecSection number="06" title="Logo Cloud / Partner Strip" description="Partner logo cloud and trust strip.">
+    <div class="flex flex-col gap-8">
+      <LogoCloud class="border border-line" />
+      <LogoCloud theme="dark" />
+    </div>
+  </SpecSection>
+</SpecShell>

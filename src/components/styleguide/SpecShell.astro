@@ -1,0 +1,36 @@
+---
+/** Styleguide page chrome - dark spec-sheet header, content column, legal footer. */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Logo from "../ui/Logo.astro";
+
+interface Props {
+  sheet: string;
+  version?: string;
+  title?: string;
+}
+
+const { sheet, version = "V1.0.0", title } = Astro.props;
+---
+
+<BaseLayout title={title ?? `${sheet} - Genius Monkey Design System`}>
+  <header class="bg-ink text-white">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
+      <a href="/"><Logo inverted class="text-lg" /></a>
+      <div class="flex items-center gap-4">
+        <p class="gm-label hidden text-[10px] text-white/50 sm:block">{sheet}</p>
+        <span class="bg-raspberry px-2.5 py-1 gm-label text-[9px] text-white">{version}</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
+    <slot />
+  </main>
+
+  <footer class="mt-12 border-t border-line bg-white">
+    <div class="mx-auto flex max-w-7xl flex-col justify-between gap-2 px-6 py-8 sm:flex-row lg:px-10">
+      <p class="text-xs text-slate">© 2026 Genius Monkey Inc. Proprietary UI specifications. All Rights Reserved.</p>
+      <p class="gm-label text-[10px]">geniusmonkey.com</p>
+    </div>
+  </footer>
+</BaseLayout>

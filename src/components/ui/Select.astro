@@ -1,0 +1,34 @@
+---
+/** Native select styled to spec - custom chevron, 2px borders, cobalt focus. */
+import Icon from "./Icon.astro";
+
+interface Props {
+  label: string;
+  name: string;
+  options: { value: string; label: string; selected?: boolean }[];
+  size?: "lg" | "md";
+  disabled?: boolean;
+  class?: string;
+}
+
+const { label, name, options, size = "md", disabled = false, class: className = "" } = Astro.props;
+const heights = { lg: "h-14", md: "h-11" };
+---
+
+<div class:list={["flex flex-col gap-2", className]}>
+  <label for={name} class="gm-label">{label}</label>
+  <div class="relative">
+    <select
+      id={name}
+      {name}
+      {disabled}
+      class:list={[
+        "w-full appearance-none border-2 border-line bg-white px-4 pr-11 font-medium outline-none transition-colors focus:border-cobalt disabled:bg-cloud disabled:text-mist",
+        heights[size],
+      ]}
+    >
+      {options.map((o) => <option value={o.value} selected={o.selected}>{o.label}</option>)}
+    </select>
+    <Icon name="chevron-down" size={18} class="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink" />
+  </div>
+</div>

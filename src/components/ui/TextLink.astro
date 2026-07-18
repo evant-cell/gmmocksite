@@ -1,0 +1,41 @@
+---
+/** Inline / standalone text action - raspberry accent or classic ink, per spec. */
+import Icon from "./Icon.astro";
+
+interface Props {
+  href: string;
+  color?: "raspberry" | "ink";
+  arrow?: boolean;
+  underline?: boolean;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  color = "raspberry",
+  arrow = false,
+  underline = true,
+  disabled = false,
+  class: className = "",
+} = Astro.props;
+
+const colors = {
+  raspberry: "text-raspberry hover:text-raspberry-deep",
+  ink: "text-ink hover:text-slate",
+};
+---
+
+<a
+  href={disabled ? undefined : href}
+  aria-disabled={disabled || undefined}
+  class:list={[
+    "inline-flex items-center gap-1.5 font-semibold transition-colors duration-150",
+    underline && "underline decoration-2 underline-offset-4",
+    disabled ? "pointer-events-none text-mist" : colors[color],
+    className,
+  ]}
+>
+  <slot />
+  {arrow && <Icon name="arrow-right" size={16} class="shrink-0" />}
+</a>

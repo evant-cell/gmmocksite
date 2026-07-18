@@ -1,0 +1,46 @@
+---
+/** Circular icon-only trigger - filled raspberry or outlined ghost, per Action UI spec. */
+import Icon from "./Icon.astro";
+import type { IconName } from "./Icon.astro";
+
+interface Props {
+  icon: IconName;
+  label: string;
+  variant?: "primary" | "ghost";
+  size?: "lg" | "md" | "sm";
+  href?: string;
+  disabled?: boolean;
+  class?: string;
+}
+
+const { icon, label, variant = "primary", size = "md", href, disabled = false, class: className = "" } = Astro.props;
+
+const sizes = { lg: "size-14", md: "size-12", sm: "size-10" };
+const iconSizes = { lg: 22, md: 20, sm: 16 };
+
+const variants = {
+  primary: "bg-raspberry text-white hover:bg-raspberry-deep disabled:bg-raspberry-200 aria-disabled:bg-raspberry-200",
+  ghost:
+    "border-2 border-ink text-ink hover:bg-ink hover:text-white disabled:border-line disabled:text-mist aria-disabled:border-line aria-disabled:text-mist",
+};
+
+const classes = [
+  "inline-flex items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt",
+  sizes[size],
+  variants[variant],
+  disabled && "pointer-events-none",
+  className,
+];
+---
+
+{
+  href ? (
+    <a href={disabled ? undefined : href} aria-label={label} aria-disabled={disabled || undefined} class:list={classes}>
+      <Icon name={icon} size={iconSizes[size]} />
+    </a>
+  ) : (
+    <button type="button" aria-label={label} {disabled} class:list={classes}>
+      <Icon name={icon} size={iconSizes[size]} />
+    </button>
+  )
+}

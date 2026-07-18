@@ -1,0 +1,35 @@
+---
+/**
+ * Modular hero block - dark or light, eyebrow + display title + copy,
+ * actions slot for buttons, media slot for imagery / visuals.
+ */
+interface Props {
+  theme?: "dark" | "light";
+  eyebrow?: string;
+  title: string;
+  class?: string;
+}
+
+const { theme = "dark", eyebrow, title, class: className = "" } = Astro.props;
+const dark = theme === "dark";
+---
+
+<section class:list={[dark ? "bg-ink text-white" : "bg-cloud text-ink", className]}>
+  <div class="mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-[1.1fr_1fr] lg:px-20">
+    <div>
+      {eyebrow && <p class:list={["gm-label", "text-raspberry"]}>{eyebrow}</p>}
+      <h1 class="mt-4 font-display text-4xl font-extrabold tracking-tight text-balance md:text-6xl">
+        {title}
+      </h1>
+      <p class:list={["mt-6 max-w-lg text-base leading-relaxed", dark ? "text-white/65" : "text-slate"]}>
+        <slot />
+      </p>
+      <div class="mt-9 flex flex-wrap gap-4">
+        <slot name="actions" />
+      </div>
+    </div>
+    <div class="max-lg:order-first lg:justify-self-end">
+      <slot name="media" />
+    </div>
+  </div>
+</section>

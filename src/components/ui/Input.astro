@@ -1,0 +1,80 @@
+---
+/**
+ * Text input - Unbounded uppercase label, Outfit input text, 2px contrast borders.
+ * States: default / error / disabled. Optional suffix (e.g. "USD") and lock on disabled.
+ */
+import Icon from "./Icon.astro";
+
+interface Props {
+  label: string;
+  name: string;
+  type?: string;
+  size?: "lg" | "md";
+  placeholder?: string;
+  value?: string;
+  hint?: string;
+  error?: string;
+  suffix?: string;
+  disabled?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  name,
+  type = "text",
+  size = "lg",
+  placeholder,
+  value,
+  hint,
+  error,
+  suffix,
+  disabled = false,
+  class: className = "",
+} = Astro.props;
+
+const heights = { lg: "h-14", md: "h-11" };
+---
+
+<div class:list={["flex flex-col gap-2", className]}>
+  <label
+    for={name}
+    class:list={["gm-label", error ? "text-error" : disabled ? "text-mist" : "text-ink"]}
+  >
+    {label}
+  </label>
+  <div class="relative">
+    <input
+      id={name}
+      {name}
+      {type}
+      {placeholder}
+      {value}
+      {disabled}
+      aria-invalid={error ? "true" : undefined}
+      class:list={[
+        "w-full border-2 bg-white px-4 font-medium outline-none transition-colors placeholder:text-mist",
+        heights[size],
+        suffix && "pr-14",
+        error
+          ? "border-error bg-error-100/40 text-error"
+          : "border-line focus:border-cobalt disabled:border-line disabled:bg-cloud disabled:text-mist",
+      ]}
+    />
+    {
+      (suffix || disabled || error) && (
+        <span class="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+          {error ? (
+            <Icon name="alert-circle" size={18} class="text-error" />
+          ) : disabled ? (
+            <Icon name="settings" size={16} class="text-mist" />
+          ) : (
+            <span class="gm-label text-[10px] text-cobalt">{suffix}</span>
+          )}
+        </span>
+      )
+    }
+  </div>
+  {error && <p class="text-sm font-medium text-error">{error}</p>}
+  {!error && hint && <p class:list={["text-sm", disabled ? "text-mist" : "text-slate"]}>{hint}</p>}
+</div>

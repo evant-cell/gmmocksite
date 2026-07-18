@@ -1,0 +1,148 @@
+---
+import SpecShell from "../../components/styleguide/SpecShell.astro";
+import SpecSection from "../../components/styleguide/SpecSection.astro";
+import SpecRow from "../../components/styleguide/SpecRow.astro";
+import Button from "../../components/ui/Button.astro";
+import IconButton from "../../components/ui/IconButton.astro";
+import TextLink from "../../components/ui/TextLink.astro";
+import Badge from "../../components/ui/Badge.astro";
+import Toggle from "../../components/ui/Toggle.astro";
+import Avatar from "../../components/ui/Avatar.astro";
+import Divider from "../../components/ui/Divider.astro";
+---
+
+<SpecShell sheet="Action UI Components Spec" version="V1.2.0">
+  <SpecSection
+    number="01"
+    title="Button System"
+    description="Five semantic variants (Primary, Secondary, Tertiary, Ghost, Destructive) across three size tiers. Hover any button to preview its interactive state."
+  >
+    <SpecRow label="Primary (Raspberry)">
+      <Button size="lg" icon="arrow-right">Primary Large</Button>
+      <Button size="md" icon="arrow-right">Primary Med</Button>
+      <Button size="sm" icon="arrow-right">Primary Sm</Button>
+      <Button size="md" icon="arrow-right" disabled>Disabled</Button>
+    </SpecRow>
+    <SpecRow label="Secondary (Ink Outlined)">
+      <Button variant="secondary" size="lg" icon="plus">Secondary Lg</Button>
+      <Button variant="secondary" size="md" icon="plus">Secondary Med</Button>
+      <Button variant="secondary" size="sm" icon="plus">Secondary Sm</Button>
+      <Button variant="secondary" size="md" icon="plus" disabled>Disabled</Button>
+    </SpecRow>
+    <SpecRow label="Tertiary (Cobalt)">
+      <Button variant="tertiary" size="lg">Launch App</Button>
+      <Button variant="tertiary" size="md">Launch App</Button>
+      <Button variant="tertiary" size="md" disabled>Launch App</Button>
+    </SpecRow>
+    <SpecRow label="Ghost (Text Only)">
+      <Button variant="ghost" size="lg" icon="chevron-right">Ghost Large</Button>
+      <Button variant="ghost" size="md" icon="chevron-right">Ghost Med</Button>
+      <Button variant="ghost" size="sm" icon="chevron-right">Ghost Sm</Button>
+      <Button variant="ghost" size="md" disabled>Disabled</Button>
+    </SpecRow>
+    <SpecRow label="Destructive (Error Red)">
+      <Button variant="destructive" size="lg" icon="trash">Delete Item</Button>
+      <Button variant="destructive" size="md" icon="trash">Delete Item</Button>
+      <Button variant="destructive" size="md" disabled>Delete Item</Button>
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="02"
+    title="Circular Icon Buttons"
+    description="Pure iconic targets for narrow-spaced layouts - filled Vivid Raspberry or outlined ghost forms."
+  >
+    <SpecRow label="Primary Accent">
+      <IconButton icon="arrow-right" label="Next" size="lg" />
+      <IconButton icon="arrow-right" label="Next" size="md" />
+      <IconButton icon="plus" label="Add" size="sm" />
+      <IconButton icon="arrow-right" label="Next" size="md" disabled />
+    </SpecRow>
+    <SpecRow label="Ghost Option">
+      <IconButton variant="ghost" icon="arrow-right" label="Next" size="lg" />
+      <IconButton variant="ghost" icon="arrow-right" label="Next" size="md" />
+      <IconButton variant="ghost" icon="close" label="Close" size="sm" />
+      <IconButton variant="ghost" icon="arrow-right" label="Next" size="md" disabled />
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="03"
+    title="Text Link Buttons"
+    description="Inline and standalone text actions with secondary underlining and state transitions."
+  >
+    <SpecRow label="Raspberry Accent">
+      <TextLink href="#">Read Press Release</TextLink>
+      <TextLink href="#" underline={false} arrow>Explore Analytics Platform</TextLink>
+      <TextLink href="#" disabled>Read Press Release</TextLink>
+    </SpecRow>
+    <SpecRow label="Classic Ink">
+      <TextLink href="#" color="ink">Back to Dashboard</TextLink>
+      <TextLink href="#" color="ink" underline={false} arrow>View Documentation</TextLink>
+      <TextLink href="#" color="ink" disabled>Back to Dashboard</TextLink>
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="04"
+    title="Status Badges & Metadata Tags"
+    description="Pill labels for metadata categorization, state indicators, and removable active filters."
+  >
+    <SpecRow label="Standard Pill">
+      <Badge>Default</Badge>
+      <Badge tone="success">Success</Badge>
+      <Badge tone="warning">Warning</Badge>
+      <Badge tone="info">Info</Badge>
+      <Badge tone="neutral">Neutral</Badge>
+      <Badge tone="raspberry">Raspberry</Badge>
+    </SpecRow>
+    <SpecRow label="Removable (Filter Tags)">
+      <Badge tone="neutral" removable>Retargeting</Badge>
+      <Badge tone="success" removable>Active Bid</Badge>
+      <Badge tone="raspberry" removable>High Priority</Badge>
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="05"
+    title="Sliding Toggle Switches"
+    description="Responsive switches for quick preference selection and status changes."
+  >
+    <SpecRow label="Interactive States">
+      <Toggle name="t1" label="Off / Default" />
+      <Toggle name="t2" label="On / Active" checked />
+      <Toggle name="t3" label="Off / Disabled" disabled />
+      <Toggle name="t4" label="On / Disabled" checked disabled />
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="06"
+    title="User Avatars"
+    description="Circular profiles with image fill or typographic initials fallback, plus optional presence indicators."
+  >
+    <SpecRow label="Initials Fallback">
+      <Avatar size="lg" initials="GM" />
+      <Avatar size="md" initials="MK" />
+      <Avatar size="sm" initials="AL" />
+      <Avatar size="md" initials="GM" tone="ink" />
+    </SpecRow>
+    <SpecRow label="With Presence Indicator">
+      <Avatar size="lg" initials="GM" status />
+      <Avatar size="md" initials="MK" status />
+      <Avatar size="sm" initials="AL" status />
+    </SpecRow>
+  </SpecSection>
+
+  <SpecSection
+    number="07"
+    title="Editorial Dividers"
+    description="Horizontal layout splits - full-bleed or inset, across brand-neutral tints."
+  >
+    <div class="flex flex-col gap-8 py-2">
+      <div><p class="gm-label mb-3 text-[10px] text-slate">Full Bleed (Cloud)</p><Divider /></div>
+      <div><p class="gm-label mb-3 text-[10px] text-slate">Full Bleed (Slate)</p><Divider tone="slate" /></div>
+      <div><p class="gm-label mb-3 text-[10px] text-slate">Inset (Cloud)</p><Divider inset /></div>
+    </div>
+  </SpecSection>
+</SpecShell>
