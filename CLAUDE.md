@@ -4,7 +4,7 @@ Project-specific instructions for **GM Site Design**.
 
 ## What this is
 
-A workspace for a **brand-new** Genius Monkey design. Not the production geniusmonkey.com deploy. The design system is now built (2026-07-17) from the spec-sheet mockups in `design samples/` — component library + styleguide pages exist; real site pages/copy do not yet.
+A workspace for a **brand-new** Genius Monkey design. Not the production geniusmonkey.com deploy. The design system is built (2026-07-17) from the spec-sheet mockups in `design samples/` — component library + styleguide pages. Real pages are now landing: `/platform` and `/` (home) are built from content JSON out of `Rebrand Content/drafts/pages/json/`.
 
 ## Stack
 
@@ -22,7 +22,7 @@ A workspace for a **brand-new** Genius Monkey design. Not the production geniusm
 - `src/components/ui/` — atomic components: Button (5 variants x 3 sizes), IconButton, TextLink, Badge, Toggle, Avatar, Divider, Input, Textarea, Select, Checkbox, Radio, Alert, Toast, Tooltip, Modal, Icon (stroke icon pack), Logo (wordmark)
 - `src/components/blocks/` — composed blocks: Navbar, Footer, Breadcrumbs, Section, SectionHeader, Hero, HeroMask, HeroTexture, HeroCollision, ContentCard, FeatureCard, TeamCard, Testimonial, FAQAccordion, ImageCaption, LogoCloud, StatBlock
 - `src/components/styleguide/` — SpecShell/SpecSection/SpecRow chrome for the styleguide pages
-- `src/pages/index.astro` — design-system hub; `src/pages/styleguide/{brand,actions,forms,content,feedback,navigation,media}.astro` mirror the original spec sheets
+- `src/pages/styleguide/index.astro` — design-system hub (moved off `/` when the real home page landed); `src/pages/styleguide/{brand,actions,forms,content,feedback,navigation,media}.astro` mirror the original spec sheets
 - No em/en dashes or ellipsis anywhere in src (per the global bouncer rule); keep it that way
 
 ## Structure
@@ -30,10 +30,10 @@ A workspace for a **brand-new** Genius Monkey design. Not the production geniusm
 | Path | Purpose |
 |---|---|
 | `src/content.config.ts` | Collection schema for a `pages` collection (`title`, `seoDescription`, `sections[]`), loaded from `src/content/pages/*.json`. Astro 7's Content Layer API config lives at `src/content.config.ts` — **not** `src/content/config.ts` (that's the legacy pre-v5 location). |
-| `src/content/pages/` | One JSON file per page goes here. Empty right now. |
-| `src/pages/` | Routes. Still just Astro's default `index.astro` boilerplate. |
-| `src/components/` | Reusable Astro components go here once there's an actual design to build. Empty right now. |
-| `src/layouts/` | Shared page layouts go here once there's an actual design to build. Empty right now. |
+| `src/content/pages/` | One JSON file per page. Has `home.json` and `platform.json`, copied verbatim from `Rebrand Content/drafts/pages/json/` v2 drafts. |
+| `src/pages/` | Routes. `index.astro` (home), `platform.astro`, `styleguide/` (design-system hub + spec sheets, noindex). |
+| `src/components/` | The built design system: `ui/` atoms, `blocks/` composed sections, `styleguide/` chrome. |
+| `src/layouts/` | `BaseLayout.astro` (head/meta/canonical/fonts). |
 | `_components/` (root) | The **component-cloner** skill's capture library — raw cloned reference snippets from other sites. Not wired into the site. Distinct from `src/components/`, which would hold real, integrated Astro components. |
 | `design/` | Moodboards, inspiration, palette/type exploration for the new design. |
 

@@ -1,0 +1,97 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Logo from "../../components/ui/Logo.astro";
+import Icon from "../../components/ui/Icon.astro";
+import Badge from "../../components/ui/Badge.astro";
+
+const sheets = [
+  {
+    href: "/styleguide/brand",
+    number: "01",
+    title: "Brand & Hero Experiments",
+    description: "Wordmark, palette, type system, image masks, texture fields, and collision layouts.",
+  },
+  {
+    href: "/styleguide/actions",
+    number: "02",
+    title: "Actions & Atomic",
+    description: "Button system, icon buttons, text links, badges, toggles, avatars, dividers.",
+  },
+  {
+    href: "/styleguide/forms",
+    number: "03",
+    title: "Forms & Inputs",
+    description: "Text inputs, textareas, selects, checkboxes, radios, composed field groups.",
+  },
+  {
+    href: "/styleguide/content",
+    number: "04",
+    title: "Content",
+    description: "Cards, section headers, testimonials, FAQ accordion, captions, logo cloud.",
+  },
+  {
+    href: "/styleguide/feedback",
+    number: "05",
+    title: "Overlays & Feedback",
+    description: "System banners, notification toasts, micro tooltips, modal dialogs.",
+  },
+  {
+    href: "/styleguide/navigation",
+    number: "06",
+    title: "Navigation & Layout",
+    description: "Navbars, footer, breadcrumbs, hero sections, container wrappers.",
+  },
+  {
+    href: "/styleguide/media",
+    number: "07",
+    title: "Media",
+    description: "Image with caption variants, partner strips, the programmatic icon pack.",
+  },
+];
+---
+
+<BaseLayout title="Genius Monkey Design System" noindex>
+  <div class="flex min-h-screen flex-col bg-ink text-white">
+    <header class="mx-auto w-full max-w-6xl px-6 pt-20 pb-14 lg:px-10">
+      <Badge tone="solid">Design System · V1.0</Badge>
+      <div class="mt-8 flex flex-wrap items-end justify-between gap-8">
+        <Logo class="text-6xl md:text-8xl" inverted />
+        <p class="max-w-sm text-sm leading-relaxed text-white/60">
+          Component specifications for the new geniusmonkey.com. Built on Astro + Tailwind from the
+          brand spec sheets: Bricolage Grotesque display, Unbounded labels, Outfit body, Vivid
+          Raspberry on Ink and Cloud.
+        </p>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl grow px-6 pb-24 lg:px-10">
+      <ul class="divide-y divide-line-dark border-y border-line-dark">
+        {
+          sheets.map((sheet) => (
+            <li>
+              <a href={sheet.href} class="group flex items-center gap-6 py-6 transition-colors hover:bg-ink-800 md:gap-10 md:px-4">
+                <span class="gm-label text-raspberry">{sheet.number}</span>
+                <span class="grow">
+                  <span class="block font-display text-2xl font-bold tracking-tight transition-colors group-hover:text-raspberry md:text-3xl">
+                    {sheet.title}
+                  </span>
+                  <span class="mt-1 block max-w-xl text-sm text-white/50">{sheet.description}</span>
+                </span>
+                <span class="grid size-11 shrink-0 place-items-center rounded-full border-2 border-white/20 transition-colors group-hover:border-raspberry group-hover:bg-raspberry">
+                  <Icon name="arrow-right" size={18} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </main>
+
+    <footer class="border-t border-line-dark">
+      <div class="mx-auto flex max-w-6xl flex-col justify-between gap-2 px-6 py-8 sm:flex-row lg:px-10">
+        <p class="text-xs text-white/40">© 2026 Genius Monkey Inc. Layout & Experimental Spec sheets.</p>
+        <p class="gm-label text-[10px] text-white/70">geniusmonkey.com</p>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
