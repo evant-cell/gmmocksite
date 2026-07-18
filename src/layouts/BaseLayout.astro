@@ -7,9 +7,20 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description?: string;
+  /** page path for the canonical URL, e.g. "/platform"; omit to skip canonical */
+  path?: string;
+  /** set true on internal pages (styleguide) to keep them out of search */
+  noindex?: boolean;
 }
 
-const { title, description = "Genius Monkey - next generation programmatic ad platform." } = Astro.props;
+const {
+  title,
+  description = "Genius Monkey - next generation programmatic ad platform.",
+  path,
+  noindex = false,
+} = Astro.props;
+
+const canonical = path && Astro.site ? new URL(path, Astro.site).href : undefined;
 ---
 
 <!doctype html>
@@ -19,6 +30,17 @@ const { title, description = "Genius Monkey - next generation programmatic ad pl
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Genius Monkey" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <slot name="head" />
   </head>
   <body>
     <slot />

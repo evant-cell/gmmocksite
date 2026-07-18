@@ -1,0 +1,36 @@
+# geniusmonkey.com robots.txt
+# All crawlers welcome, including AI search and answer engines.
+
+User-agent: *
+Allow: /
+
+# AI search / answer engine crawlers (explicitly allowed so they can cite us)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Internal design documentation, not for indexing
+User-agent: *
+Disallow: /styleguide/
+
+Sitemap: https://geniusmonkey.com/sitemap-index.xml
