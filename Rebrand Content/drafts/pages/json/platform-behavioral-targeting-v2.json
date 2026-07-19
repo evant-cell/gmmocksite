@@ -1,0 +1,256 @@
+{
+  "title": "Behavioral targeting that stops you paying to reach strangers",
+  "seoDescription": "Behavioral targeting builds audiences from what people actually did, not who they probably are. See how Genius Monkey layers signals to find real buyers.",
+  "sections": [
+    {
+      "type": "meta",
+      "draftLabel": "Behavioral targeting page, V2 draft (V1 preserved at platform-behavioral-targeting.md)",
+      "url": "/platform/behavioral-targeting",
+      "metaTitle": "Behavioral Targeting for Programmatic Advertising | Genius Monkey",
+      "notes": "Register note. Guardrails lifted roughly a third toward Loud, Outspoken, and Playful. Primary keyword still opens the H1, no SEO trade. The definition block, comparison table, and FAQ answers stay disciplined, they are the AEO surfaces."
+    },
+    {
+      "type": "hero",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Demographics tell you who someone is. Behavior tells you what they're about to do. Only one of those is worth money. We build audiences out of what people actually did, then keep layering signals until the group is small enough that every impression in it has a reason to exist."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What behavioral targeting is",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Behavioral targeting selects ad audiences based on what people have actually done, such as sites visited, searches run, and past purchases, rather than on assumed traits. Genius Monkey layers multiple behavioral signals with first-party and partner data so campaigns reach people already showing intent, not broad demographic groups."
+        },
+        {
+          "kind": "p",
+          "text": "That's the clean version. The rest of the page is about the money."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Adults 25 to 54, household income $75,000 plus",
+      "content": [
+        {
+          "kind": "p",
+          "text": "You bought that audience. So did your competitor. So did whoever sells boat insurance. Every one of you paid real money to reach the same tired list, and not one of you had a shred of evidence that a single person on it wanted the thing you sell."
+        },
+        {
+          "kind": "p",
+          "text": "Age and income are stand-ins for intent. They became the industry default because intent was harder to buy, and somewhere along the way the stand-in got promoted to the real thing. It isn't. It never was. That's how audience targeting became a demographics exercise, and why so much of it quietly underperforms."
+        },
+        {
+          "kind": "p",
+          "text": "One list is a blunt instrument. The waste doesn't announce itself. It just shows up as impressions served to people who were never going to act, month after month, invoiced at full price."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "One signal is a guess. Four is a pattern.",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Audience profiles in our platform are built with if/and/or logic, layered rather than lined up side by side. Most platforms let you stack lists, which gets you a bigger audience. Layering gets you a smaller one, and smaller is the entire point."
+        },
+        {
+          "kind": "p",
+          "text": "The signals available include specific websites visited, specific keywords searched, similar past purchases, offline behaviors, geography, and demographics and psychographics. The data behind them comes from named, established sources, search engines, websites, mobile apps, CRM and marketing automation databases, and credit services, connected through the Experian and Tapad data graph, with demographic and persona data from Stat Social added in 2023."
+        },
+        {
+          "kind": "p",
+          "text": "Watch it shrink, in a vertical from our own case studies. A roofing company doesn't need adults 25 to 54, which is most of a city. Homeowners only, that's half of it gone. Inside the service area, smaller again. Searched for roof repair this month, now it's people with a broken roof. Visited contractor sites without picking one, now it's people with a broken roof and no roofer. That last group is tiny compared to where we started, and it's the only group worth a dollar.",
+          "links": [
+            "/programmatic-case-studies",
+            "Cenvar Roofing case study"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Behavioral vs contextual targeting",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Behavioral targeting looks at the person. Contextual targeting looks at the page. The honest answer to \"which one\" is almost always both, and anyone selling you a religion about it is selling you their inventory."
+        },
+        {
+          "kind": "p",
+          "text": "Behavioral targeting selects audiences from a person's past actions, like searches and site visits. Contextual advertising places ads based on the content of the page being viewed, with no personal data involved. Behavioral finds people already showing intent. Contextual reaches people while they're reading something relevant."
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "",
+            "Behavioral targeting",
+            "Contextual targeting"
+          ],
+          "rows": [
+            [
+              "What it targets",
+              "The person, based on past actions",
+              "The page, based on its content"
+            ],
+            [
+              "What it needs to know about the person",
+              "Aggregated behavior, like searches and site visits",
+              "Nothing"
+            ],
+            [
+              "Best used for",
+              "Reaching people already showing intent",
+              "Reaching people in a relevant moment"
+            ],
+            [
+              "Holds up without third-party cookies",
+              "Yes, with first-party data and identity partnerships",
+              "Yes, it never used them"
+            ]
+          ]
+        },
+        {
+          "kind": "p",
+          "text": "Lookalike audiences extend the same logic. Start with the people who already converted, find the behavioral patterns they share, and reach new people who match those patterns. It's a way to scale a working audience without falling back on demographic guesses.",
+          "links": [
+            "/glossary behavioral targeting, contextual advertising, first-party data entries"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Precise is not the same as creepy",
+      "content": [
+        {
+          "kind": "p",
+          "text": "There's a version of this industry that has earned every bad headline it gets. Building files on named individuals, passing them around, betting nobody reads the fine print. That's not the version we run. We work with aggregated behavioral data through established partnerships, and if that line ever got thin, we'd tell you before a regulator did."
+        },
+        {
+          "kind": "p",
+          "text": "For the people who see the ads, the result should be simple, relevant advertising. Ads that make sense given what someone is actually in the market for, instead of a guess based on their birthday.",
+          "links": [
+            "Targeting, Data & Privacy blog cluster"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Proof",
+      "content": [
+        {
+          "kind": "p",
+          "text": "onsemi came to us wanting the right message in front of the right person. Their cost per conversion went from $2,000 to eight bucks, then under a dollar two years later. That is what happens when the audience stops being a guess."
+        },
+        {
+          "kind": "p",
+          "text": "An accident and personal injury law firm cut its cost per lead by more than 50% on display and 68% on video inside six months, through constant refinement of budgets, targeting, audiences, and channels. Display leads went from $10 to $5. Video went from $19 to $6.",
+          "links": [
+            "/programmatic-case-studies",
+            "onsemi case study",
+            "personal injury law firm case study"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "heading": "Questions buyers actually ask",
+      "content": [],
+      "subsections": [
+        {
+          "heading": "What is behavioral targeting?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Behavioral targeting selects ad audiences based on what people have actually done, such as sites visited, searches run, and past purchases, rather than on assumed traits like age or income. It reaches people already showing intent, which means less budget spent on impressions served to people who were never going to act."
+            }
+          ]
+        },
+        {
+          "heading": "What is the difference between behavioral and contextual targeting?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Behavioral targeting chooses who sees an ad based on a person's past actions. Contextual targeting chooses where an ad appears based on the content of the page. Behavioral follows intent, contextual follows relevance, and most strong campaigns use both, weighted to what the campaign is trying to do."
+            }
+          ]
+        },
+        {
+          "heading": "What are lookalike audiences?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Lookalike audiences are built by finding the shared behavioral patterns of your existing customers or converters, then reaching new people who match those patterns. They scale a proven audience without falling back on broad demographics. The better the source audience, the better the lookalike it produces."
+            }
+          ]
+        },
+        {
+          "heading": "Where does the behavioral data come from?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "From named, established sources, search engines, websites, mobile apps, CRM and marketing automation databases, and credit services. Genius Monkey also works with the Experian and Tapad data graph and demographic and persona data from Stat Social. All of it is aggregated behavioral data, not files on individual people."
+            }
+          ]
+        },
+        {
+          "heading": "Does behavioral targeting still work without third-party cookies?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Yes. Behavioral audiences can be built from first-party data, aggregated partner data, and identity graphs like Experian and Tapad's, none of which depend on third-party cookies. Pairing behavioral signals with contextual targeting adds a layer that never needed cookies in the first place."
+            }
+          ]
+        },
+        {
+          "heading": "Can I use my own customer data?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Yes. CRM and marketing automation databases are among the sources we build audiences from, so your first-party data can seed the targeting. It's often the strongest signal available, because it describes people who already bought. Our attribution then ties what it produces back to conversions.",
+              "links": [
+                "/platform/measurement-validation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "See who's actually in it",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Bring us an audience you're sure you understand. We'll show you who's actually in it. Request a demo."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "draftNotes",
+      "items": [
+        "Voice cues used: Loud and Outspoken up, Playful in the problem section and the shrinking worked example, Humble carrying the privacy section. Practices criticized, never a named company (\"selling you their inventory\" is aimed at a practice). Consumer-facing register held in the privacy section. Contractions free.",
+        "Guesses flagged for the capture loop: \"Only one of those is worth money\" (hero), the demo-string section header, \"whoever sells boat insurance\", \"invoiced at full price\", \"selling you their inventory\" (sharpest competitor line in the V2 set), \"before a regulator did\", \"eight bucks\" (register choice on a named Fortune 500 client's figure, number unchanged), and the closing CTA.",
+        "Keywords: \"behavioral targeting\" opens the H1 and sits in the first 100 words; \"audience targeting,\" \"contextual advertising,\" \"lookalike audiences\" all placed as in V1. Definition block, comparison table, and FAQ answers identical to V1 by design (AEO surfaces).",
+        "Worked example: same roofing vertical as V1 (Cenvar, cleared), rebuilt to let the reader watch the audience shrink. Layers are illustrative of the mechanic, not claimed as Cenvar's actual build.",
+        "Facts: identical to V1. onsemi sequence intact ($2,000 to $8, then under $1 two years later; \"eight bucks\" and \"under a dollar\" are phrasing, not number changes). Law firm anonymized, descriptor only. No new claims in V2.",
+        "OPEN ITEM (blocking publish, worse in V2): the live page still sells \"Emails Received from Competitors\" and \"the sky's the limit.\" V2 takes a loud public position on privacy that those features directly undercut. Publishing V2 with them still live elsewhere is a visible contradiction. Needs a yes or no."
+      ]
+    }
+  ]
+}

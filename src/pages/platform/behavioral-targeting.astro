@@ -1,0 +1,782 @@
+---
+import { getEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Navbar from "../../components/blocks/Navbar.astro";
+import Footer from "../../components/blocks/Footer.astro";
+import Breadcrumbs from "../../components/blocks/Breadcrumbs.astro";
+import Button from "../../components/ui/Button.astro";
+import TextLink from "../../components/ui/TextLink.astro";
+import Icon from "../../components/ui/Icon.astro";
+import FAQAccordion from "../../components/blocks/FAQAccordion.astro";
+
+const page = await getEntry("pages", "platform-behavioral-targeting");
+if (!page) throw new Error("Missing content: src/content/pages/platform-behavioral-targeting.json");
+const data = page.data;
+
+type Block = { kind: string; text?: string; links?: string[]; headers?: string[]; rows?: string[][] };
+type Section = {
+  type: string;
+  heading?: string;
+  content?: Block[];
+  subsections?: { heading: string; content: Block[]; links?: string[] }[];
+  metaTitle?: string;
+  [key: string]: unknown;
+};
+
+const sections = data.sections as Section[];
+const meta = sections.find((s) => s.type === "meta");
+const hero = sections.find((s) => s.type === "hero");
+const faq = sections.find((s) => s.type === "faq");
+const contentSecs = sections.filter((s) => s.type === "section");
+const comparison = contentSecs.find((s) => s.content?.some((c) => c.kind === "table"));
+const ctaSec = contentSecs.find((s) => s.content?.some((c) => c.kind === "cta"));
+// Remaining prose sections in JSON order: definition, the demo string, signal
+// layering, privacy, proof.
+const [definition, demoSec, layering, privacy, proof] = contentSecs.filter(
+  (s) => s !== comparison && s !== ctaSec,
+);
+
+const heroParas = hero?.content?.filter((c) => c.kind === "p") ?? [];
+const heroCta = hero?.content?.find((c) => c.kind === "cta");
+const ctaParas = ctaSec?.content?.filter((c) => c.kind === "p") ?? [];
+const ctaBtn = ctaSec?.content?.find((c) => c.kind === "cta");
+const table = comparison?.content?.find((c) => c.kind === "table");
+const comparisonParas = comparison?.content?.filter((c) => c.kind === "p") ?? [];
+
+const faqItems = (faq?.subsections ?? []).map((s, i) => ({
+  question: s.heading,
+  answer: s.content?.[0]?.text ?? "",
+  open: i === 0,
+}));
+const faqLink = faq?.subsections?.map((s) => s.content?.[0]?.links).find((l) => l?.length);
+
+// First path-shaped link on a block, e.g. "/glossary DSP entry" -> "/glossary"
+const pathOf = (links?: string[]) => links?.find((l) => l.startsWith("/"))?.split(" ")[0];
+
+// H1 accent lands on the final word
+const title = data.title;
+const lastSpace = title.lastIndexOf(" ");
+const titleHead = lastSpace > -1 ? title.slice(0, lastSpace) : title;
+const titleLast = lastSpace > -1 ? title.slice(lastSpace + 1) : "";
+
+// The worked example is one paragraph. Split it on its own sentence openers so the
+// reader can watch the audience narrow one layer at a time. Copy stays verbatim:
+// the fragments concatenate back to the source paragraph.
+const shrinkBlock = layering?.content?.[2];
+const shrinkPara = shrinkBlock?.text ?? "";
+const anchors = [
+  "A roofing company",
+  "Homeowners only",
+  "Inside the service area",
+  "Searched for roof repair",
+  "Visited contractor sites",
+  "That last group",
+];
+const cuts = anchors.map((a) => shrinkPara.indexOf(a));
+const usable = cuts.every((c) => c > -1);
+const shrinkIntro = usable ? shrinkPara.slice(0, cuts[0]).trim() : shrinkPara;
+const shrinkSteps = usable
+  ? anchors.slice(0, 5).map((_, i) => shrinkPara.slice(cuts[i], cuts[i + 1]).trim())
+  : [];
+const shrinkClose = usable ? shrinkPara.slice(cuts[5]).trim() : "";
+
+// Dot field: 600 impressions, each tagged with the last layer it survives.
+// Survivor counts per layer run 600 / 300 / 190 / 90 / 25 / 8, so the field
+// visibly collapses to the only group worth a dollar. Seeded, so the build is
+// deterministic. No numbers are shown: the visual carries proportion only.
+const COLS = 30;
+const ROWS = 20;
+const survivors = [600, 300, 190, 90, 25, 8];
+let seed = 20260719;
+const rand = () => {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+};
+const order = Array.from({ length: COLS * ROWS }, (_, i) => i);
+for (let i = order.length - 1; i > 0; i--) {
+  const j = Math.floor(rand() * (i + 1));
+  [order[i], order[j]] = [order[j], order[i]];
+}
+const stageOf = new Array<number>(COLS * ROWS).fill(0);
+for (let layer = 1; layer < survivors.length; layer++) {
+  for (let k = 0; k < survivors[layer]; k++) stageOf[order[k]] = layer;
+}
+const dots = Array.from({ length: COLS * ROWS }, (_, idx) => ({
+  cx: 5 + (idx % COLS) * 10,
+  cy: 5 + Math.floor(idx / COLS) * 10,
+  stage: stageOf[idx],
+}));
+
+const navLinks = [
+  { label: "Platform", href: "/platform" },
+  { label: "Solutions", href: "#" },
+  { label: "Pricing", href: "#" },
+  { label: "Resources", href: "#" },
+];
+
+const siblings = [
+  { label: "Measurement and validation", href: "/platform/measurement-validation" },
+  { label: "The dashboard", href: "/platform/the-dashboard" },
+  { label: "The platform", href: "/platform" },
+];
+
+// Trailing slash to match the URLs Astro emits in the sitemap
+const pagePath = (((meta?.url as string) ?? "/platform/behavioral-targeting") + "/").replace(/\/+$/, "/");
+const siteUrl = Astro.site?.href ?? "https://geniusmonkey.com/";
+const pageUrl = new URL(pagePath, siteUrl).href;
+const platformUrl = new URL("/platform/", siteUrl).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}#organization`,
+      name: "Genius Monkey",
+      url: siteUrl,
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: meta?.metaTitle ?? data.title,
+      description: data.seoDescription,
+      isPartOf: { "@id": `${siteUrl}#organization` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+        { "@type": "ListItem", position: 2, name: "Platform", item: platformUrl },
+        { "@type": "ListItem", position: 3, name: "Behavioral targeting", item: pageUrl },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={meta?.metaTitle ?? data.title} description={data.seoDescription} path={pagePath}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+  <script is:inline>document.documentElement.classList.add("js");</script>
+  <Navbar links={navLinks} class="bg-hole!" />
+
+  <!-- Hero -->
+  <section class="relative isolate overflow-hidden bg-hole text-white">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_88%_-10%,rgb(124_77_255/0.22),transparent_55%)]"
+    >
+    </div>
+    <!-- The page's argument, seeded early: a wide field, one small group that matters -->
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 300 120"
+      preserveAspectRatio="xMidYMid slice"
+      class="pointer-events-none absolute inset-y-0 right-0 h-full w-[62%] opacity-70 [mask-image:linear-gradient(to_right,transparent,black_45%)]"
+    >
+      {
+        Array.from({ length: 22 * 9 }, (_, i) => {
+          const col = i % 22;
+          const row = Math.floor(i / 22);
+          const worth = row > 5 && col > 15 && (col + row) % 3 !== 0;
+          return (
+            <circle
+              cx={8 + col * 13}
+              cy={10 + row * 13}
+              r={worth ? 2.6 : 1.7}
+              fill={worth ? "#f7004e" : "#ffffff"}
+              opacity={worth ? 0.9 : 0.1}
+            />
+          );
+        })
+      }
+    </svg>
+
+    <div class="relative mx-auto max-w-7xl px-6 pt-10 pb-24 md:pb-32 lg:px-20">
+      <Breadcrumbs
+        theme="dark"
+        class="bg-transparent! px-0! py-0!"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Platform", href: "/platform" },
+          { label: "Behavioral targeting" },
+        ]}
+      />
+      <p class="gm-label rise mt-10 text-raspberry">The Platform / Behavioral Targeting</p>
+      <h1 class="mt-6 max-w-5xl font-display font-extrabold tracking-tight">
+        <span class="mask block">
+          <span class="line-up block text-[clamp(2.5rem,6.5vw,5.5rem)] leading-[0.98]">
+            {titleHead}{titleLast && <> <span class="text-raspberry">{titleLast}</span></>}
+          </span>
+        </span>
+      </h1>
+      <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]">
+        <p class="rise text-lead text-white/70" style="animation-delay: 320ms">{heroParas[0]?.text}</p>
+        <div class="rise flex items-start lg:justify-end" style="animation-delay: 400ms">
+          {heroCta && <Button size="lg" href="/request-a-demo" icon="arrow-right">{heroCta.text}</Button>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 Definition -->
+  {
+    definition && (
+      <section class="bg-white">
+        <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:py-24 lg:grid-cols-[1fr_2fr] lg:px-20">
+          <div data-reveal>
+            <p class="gm-label text-slate">01 / Definition</p>
+            <h2 class="mt-4 text-h2 tracking-tight text-balance">{definition.heading}</h2>
+          </div>
+          <div class="lg:pt-12" data-reveal style="transition-delay: 90ms">
+            <div class="border-l-4 border-raspberry pl-6">
+              <p class="text-lead text-ink">{definition.content?.[0]?.text}</p>
+            </div>
+            <p class="mt-6 text-body text-slate">{definition.content?.[1]?.text}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 02 The default audience, struck through -->
+  {
+    demoSec && (
+      <section class="bg-cloud">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
+          <p class="gm-label text-slate" data-reveal>02 / The Default</p>
+          <h2
+            class="mt-6 max-w-4xl font-display text-[clamp(2.25rem,5.5vw,4.25rem)] leading-[1.15] font-extrabold tracking-tight text-mist"
+            data-reveal
+          >
+            <span class="strike">{demoSec.heading}</span>
+          </h2>
+          <div class="mt-12 flex max-w-2xl flex-col gap-6 lg:ml-[30%]">
+            {demoSec.content?.map((block, i) => (
+              <p class="text-lead text-slate" data-reveal style={`transition-delay: ${i * 80}ms`}>
+                {block.text}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 03 Signal layering: watch the audience shrink -->
+  {
+    layering && (
+      <section class="relative overflow-hidden bg-hole text-white">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
+          <p class="gm-label text-white/60" data-reveal>03 / Layering</p>
+          <h2
+            class="mt-4 max-w-3xl font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] font-extrabold tracking-tight text-balance"
+            data-reveal
+          >
+            {layering.heading}
+          </h2>
+
+          <div class="mt-12 grid gap-12 lg:grid-cols-[1fr_1fr] lg:items-start">
+            <p class="max-w-2xl text-lead text-white/80" data-reveal>{layering.content?.[0]?.text}</p>
+            <div class="relative" data-reveal style="transition-delay: 90ms">
+              {/* if / and / or: signals layered, not lined up side by side */}
+              <div aria-hidden="true" class="pointer-events-none absolute -inset-x-4 -top-6 -bottom-6 -z-10">
+                {["bg-violet/25", "bg-cobalt/20", "bg-raspberry/20", "bg-mint/15"].map((tone, i) => (
+                  <div
+                    class:list={["absolute inset-x-0 h-16 -skew-y-6 rounded-sm", tone]}
+                    style={`top: ${i * 22}px`}
+                  />
+                ))}
+              </div>
+              <p class="text-body text-white/70">{layering.content?.[1]?.text}</p>
+            </div>
+          </div>
+
+          <p class="mt-20 max-w-xl text-lead font-semibold text-white" data-reveal>{shrinkIntro}</p>
+
+          <div class="mt-10 grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
+            <!-- The field: 600 impressions, collapsing layer by layer. Pinned
+                 beside the layers on wide screens; on narrow ones it follows them
+                 as the payoff, already collapsed. -->
+            <div class="order-2 lg:order-1 lg:sticky lg:top-24">
+              <svg
+                id="shrink-field"
+                data-active="5"
+                aria-hidden="true"
+                viewBox="0 0 300 200"
+                class="w-full rounded-sm border border-white/10 bg-white/2 p-3"
+              >
+                {
+                  dots.map((dot) => (
+                    <circle
+                      class:list={["dot", dot.stage === 5 && "dot-final", dot.stage < 5 && "out"]}
+                      data-stage={dot.stage}
+                      cx={dot.cx}
+                      cy={dot.cy}
+                      r="2.4"
+                    />
+                  ))
+                }
+              </svg>
+              <p class="mt-4 gm-label text-[10px] text-white/40">Every dot is an impression you would pay for</p>
+            </div>
+
+            <ol class="order-1 flex flex-col lg:order-2">
+              {
+                shrinkSteps.map((step, i) => (
+                  <li class="shrink-step border-l border-white/15 py-6 pl-6" data-step={i + 1}>
+                    <span class="gm-label text-[10px] text-violet">Layer {String(i + 1).padStart(2, "0")}</span>
+                    <p class="mt-3 text-lead text-white/85">{step}</p>
+                  </li>
+                ))
+              }
+              <li class="border-l border-raspberry py-6 pl-6">
+                <span class="gm-label text-[10px] text-raspberry">What is left</span>
+                <p class="mt-3 text-lead font-semibold text-white">{shrinkClose}</p>
+                {
+                  pathOf(shrinkBlock?.links) && (
+                    <TextLink href={pathOf(shrinkBlock?.links)!} arrow class="mt-5 text-white hover:text-white/70">
+                      Cenvar Roofing case study
+                    </TextLink>
+                  )
+                }
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 04 Behavioral vs contextual -->
+  {
+    comparison && table && (
+      <section class="bg-white">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
+          <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
+            <div data-reveal>
+              <p class="gm-label text-slate">04 / The Comparison</p>
+              <h2 class="mt-4 text-h2 tracking-tight text-balance">{comparison.heading}</h2>
+              <p class="mt-6 text-body text-slate">{comparisonParas[0]?.text}</p>
+              {comparisonParas[1] && (
+                <div class="mt-8 border-l-4 border-raspberry pl-5">
+                  <p class="text-lead font-semibold text-ink">{comparisonParas[1].text}</p>
+                </div>
+              )}
+            </div>
+            <div class="lg:pt-12" data-reveal style="transition-delay: 90ms">
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-130 border-collapse text-left">
+                  <thead>
+                    <tr>
+                      {table.headers?.map((h, col) => (
+                        <th
+                          class:list={[
+                            "border-b-2 border-ink px-4 py-3 text-sm font-bold",
+                            col === 1 && "bg-raspberry text-white",
+                            col === 2 && "text-slate",
+                          ]}
+                        >
+                          {h || <span class="sr-only">Category</span>}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {table.rows?.map((row) => (
+                      <tr class="border-b border-line">
+                        {row.map((cell, col) => (
+                          <td
+                            class:list={[
+                              "px-4 py-4 text-sm",
+                              col === 0 && "font-bold",
+                              col === 1 && "bg-raspberry-100/40 font-semibold",
+                              col === 2 && "text-slate",
+                            ]}
+                          >
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {comparisonParas[2] && (
+                <p class="mt-8 max-w-2xl text-body text-slate">
+                  {comparisonParas[2].text}
+                  {pathOf(comparisonParas[2].links) && (
+                    <TextLink href={pathOf(comparisonParas[2].links)!} class="ml-2">
+                      Lookalike audiences, defined
+                    </TextLink>
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 05 Privacy: the quietest section on the page, on purpose -->
+  {
+    privacy && (
+      <section class="bg-cloud">
+        <div class="mx-auto max-w-7xl border-t border-line px-6 py-20 md:py-28 lg:px-20">
+          <div class="mx-auto max-w-3xl text-center" data-reveal>
+            <p class="gm-label text-slate">05 / Privacy</p>
+            <h2 class="mt-4 text-h2 tracking-tight text-balance">{privacy.heading}</h2>
+            <div class="mt-8 flex flex-col gap-6 text-left">
+              {privacy.content?.map((block) => <p class="text-lead text-slate">{block.text}</p>)}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 06 Proof -->
+  {
+    proof && (
+      <section class="bg-ink text-white">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
+          <p class="gm-label text-white/60" data-reveal>06 / Proof</p>
+          <h2 class="mt-4 text-h2 tracking-tight" data-reveal>{proof.heading}</h2>
+
+          <div class="mt-12 grid border-y border-white/12 lg:grid-cols-2 lg:divide-x lg:divide-white/12">
+            <div class="flex flex-col items-start gap-6 border-b border-white/12 py-12 lg:border-b-0 lg:pr-14" data-reveal>
+              <p class="gm-label text-[10px] text-white/50">onsemi</p>
+              <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
+                <span class="block text-[clamp(2.5rem,4.5vw,4rem)] text-white/30 line-through decoration-raspberry decoration-4">
+                  $2,000
+                </span>
+                <span class="block text-[clamp(4rem,8vw,7rem)] text-raspberry">under $1</span>
+              </p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">Cost per conversion</p>
+              <p class="max-w-md text-body text-white/70">{proof.content?.[0]?.text}</p>
+            </div>
+
+            <div class="flex flex-col items-start gap-6 py-12 lg:pl-14" data-reveal style="transition-delay: 90ms">
+              <p class="gm-label text-[10px] text-white/50">Accident and personal injury law firm</p>
+              <div class="grid w-full max-w-md grid-cols-2 gap-8">
+                <div>
+                  <p class="font-display text-[clamp(2rem,4vw,3.25rem)] leading-[0.95] font-extrabold tracking-tighter">
+                    <span class="text-white/30 line-through decoration-violet decoration-4">$10</span>
+                    <span class="ml-2 text-violet">$<span data-countup data-target="5">5</span></span>
+                  </p>
+                  <p class="mt-2 gm-label text-[10px] text-white/50">Display</p>
+                </div>
+                <div>
+                  <p class="font-display text-[clamp(2rem,4vw,3.25rem)] leading-[0.95] font-extrabold tracking-tighter">
+                    <span class="text-white/30 line-through decoration-raspberry decoration-4">$19</span>
+                    <span class="ml-2 text-raspberry">$<span data-countup data-target="6">6</span></span>
+                  </p>
+                  <p class="mt-2 gm-label text-[10px] text-white/50">Video</p>
+                </div>
+              </div>
+              <p class="inline-block bg-white px-3 py-1.5 gm-label text-[10px] text-ink">Cost per lead</p>
+              <p class="max-w-md text-body text-white/70">{proof.content?.[1]?.text}</p>
+              {
+                pathOf(proof.content?.[1]?.links) && (
+                  <TextLink href={pathOf(proof.content?.[1]?.links)!} arrow class="text-white hover:text-white/70">
+                    Read the case studies
+                  </TextLink>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Sibling navigation -->
+  <section class="bg-white" aria-label="More of the platform">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-10 gap-y-4 px-6 py-8 lg:px-20">
+      <span class="gm-label text-[10px] text-mist">Keep reading</span>
+      {siblings.map((s) => <TextLink href={s.href} arrow color="ink" underline={false}>{s.label}</TextLink>)}
+    </div>
+  </section>
+
+  <!-- 07 FAQ -->
+  {
+    faq && (
+      <section class="bg-cloud">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
+          <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
+            <div data-reveal>
+              <p class="gm-label text-slate">07 / FAQ</p>
+              <h2 class="mt-4 text-h2 tracking-tight text-balance">{faq.heading}</h2>
+              {pathOf(faqLink) && (
+                <TextLink href={pathOf(faqLink)!} arrow class="mt-6">
+                  How we tie it to conversions
+                </TextLink>
+              )}
+            </div>
+            <FAQAccordion items={faqItems} class="lg:mt-2" />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- CTA -->
+  {
+    ctaSec && (
+      <section class="relative overflow-hidden bg-hole text-white">
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_120%,rgb(247_0_78/0.45),transparent_55%)]"
+        />
+        <svg aria-hidden="true" viewBox="0 0 200 60" class="pointer-events-none absolute inset-0 size-full opacity-40">
+          {
+            Array.from({ length: 16 * 6 }, (_, i) => (
+              <circle cx={6 + (i % 16) * 13} cy={6 + Math.floor(i / 16) * 11} r="1.3" fill="#ffffff" opacity="0.12" />
+            ))
+          }
+        </svg>
+        <div class="relative mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
+          <h2
+            class="max-w-2xl font-display text-[clamp(2.5rem,5.5vw,4.5rem)] leading-[1.02] font-extrabold tracking-tight"
+            data-reveal
+          >
+            {ctaSec.heading}
+          </h2>
+          <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]" data-reveal style="transition-delay: 100ms">
+            <p class="text-lead text-white/75">{ctaParas[0]?.text}</p>
+            <div class="flex items-start lg:justify-end">
+              {ctaBtn && <Button size="lg" href="/request-a-demo" icon="arrow-right">{ctaBtn.text}</Button>}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <Footer />
+</BaseLayout>
+
+<style is:global>
+  /* Hero load-in */
+  @keyframes gm-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  .rise {
+    animation: gm-rise 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+
+  /* Masked line reveal */
+  .mask {
+    overflow: hidden;
+  }
+  .line-up {
+    transform: translateY(112%);
+    animation: gm-line-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+  }
+  @keyframes gm-line-up {
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* Scroll reveals: only applied when JS is on, so content never hides without it */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+      transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .js [data-reveal].in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The default audience gets struck through as you read it. Painted as a
+     background so every wrapped line is crossed, not just the block. */
+  .strike {
+    background-image: linear-gradient(var(--color-raspberry), var(--color-raspberry));
+    background-repeat: no-repeat;
+    background-position: 0 0.62em;
+    background-size: 100% 0.07em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .js [data-reveal] .strike {
+    background-size: 0% 0.07em;
+    transition: background-size 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+  }
+  .js [data-reveal].in .strike {
+    background-size: 100% 0.07em;
+  }
+
+  /* Audience field */
+  #shrink-field .dot {
+    fill: var(--color-raspberry);
+    transition:
+      opacity 0.55s ease,
+      fill 0.55s ease;
+  }
+  #shrink-field .dot.out {
+    fill: #ffffff;
+    opacity: 0.07;
+  }
+  #shrink-field[data-active="5"] .dot-final {
+    stroke: var(--color-violet);
+    stroke-width: 1.6;
+  }
+  .shrink-step {
+    transition:
+      opacity 0.4s ease,
+      border-color 0.4s ease;
+  }
+  @media (min-width: 1024px) {
+    .js .shrink-step:not(.active) {
+      opacity: 0.45;
+    }
+    .js .shrink-step.active {
+      border-color: var(--color-violet);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise {
+      animation: none;
+    }
+    .line-up {
+      animation: none;
+      transform: none;
+    }
+    .js [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .js [data-reveal] .strike,
+    .js [data-reveal].in .strike {
+      background-size: 100% 0.07em;
+      transition: none;
+    }
+    #shrink-field .dot {
+      transition: none;
+    }
+    .js .shrink-step:not(.active) {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Scroll reveals
+  const revealer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          revealer.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => revealer.observe(el));
+
+  // Count-up stats
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
+  const runCount = (el: HTMLElement) => {
+    const target = Number(el.dataset.target ?? "0");
+    const decimals = Number(el.dataset.decimals ?? "0");
+    const duration = 1400;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const value = easeOut(t) * target;
+      el.textContent = decimals
+        ? value.toFixed(decimals)
+        : Math.round(value).toLocaleString("en-US");
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if (!reduceMotion) {
+    const counter = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            runCount(entry.target as HTMLElement);
+            counter.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.6 },
+    );
+    document.querySelectorAll<HTMLElement>("[data-countup]").forEach((el) => counter.observe(el));
+  }
+
+  // Watch it shrink: each layer the reader reaches removes the impressions that
+  // layer filters out. Server-rendered state is the final one, so no-JS and
+  // reduced-motion readers see where the story lands.
+  const field = document.getElementById("shrink-field");
+  const steps = Array.from(document.querySelectorAll<HTMLElement>(".shrink-step"));
+  const wide = window.matchMedia("(min-width: 1024px)");
+  if (field && steps.length && !reduceMotion) {
+    const dots = Array.from(field.querySelectorAll<SVGCircleElement>(".dot"));
+    const setStage = (stage: number) => {
+      if (field.dataset.active === String(stage)) return;
+      field.dataset.active = String(stage);
+      for (const dot of dots) {
+        dot.classList.toggle("out", Number(dot.dataset.stage ?? "0") < stage);
+      }
+    };
+
+    let ticking = false;
+    const sync = () => {
+      const mid = window.innerHeight * 0.5;
+      let active = 0;
+      for (const step of steps) {
+        const box = step.getBoundingClientRect();
+        const passed = box.top < mid;
+        step.classList.toggle("active", passed && box.bottom > mid);
+        if (passed) active = Number(step.dataset.step ?? "0");
+      }
+      setStage(active);
+    };
+    const onScroll = () => {
+      if (!wide.matches || ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        sync();
+        ticking = false;
+      });
+    };
+
+    // Only step through the layers where the field is pinned beside them. On
+    // narrow screens the markup's final state stands as the payoff instead.
+    const engage = () => {
+      if (wide.matches) {
+        sync();
+      } else {
+        setStage(5);
+        steps.forEach((step) => step.classList.remove("active"));
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    wide.addEventListener("change", engage);
+    engage();
+  }
+</script>

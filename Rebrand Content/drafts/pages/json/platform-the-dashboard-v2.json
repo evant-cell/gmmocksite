@@ -1,0 +1,234 @@
+{
+  "title": "Programmatic reporting with nowhere to hide",
+  "seoDescription": "Open your programmatic reporting whenever you want. Every dollar, every placement, every conversion, live, with no waiting for a monthly recap.",
+  "sections": [
+    {
+      "type": "meta",
+      "draftLabel": "The dashboard page, V2 draft (V1 preserved at platform-the-dashboard.md)",
+      "url": "/platform/the-dashboard",
+      "metaTitle": "Programmatic Reporting Dashboard | Genius Monkey",
+      "notes": "Register note. Guardrails lifted roughly a third toward Loud, Outspoken, and Playful. Primary keyword stays in the H1, so no SEO trade on this page. The definition block and FAQ answers stay disciplined on purpose, they are the AEO surfaces."
+    },
+    {
+      "type": "hero",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Most agencies report monthly. That's a convenient rhythm for anyone who needs a few weeks to workshop the story. Ours updates while you're reading it. Open the dashboard at two in the morning on a Sunday and follow one conversion back to the impression that started it. Nobody gets a heads up. That's the feature."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What a programmatic reporting dashboard shows",
+      "content": [
+        {
+          "kind": "p",
+          "text": "A programmatic reporting dashboard shows where your ads ran, what they cost, and which impressions led to conversions. The Genius Monkey dashboard tracks performance from first impression to conversion in real time, including conversion type, device, interaction level, timing, and the referral pages that brought people in."
+        },
+        {
+          "kind": "p",
+          "text": "That's what an advertising dashboard is for. Ours just refuses to summarize."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "You've seen this slide",
+      "content": [
+        {
+          "kind": "p",
+          "text": "It had one big number on it, in a nice color. You asked where the number came from. There was a pause, and then somebody said they'd follow up."
+        },
+        {
+          "kind": "p",
+          "text": "The delay is the first problem. A monthly recap is how most programmatic campaign management works, and a monthly recap is a history lesson. By the time it reaches you, the budget it describes is gone. You can learn from it. You can't act on it."
+        },
+        {
+          "kind": "p",
+          "text": "The aggregation is the second. A summary that can't be broken apart can't be audited, and anything you can't audit you're taking on faith."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "The whole thing, not the highlights reel",
+      "content": [],
+      "subsections": [
+        {
+          "heading": "Spend against results",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Ad spend and daily revenue on one screen. ROAS as a live ratio, not a month-end reconciliation somebody had time to think about."
+            }
+          ]
+        },
+        {
+          "heading": "Attribution down to the conversion",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Campaign conversion channel, conversions by device type, and placement-level attribution breakdowns. The methodology lives on our measurement page."
+            }
+          ],
+          "links": [
+            "/platform/measurement-validation"
+          ]
+        },
+        {
+          "heading": "Conversion detail",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Type, device, interaction level, dates and times, IP address, referral pages. The granular record most reporting rounds off."
+            }
+          ]
+        },
+        {
+          "heading": "Where your ads actually ran",
+          "content": [
+            {
+              "kind": "p",
+              "text": "A display ad placement preview. See the creative sitting in its real placement instead of trusting a domain list somebody exported for you."
+            }
+          ]
+        },
+        {
+          "heading": "Campaign monitoring and optimization",
+          "content": [
+            {
+              "kind": "p",
+              "text": "What's running, what's being adjusted, what changed."
+            }
+          ],
+          "links": [
+            "/platform/real-time-optimization"
+          ]
+        },
+        {
+          "heading": "Your analytics next to ours",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Full Google Analytics integration, so our numbers can be checked against a source we don't control."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Yes, this can make us look bad",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Leaving the reporting open means we can't quietly sit on a rough week until we've got a story for it. Some months the graph goes the wrong way and you'll see it before we've called you. We decided that was the right trade. If our numbers only hold up when we're the ones presenting them, they were never numbers, they were a pitch."
+        },
+        {
+          "kind": "p",
+          "text": "The Google Analytics integration is here for the same reason. You're invited to check us against a source we don't control, and campaign transparency that has to be requested doesn't count."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Proof",
+      "content": [
+        {
+          "kind": "p",
+          "text": "onsemi could see exactly which 23.15% of their conversions came from us. Not \"roughly a quarter.\" Not \"a significant share.\" 23.15%. That precision is the entire product. It's also how they watched cost per conversion fall from $2,000 to $8, then under $1 two years later. Country Thunder ran the same reporting to a 2300% return on ad spend, $230 back for every dollar in.",
+          "links": [
+            "/programmatic-case-studies",
+            "onsemi case study",
+            "Country Thunder case study"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "heading": "Questions buyers actually ask",
+      "content": [],
+      "subsections": [
+        {
+          "heading": "What does a programmatic reporting dashboard show?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "It shows where your ads ran, what each placement cost, and which impressions led to conversions. In the Genius Monkey dashboard that includes spend against daily revenue, live ROAS, conversion detail down to device and referral page, and a preview of your ads in their actual placements."
+            }
+          ]
+        },
+        {
+          "heading": "Do I get access, or do I have to ask for reports?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "You get access. The dashboard is open to every client from day one, and you can open it whenever you want, without scheduling a call or waiting for a monthly recap. If you'd rather have us walk through it with you, we do that too."
+            }
+          ]
+        },
+        {
+          "heading": "How current is the data?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "It's live. Spend, impressions, and conversions post to the dashboard in real time as campaigns run, so you're looking at what's happening now, not a reconciliation of last month. When we adjust a campaign, the change and its effect show up in the same view."
+            }
+          ]
+        },
+        {
+          "heading": "Can I check your numbers against Google Analytics?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Yes. The dashboard includes full Google Analytics integration, so you can put our reporting next to a data source we don't control. If the two ever tell different stories, we want to know as much as you do, and we'll dig into why."
+            }
+          ]
+        },
+        {
+          "heading": "How do you decide which ad gets credit for a conversion?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Through multi-touch attribution that follows the full path from first impression to conversion, instead of handing all the credit to the last click. Every touchpoint on the path earns a share of the credit, and the full methodology, including impression tracking and viewability, lives on our measurement and validation page.",
+              "links": [
+                "/platform/measurement-validation"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Come find the ugly part",
+      "content": [
+        {
+          "kind": "p",
+          "text": "We'll open a real dashboard and let you go looking for the ugly part. Request a demo."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "draftNotes",
+      "items": [
+        "Voice cues used: Loud and Outspoken pushed up, Playful twice (two in the morning, the slide scene), Humble carrying \"Yes, this can make us look bad.\" Category poked, no competitor named. Contractions free. \"Tool\" avoided.",
+        "Intentional guardrail exception: the proof section's \"Not 'roughly a quarter.' Not 'a significant share.' 23.15%.\" is an anaphoric triad, restricted by Part 3 to brand copy. Used deliberately because the repetition is the argument about precision. Flag for reaction, not an oversight.",
+        "Guesses flagged for the capture loop: \"Nobody gets a heads up. That's the feature.\", \"You've seen this slide\", \"There was a pause, and then somebody said they'd follow up\", \"Yes, this can make us look bad\" (the bravest line in the V2 set), \"they were never numbers, they were a pitch\", the 23.15% triad, and the closing CTA.",
+        "Keywords: \"programmatic reporting\" in H1 and first 100 words; \"advertising dashboard,\" \"programmatic campaign management,\" \"campaign transparency\" each once. FAQ answers identical to V1 by design (AEO surface).",
+        "Facts: identical to V1, feature list from the live page (verified 2026-07-19), onsemi and Country Thunder from brand/facts.md, onsemi timeline uncompressed. No new claims in V2.",
+        "OPEN ITEM (blocking publish): self-serve dashboard access. V2 leans harder on the promise than V1 (\"Nobody gets a heads up\"), so confirming it matters more here."
+      ]
+    }
+  ]
+}

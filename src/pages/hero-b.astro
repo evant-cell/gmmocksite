@@ -1,0 +1,186 @@
+---
+/**
+ * Hero concept B - preview route, not linked from anywhere.
+ * Same approved home copy, composed in the style of the current production
+ * geniusmonkey.com hero: diagonal white slice, giant brand watermark,
+ * centered accent headline + uppercase subhead, icon trio, lead + pill CTAs.
+ * Translated into the new brand system (raspberry / Black Hole / Bricolage / Unbounded).
+ */
+import { getEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/blocks/Navbar.astro";
+import Icon from "../components/ui/Icon.astro";
+import type { IconName } from "../components/ui/Icon.astro";
+
+const page = await getEntry("pages", "home");
+if (!page) throw new Error("Missing content: src/content/pages/home.json");
+const data = page.data;
+
+type Block = { kind: string; text?: string };
+type Section = { type: string; content?: Block[]; [key: string]: unknown };
+const sections = data.sections as Section[];
+const hero = sections.find((s) => s.type === "hero");
+const heroParas = hero?.content?.filter((c) => c.kind === "p") ?? [];
+const heroCta = hero?.content?.find((c) => c.kind === "cta");
+
+const title = data.title;
+const splitAt = title.indexOf(". ");
+const titleA = splitAt > -1 ? title.slice(0, splitAt + 1) : title;
+const titleB = splitAt > -1 ? title.slice(splitAt + 2) : "";
+
+// Icon trio: each label is a verbatim fragment of the hero paragraph
+const trio: { icon: IconName; label: string }[] = [
+  { icon: "settings", label: "Our own DSP" },
+  { icon: "user", label: "A real expert behind every account" },
+  { icon: "search", label: "Every dollar visible, every result explained" },
+];
+
+// Every ticker item is a fact stated in the home page copy
+const tickerItems = [
+  "Our own DSP",
+  "A real expert behind every account",
+  "Display $2-$4 CPM",
+  "Video $10-$22 CPM",
+  "OTT/CTV $25-$40 CPM",
+  "No long-term contracts",
+  "27 published case studies",
+  "Founded in 2009",
+];
+
+const navLinks = [
+  { label: "Platform", href: "/platform" },
+  { label: "Solutions", href: "#" },
+  { label: "Pricing", href: "#" },
+  { label: "Resources", href: "#" },
+];
+---
+
+<BaseLayout title="Hero Concept B - Genius Monkey" noindex>
+  <div class="bg-raspberry py-1.5 text-center gm-label text-[10px] text-white">
+    Hero concept B, production-style composition. Current live version at <a href="/" class="underline underline-offset-2">/</a>
+  </div>
+  <Navbar theme="light" links={navLinks} />
+
+  <!-- Hero: dark block with a diagonal white slice at the top, per the production site -->
+  <section class="relative overflow-hidden bg-white">
+    <div class="relative bg-hole text-white [clip-path:polygon(0_7rem,100%_0,100%_100%,0_100%)] md:[clip-path:polygon(0_9rem,100%_0,100%_100%,0_100%)]">
+      <!-- Giant brand watermark, the mascot's role in the production hero -->
+      <p
+        aria-hidden="true"
+        class="pointer-events-none absolute -right-10 -bottom-24 font-display text-[clamp(16rem,42vw,34rem)] leading-none font-extrabold tracking-tighter text-white/4 select-none md:-right-16"
+      >
+        GM.
+      </p>
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_130%,rgb(247_0_78/0.18),transparent_60%)]"
+      >
+      </div>
+
+      <div class="relative mx-auto w-full max-w-7xl px-6 pt-36 pb-20 md:pt-44 md:pb-24 lg:px-20">
+        <!-- Centered accent headline + uppercase subhead, production-style -->
+        <div class="mx-auto max-w-4xl text-center">
+          <h1 class="font-display font-extrabold tracking-tight">
+            <span class="rise block text-[clamp(2.4rem,5.5vw,4.5rem)] leading-[1.02] text-raspberry">{titleA}</span>
+            {
+              titleB && (
+                <span
+                  class="rise mt-5 block font-label text-[clamp(0.85rem,1.6vw,1.2rem)] font-semibold tracking-[0.1em] text-raspberry uppercase"
+                  style="animation-delay: 120ms"
+                >
+                  {titleB}
+                </span>
+              )
+            }
+          </h1>
+        </div>
+
+        <!-- Icon trio left, lead + pill CTAs right -->
+        <div class="mt-16 grid items-center gap-14 md:mt-20 lg:grid-cols-2 lg:gap-20">
+          <div class="rise grid grid-cols-3 gap-6" style="animation-delay: 240ms">
+            {
+              trio.map((item) => (
+                <div class="flex flex-col items-center gap-4 text-center">
+                  <span class="grid size-20 place-items-center rounded-full border border-white/25">
+                    <Icon name={item.icon} size={34} class="text-white" />
+                  </span>
+                  <p class="gm-label max-w-36 text-[10px] leading-relaxed text-white/60">{item.label}</p>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="rise" style="animation-delay: 340ms">
+            <p class="text-lead text-white/85">{heroParas[0]?.text}</p>
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              {
+                heroCta && (
+                  <a
+                    href="/request-a-demo"
+                    class="inline-flex h-13 items-center justify-center gap-2 rounded-full bg-raspberry px-9 gm-label text-xs text-white transition-colors duration-150 hover:bg-raspberry-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
+                  >
+                    {heroCta.text}
+                    <Icon name="arrow-right" size={16} />
+                  </a>
+                )
+              }
+              <a
+                href="/#receipts"
+                class="inline-flex h-13 items-center justify-center rounded-full border-2 border-white/70 px-9 gm-label text-xs text-white transition-colors duration-150 hover:bg-white hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
+              >
+                See the receipts
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Published-facts ticker, carried over from the live hero -->
+      <div class="relative overflow-hidden border-t border-white/10">
+        <div class="ticker flex w-max">
+          {
+            [0, 1].map((dup) => (
+              <ul class="flex shrink-0 items-center py-4" aria-hidden={dup === 1 ? "true" : undefined}>
+                {tickerItems.map((item) => (
+                  <li class="flex items-center">
+                    <span class="gm-label text-[10px] whitespace-nowrap text-white/55">{item}</span>
+                    <span class="mx-10 size-1 shrink-0 rounded-full bg-raspberry/80" />
+                  </li>
+                ))}
+              </ul>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @keyframes gm-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  .rise {
+    animation: gm-rise 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .ticker {
+    animation: ticker-scroll 44s linear infinite;
+  }
+  .ticker:hover {
+    animation-play-state: paused;
+  }
+  @keyframes ticker-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    .ticker {
+      animation: none;
+    }
+  }
+</style>

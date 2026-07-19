@@ -1,0 +1,768 @@
+---
+import { getEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Navbar from "../../components/blocks/Navbar.astro";
+import Footer from "../../components/blocks/Footer.astro";
+import Breadcrumbs from "../../components/blocks/Breadcrumbs.astro";
+import Button from "../../components/ui/Button.astro";
+import TextLink from "../../components/ui/TextLink.astro";
+import Icon from "../../components/ui/Icon.astro";
+import FAQAccordion from "../../components/blocks/FAQAccordion.astro";
+
+const page = await getEntry("pages", "platform-the-dashboard");
+if (!page) throw new Error("Missing content: src/content/pages/platform-the-dashboard.json");
+const data = page.data;
+
+type Block = { kind: string; text?: string; links?: string[]; headers?: string[]; rows?: string[][] };
+type Section = {
+  type: string;
+  heading?: string;
+  content?: Block[];
+  subsections?: { heading: string; content: Block[]; links?: string[] }[];
+  metaTitle?: string;
+  [key: string]: unknown;
+};
+
+const sections = data.sections as Section[];
+const meta = sections.find((s) => s.type === "meta");
+const hero = sections.find((s) => s.type === "hero");
+const faq = sections.find((s) => s.type === "faq");
+const contentSecs = sections.filter((s) => s.type === "section");
+const features = contentSecs.find((s) => (s.subsections?.length ?? 0) > 0);
+const ctaSec = contentSecs.find((s) => s.content?.some((c) => c.kind === "cta"));
+// Remaining prose sections in JSON order: definition, the monthly recap, the
+// trade we made by leaving reporting open, proof.
+const [definition, recap, trade, proof] = contentSecs.filter((s) => s !== features && s !== ctaSec);
+
+const heroParas = hero?.content?.filter((c) => c.kind === "p") ?? [];
+const heroCta = hero?.content?.find((c) => c.kind === "cta");
+const ctaParas = ctaSec?.content?.filter((c) => c.kind === "p") ?? [];
+const ctaBtn = ctaSec?.content?.find((c) => c.kind === "cta");
+
+const faqItems = (faq?.subsections ?? []).map((s, i) => ({
+  question: s.heading,
+  answer: s.content?.[0]?.text ?? "",
+  open: i === 0,
+}));
+const faqLink = faq?.subsections?.map((s) => s.content?.[0]?.links).find((l) => l?.length);
+
+const pathOf = (links?: string[]) => links?.find((l) => l.startsWith("/"))?.split(" ")[0];
+
+// H1 accent lands on the closing phrase
+const title = data.title;
+const accentAt = title.indexOf("nowhere to hide");
+const titleHead = accentAt > -1 ? title.slice(0, accentAt) : title;
+const titleAccent = accentAt > -1 ? title.slice(accentAt) : "";
+
+// The trade paragraph ends on the page's sharpest promise. Split it out as a
+// pull quote, keeping the sentence order and wording of the source.
+const tradePara = trade?.content?.[0]?.text ?? "";
+const tradeCut = tradePara.indexOf("If our numbers");
+const tradeLead = tradeCut > -1 ? tradePara.slice(0, tradeCut).trim() : tradePara;
+const tradeQuote = tradeCut > -1 ? tradePara.slice(tradeCut).trim() : "";
+
+// Proof is one paragraph covering two clients. Split at the second client so each
+// panel carries its own copy, then split onsemi again at the cost-per-conversion
+// sentence so the precision claim and the numbers sit apart.
+const proofPara = proof?.content?.[0]?.text ?? "";
+const ctCut = proofPara.indexOf("Country Thunder");
+const onsemiFull = ctCut > -1 ? proofPara.slice(0, ctCut).trim() : proofPara;
+const thunderPara = ctCut > -1 ? proofPara.slice(ctCut).trim() : "";
+const costCut = onsemiFull.indexOf("It's also how");
+const onsemiLead = costCut > -1 ? onsemiFull.slice(0, costCut).trim() : onsemiFull;
+const onsemiCost = costCut > -1 ? onsemiFull.slice(costCut).trim() : "";
+
+const navLinks = [
+  { label: "Platform", href: "/platform" },
+  { label: "Solutions", href: "#" },
+  { label: "Pricing", href: "#" },
+  { label: "Resources", href: "#" },
+];
+
+const siblings = [
+  { label: "Behavioral targeting", href: "/platform/behavioral-targeting" },
+  { label: "Measurement and validation", href: "/platform/measurement-validation" },
+  { label: "The platform", href: "/platform" },
+];
+
+const pagePath = (((meta?.url as string) ?? "/platform/the-dashboard") + "/").replace(/\/+$/, "/");
+const siteUrl = Astro.site?.href ?? "https://geniusmonkey.com/";
+const pageUrl = new URL(pagePath, siteUrl).href;
+const platformUrl = new URL("/platform/", siteUrl).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}#organization`,
+      name: "Genius Monkey",
+      url: siteUrl,
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: meta?.metaTitle ?? data.title,
+      description: data.seoDescription,
+      isPartOf: { "@id": `${siteUrl}#organization` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+        { "@type": "ListItem", position: 2, name: "Platform", item: platformUrl },
+        { "@type": "ListItem", position: 3, name: "The dashboard", item: pageUrl },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: { "@type": "Answer", text: item.answer },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout title={meta?.metaTitle ?? data.title} description={data.seoDescription} path={pagePath}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+  <script is:inline>document.documentElement.classList.add("js");</script>
+  <Navbar links={navLinks} class="bg-hole!" />
+
+  <!-- Hero -->
+  <section class="relative isolate overflow-hidden bg-hole text-white">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_-10%,rgb(82_224_182/0.16),transparent_55%)]"
+    >
+    </div>
+    <!-- A dashboard sitting open in the background, because it always is -->
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 320 200"
+      preserveAspectRatio="xMidYMid meet"
+      class="wireframe pointer-events-none absolute top-1/2 right-0 hidden w-[46%] -translate-y-1/2 lg:block"
+    >
+      <rect x="4" y="4" width="312" height="192" rx="6" fill="none" stroke="#ffffff" stroke-opacity="0.08" />
+      <rect x="18" y="20" width="132" height="72" rx="4" fill="none" stroke="#52e0b6" stroke-opacity="0.5" />
+      <rect x="164" y="20" width="138" height="72" rx="4" fill="none" stroke="#ffffff" stroke-opacity="0.08" />
+      <rect x="18" y="106" width="284" height="34" rx="4" fill="none" stroke="#ffffff" stroke-opacity="0.08" />
+      <rect x="18" y="152" width="136" height="30" rx="4" fill="none" stroke="#ffffff" stroke-opacity="0.08" />
+      <rect x="166" y="152" width="136" height="30" rx="4" fill="none" stroke="#ffffff" stroke-opacity="0.08" />
+      <polyline
+        points="26,80 50,62 74,70 98,44 122,52 142,30"
+        fill="none"
+        stroke="#f7004e"
+        stroke-opacity="0.55"
+        stroke-width="1.6"
+      ></polyline>
+    </svg>
+
+    <div class="relative mx-auto max-w-7xl px-6 pt-10 pb-24 md:pb-32 lg:px-20">
+      <Breadcrumbs
+        theme="dark"
+        class="bg-transparent! px-0! py-0!"
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Platform", href: "/platform" },
+          { label: "The dashboard" },
+        ]}
+      />
+      <div class="rise mt-10 flex items-center gap-3">
+        <span aria-hidden="true" class="relative grid size-2 place-items-center">
+          <span class="pulse absolute size-2 rounded-full bg-mint/60"></span>
+          <span class="size-2 rounded-full bg-mint"></span>
+        </span>
+        <p class="gm-label text-raspberry">The Platform / The Dashboard</p>
+      </div>
+      <h1 class="mt-6 max-w-4xl font-display font-extrabold tracking-tight">
+        <span class="mask block">
+          <span class="line-up block text-[clamp(2.5rem,6.5vw,5.5rem)] leading-[0.98]">
+            {titleHead}{titleAccent && <span class="text-raspberry">{titleAccent}</span>}
+          </span>
+        </span>
+      </h1>
+      <div class="mt-12 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]">
+        <p class="rise text-lead text-white/70" style="animation-delay: 320ms">{heroParas[0]?.text}</p>
+        <div class="rise flex items-start lg:justify-end" style="animation-delay: 400ms">
+          {heroCta && <Button size="lg" href="/request-a-demo" icon="arrow-right">{heroCta.text}</Button>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 01 Definition -->
+  {
+    definition && (
+      <section class="bg-white">
+        <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:py-24 lg:grid-cols-[1fr_2fr] lg:px-20">
+          <div data-reveal>
+            <p class="gm-label text-slate">01 / Definition</p>
+            <h2 class="mt-4 text-h2 tracking-tight text-balance">{definition.heading}</h2>
+          </div>
+          <div class="lg:pt-12" data-reveal style="transition-delay: 90ms">
+            <div class="border-l-4 border-raspberry pl-6">
+              <p class="text-lead text-ink">{definition.content?.[0]?.text}</p>
+            </div>
+            <p class="mt-6 text-body text-slate">{definition.content?.[1]?.text}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 02 The slide with one big number on it -->
+  {
+    recap && (
+      <section class="relative overflow-hidden bg-ink text-white">
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgb(255_255_255/0.07),transparent_60%)]"
+        />
+        <div class="relative mx-auto max-w-7xl px-6 py-20 text-center md:py-28 lg:px-20">
+          <p class="gm-label text-white/60" data-reveal>02 / The Monthly Recap</p>
+          <h2 class="mt-4 text-h2 tracking-tight" data-reveal>{recap.heading}</h2>
+
+          {/* The slide itself: one big number, no source, nothing to audit */}
+          <div class="mt-12 flex justify-center" data-reveal style="transition-delay: 90ms">
+            <div
+              aria-hidden="true"
+              class="w-full max-w-md -rotate-[1.5deg] rounded-sm bg-white p-8 shadow-toast"
+              style="aspect-ratio: 16 / 9"
+            >
+              <div class="flex h-full flex-col justify-center gap-4">
+                <div class="mx-auto h-16 w-1/2 rounded-md bg-cloud"></div>
+                <div class="mx-auto h-2 w-1/3 rounded-full bg-cloud"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mx-auto mt-12 flex max-w-2xl flex-col gap-6 text-left">
+            {recap.content?.map((block, i) => (
+              <p class="text-lead text-white/80" data-reveal style={`transition-delay: ${i * 80}ms`}>
+                {block.text}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 03 Inside the dashboard: the panels track what you are reading -->
+  {
+    features && (
+      <section class="bg-cloud">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
+          <p class="gm-label text-slate" data-reveal>03 / Inside The Dashboard</p>
+          <h2 class="mt-4 max-w-2xl text-h2 tracking-tight text-balance" data-reveal>{features.heading}</h2>
+
+          <div class="mt-12 grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:gap-16">
+            <div class="lg:sticky lg:top-24">
+              <div id="mock-dash" class="rounded-lg border border-line-dark bg-ink p-4 shadow-card">
+                <div class="flex items-center gap-2 pb-4">
+                  <span aria-hidden="true" class="size-2 rounded-full bg-white/20"></span>
+                  <span aria-hidden="true" class="size-2 rounded-full bg-white/20"></span>
+                  <span aria-hidden="true" class="size-2 rounded-full bg-white/20"></span>
+                  <span aria-hidden="true" class="ml-auto flex items-center gap-2">
+                    <span class="pulse size-1.5 rounded-full bg-mint"></span>
+                    <span class="h-1.5 w-12 rounded-full bg-white/10"></span>
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 gap-3" aria-hidden="true">
+                  <!-- 01 Spend against results -->
+                  <div class="panel" data-panel="1">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      <polyline points="4,48 24,40 44,44 64,26 84,30 116,12" fill="none" stroke="#f7004e" stroke-width="2" />
+                      <polyline points="4,54 24,50 44,38 64,42 84,22 116,20" fill="none" stroke="#52e0b6" stroke-width="2" />
+                    </svg>
+                  </div>
+                  <!-- 02 Attribution down to the conversion -->
+                  <div class="panel" data-panel="2">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      <rect x="4" y="24" width="42" height="12" fill="#f7004e" />
+                      <rect x="46" y="24" width="30" height="12" fill="#3d5afe" />
+                      <rect x="76" y="24" width="22" height="12" fill="#7c4dff" />
+                      <rect x="98" y="24" width="18" height="12" fill="#52e0b6" />
+                      <rect x="4" y="44" width="70" height="4" rx="2" fill="#ffffff" fill-opacity="0.14" />
+                    </svg>
+                  </div>
+                  <!-- 03 Conversion detail -->
+                  <div class="panel" data-panel="3">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      {[10, 22, 34, 46].map((y, i) => (
+                        <>
+                          <rect x="4" y={y} width={[34, 26, 40, 22][i]} height="5" rx="2.5" fill="#ffffff" fill-opacity="0.28" />
+                          <rect x={48} y={y} width={[30, 44, 24, 38][i]} height="5" rx="2.5" fill="#ffffff" fill-opacity="0.12" />
+                        </>
+                      ))}
+                    </svg>
+                  </div>
+                  <!-- 04 Where your ads actually ran -->
+                  <div class="panel" data-panel="4">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      <rect x="4" y="6" width="112" height="48" rx="3" fill="none" stroke="#ffffff" stroke-opacity="0.16" />
+                      <rect x="10" y="12" width="44" height="4" rx="2" fill="#ffffff" fill-opacity="0.2" />
+                      <rect x="10" y="22" width="60" height="3" rx="1.5" fill="#ffffff" fill-opacity="0.12" />
+                      <rect x="10" y="30" width="52" height="3" rx="1.5" fill="#ffffff" fill-opacity="0.12" />
+                      <rect x="78" y="12" width="32" height="26" rx="2" fill="none" stroke="#f7004e" stroke-width="1.5" />
+                    </svg>
+                  </div>
+                  <!-- 05 Campaign monitoring and optimization -->
+                  <div class="panel" data-panel="5">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      <polyline points="4,44 22,38 40,42 58,28 76,32 94,18 116,22" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="2" />
+                      <circle cx="94" cy="18" r="4" fill="#52e0b6" />
+                      <rect x="4" y="52" width="26" height="5" rx="2.5" fill="#52e0b6" fill-opacity="0.35" />
+                    </svg>
+                  </div>
+                  <!-- 06 Your analytics next to ours -->
+                  <div class="panel" data-panel="6">
+                    <svg viewBox="0 0 120 60" class="w-full">
+                      {[0, 1, 2].map((i) => (
+                        <>
+                          <rect x={12 + i * 36} y={54 - [30, 22, 34][i]} width="12" height={[30, 22, 34][i]} fill="#f7004e" />
+                          <rect x={26 + i * 36} y={54 - [26, 24, 30][i]} width="12" height={[26, 24, 30][i]} fill="#ffffff" fill-opacity="0.4" />
+                        </>
+                      ))}
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-4 gm-label text-[10px] text-mist">Illustrative view of the reporting surface</p>
+            </div>
+
+            <ol class="flex flex-col">
+              {
+                features.subsections?.map((sub, i) => (
+                  <li class="feature-step border-l border-line py-10 pl-6" data-step={i + 1}>
+                    <span class="step-index gm-label text-[10px] text-mint">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 class="mt-3 text-h4 tracking-tight">{sub.heading}</h3>
+                    <p class="mt-3 text-body text-slate">{sub.content?.[0]?.text}</p>
+                    {pathOf(sub.links) && (
+                      <TextLink href={pathOf(sub.links)!} arrow class="mt-4">
+                        {sub.heading === "Attribution down to the conversion"
+                          ? "The methodology"
+                          : "Real-time optimization"}
+                      </TextLink>
+                    )}
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 04 The trade -->
+  {
+    trade && (
+      <section class="relative overflow-hidden bg-hole text-white">
+        <div class="relative mx-auto max-w-7xl px-6 py-24 md:py-32 lg:px-20">
+          <p class="gm-label text-white/60" data-reveal>04 / The Trade</p>
+          <h2
+            class="mt-6 max-w-3xl font-display text-[clamp(2.5rem,6vw,5rem)] leading-[1] font-extrabold tracking-tight text-balance"
+            data-reveal
+          >
+            {trade.heading}
+          </h2>
+
+          {/* Some months the graph goes the wrong way. Here it is, going the wrong way. */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 600 120"
+            class="mt-14 w-full"
+            data-reveal
+          >
+            <line x1="0" y1="119" x2="600" y2="119" stroke="#ffffff" stroke-opacity="0.12" />
+            <polyline
+              class="declining"
+              points="10,24 100,38 190,30 280,56 370,72 460,66 550,98"
+              fill="none"
+              stroke="#f7004e"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></polyline>
+          </svg>
+
+          <div class="mt-14 grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+            <div data-reveal>
+              <p class="text-lead text-white/75">{tradeLead}</p>
+              {tradeQuote && (
+                <p class="mt-8 font-display text-h3 leading-snug tracking-tight text-white">{tradeQuote}</p>
+              )}
+            </div>
+            <p class="text-lead text-white/70 lg:pt-2" data-reveal style="transition-delay: 90ms">
+              {trade.content?.[1]?.text}
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 05 Proof -->
+  {
+    proof && (
+      <section class="bg-ink text-white">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
+          <p class="gm-label text-white/60" data-reveal>05 / Proof</p>
+          <h2 class="mt-4 text-h2 tracking-tight" data-reveal>{proof.heading}</h2>
+
+          <div class="mt-12 grid border-y border-white/12 lg:grid-cols-2 lg:divide-x lg:divide-white/12">
+            <div class="flex flex-col items-start gap-6 border-b border-white/12 py-12 lg:border-b-0 lg:pr-14" data-reveal>
+              <p class="gm-label text-[10px] text-white/50">onsemi</p>
+              <p class="font-display text-[clamp(3.5rem,8vw,6.5rem)] leading-[0.95] font-extrabold tracking-tighter text-raspberry">
+                <span data-countup data-target="23.15" data-decimals="2">23.15</span>%
+              </p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">of conversions, attributed</p>
+              <p class="max-w-md text-body text-white/70">{onsemiLead}</p>
+              {
+                onsemiCost && (
+                  <div class="w-full border-t border-white/12 pt-6">
+                    <p class="font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-[1] font-extrabold tracking-tighter">
+                      <span class="text-white/30 line-through decoration-raspberry decoration-4">$2,000</span>
+                      <span class="mx-2 text-white/40">to</span>
+                      <span class="text-white">under $1</span>
+                    </p>
+                    <p class="mt-4 max-w-md text-body text-white/70">{onsemiCost}</p>
+                  </div>
+                )
+              }
+            </div>
+
+            <div class="flex flex-col items-start gap-6 py-12 lg:pl-14" data-reveal style="transition-delay: 90ms">
+              <p class="gm-label text-[10px] text-white/50">Country Thunder</p>
+              <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
+                <span class="block text-[clamp(2.5rem,4.5vw,4rem)] text-white">$1 in</span>
+                <span class="block text-[clamp(4rem,8vw,7rem)] text-mint">
+                  $<span data-countup data-target="230">230</span> back
+                </span>
+              </p>
+              <p class="inline-block bg-mint px-3 py-1.5 gm-label text-[10px] text-ink">Ticket sales</p>
+              <p class="max-w-md text-body text-white/70">{thunderPara}</p>
+              {
+                pathOf(proof.content?.[0]?.links) && (
+                  <TextLink href={pathOf(proof.content?.[0]?.links)!} arrow class="text-white hover:text-white/70">
+                    Read the case studies
+                  </TextLink>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Sibling navigation -->
+  <section class="bg-white" aria-label="More of the platform">
+    <div class="mx-auto flex max-w-7xl flex-wrap items-center gap-x-10 gap-y-4 px-6 py-8 lg:px-20">
+      <span class="gm-label text-[10px] text-mist">Keep reading</span>
+      {siblings.map((s) => <TextLink href={s.href} arrow color="ink" underline={false}>{s.label}</TextLink>)}
+    </div>
+  </section>
+
+  <!-- 06 FAQ -->
+  {
+    faq && (
+      <section class="bg-cloud">
+        <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
+          <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
+            <div data-reveal>
+              <p class="gm-label text-slate">06 / FAQ</p>
+              <h2 class="mt-4 text-h2 tracking-tight text-balance">{faq.heading}</h2>
+              {pathOf(faqLink) && (
+                <TextLink href={pathOf(faqLink)!} arrow class="mt-6">
+                  Measurement and validation
+                </TextLink>
+              )}
+            </div>
+            <FAQAccordion items={faqItems} class="lg:mt-2" />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- CTA -->
+  {
+    ctaSec && (
+      <section class="relative overflow-hidden bg-hole text-white">
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_120%,rgb(247_0_78/0.45),transparent_55%)]"
+        />
+        <p
+          aria-hidden="true"
+          class="pointer-events-none absolute -right-8 -bottom-16 font-display text-[clamp(10rem,26vw,22rem)] leading-none font-extrabold tracking-tighter text-white/4 select-none"
+        >
+          GM.
+        </p>
+        <div class="relative mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
+          <h2
+            class="max-w-2xl font-display text-[clamp(2.5rem,5.5vw,4.5rem)] leading-[1.02] font-extrabold tracking-tight"
+            data-reveal
+          >
+            {ctaSec.heading}
+          </h2>
+          <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]" data-reveal style="transition-delay: 100ms">
+            <p class="text-lead text-white/75">{ctaParas[0]?.text}</p>
+            <div class="flex items-start lg:justify-end">
+              {ctaBtn && <Button size="lg" href="/request-a-demo" icon="arrow-right">{ctaBtn.text}</Button>}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <Footer />
+</BaseLayout>
+
+<style is:global>
+  /* Hero load-in */
+  @keyframes gm-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  .rise {
+    animation: gm-rise 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+
+  /* Masked line reveal */
+  .mask {
+    overflow: hidden;
+  }
+  .line-up {
+    transform: translateY(112%);
+    animation: gm-line-up 1s cubic-bezier(0.16, 1, 0.3, 1) 0.12s forwards;
+  }
+  @keyframes gm-line-up {
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* Scroll reveals: only applied when JS is on, so content never hides without it */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+      transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .js [data-reveal].in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Live data, still arriving */
+  @keyframes gm-pulse {
+    50% {
+      opacity: 0.25;
+      transform: scale(2.2);
+    }
+  }
+  .pulse {
+    animation: gm-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes gm-breathe {
+    50% {
+      opacity: 0.55;
+    }
+  }
+  .wireframe {
+    opacity: 0.85;
+    animation: gm-breathe 7s ease-in-out infinite;
+  }
+
+  /* Mock dashboard panels follow the feature you are reading */
+  #mock-dash .panel {
+    border-radius: 0.25rem;
+    border: 1px solid var(--color-line-dark);
+    padding: 0.75rem;
+    transition:
+      opacity 0.45s ease,
+      box-shadow 0.45s ease,
+      border-color 0.45s ease;
+  }
+  .js #mock-dash[data-tracking] .panel {
+    opacity: 0.4;
+  }
+  .js #mock-dash[data-tracking] .panel.active {
+    opacity: 1;
+    border-color: var(--color-mint);
+    box-shadow: 0 0 0 1px var(--color-mint);
+  }
+  .feature-step {
+    transition:
+      opacity 0.4s ease,
+      border-color 0.4s ease;
+  }
+  .js .feature-step.active {
+    border-color: var(--color-mint);
+  }
+  .js .feature-step.active .step-index {
+    color: var(--color-raspberry);
+  }
+
+  /* The graph going the wrong way, drawn as you arrive */
+  .js .declining {
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+  }
+  .js [data-reveal].in .declining {
+    transition: stroke-dashoffset 1.6s cubic-bezier(0.33, 1, 0.68, 1) 0.2s;
+    stroke-dashoffset: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    .pulse,
+    .wireframe {
+      animation: none;
+    }
+    .line-up {
+      animation: none;
+      transform: none;
+    }
+    .js [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .js #mock-dash[data-tracking] .panel,
+    .js #mock-dash[data-tracking] .panel.active {
+      opacity: 1;
+      transition: none;
+    }
+    .js .declining {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+
+<script>
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Scroll reveals
+  const revealer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          revealer.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.15, rootMargin: "0px 0px -40px 0px" },
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => revealer.observe(el));
+
+  // Count-up stats
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
+  const runCount = (el: HTMLElement) => {
+    const target = Number(el.dataset.target ?? "0");
+    const decimals = Number(el.dataset.decimals ?? "0");
+    const duration = 1400;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const value = easeOut(t) * target;
+      el.textContent = decimals
+        ? value.toFixed(decimals)
+        : Math.round(value).toLocaleString("en-US");
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if (!reduceMotion) {
+    const counter = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            runCount(entry.target as HTMLElement);
+            counter.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.6 },
+    );
+    document.querySelectorAll<HTMLElement>("[data-countup]").forEach((el) => counter.observe(el));
+  }
+
+  // The panel matching the feature you are reading lights up. Only engaged on
+  // wide screens where the dashboard is actually pinned beside the list, and
+  // only when motion is welcome, so everywhere else all six stay fully visible.
+  const dash = document.getElementById("mock-dash");
+  const featureSteps = Array.from(document.querySelectorAll<HTMLElement>(".feature-step"));
+  const wide = window.matchMedia("(min-width: 1024px)");
+  if (dash && featureSteps.length && !reduceMotion) {
+    const panels = Array.from(dash.querySelectorAll<HTMLElement>(".panel"));
+    let current = 0;
+
+    const apply = (step: number) => {
+      if (step === current) return;
+      current = step;
+      for (const panel of panels) {
+        panel.classList.toggle("active", Number(panel.dataset.panel ?? "0") === step);
+      }
+      for (const el of featureSteps) {
+        el.classList.toggle("active", Number(el.dataset.step ?? "0") === step);
+      }
+    };
+
+    // Whichever feature sits nearest the middle of the screen is the one being
+    // read, so that is the panel that lights up.
+    const pick = () => {
+      const mid = window.innerHeight * 0.5;
+      let best = 0;
+      let bestGap = Infinity;
+      for (const el of featureSteps) {
+        const box = el.getBoundingClientRect();
+        const gap = Math.abs(box.top + box.height / 2 - mid);
+        if (gap < bestGap) {
+          bestGap = gap;
+          best = Number(el.dataset.step ?? "0");
+        }
+      }
+      apply(best);
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!wide.matches || ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        pick();
+        ticking = false;
+      });
+    };
+
+    const sync = () => {
+      if (wide.matches) {
+        dash.dataset.tracking = "";
+        pick();
+      } else {
+        delete dash.dataset.tracking;
+        current = 0;
+        panels.forEach((p) => p.classList.remove("active"));
+        featureSteps.forEach((el) => el.classList.remove("active"));
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    wide.addEventListener("change", sync);
+    sync();
+  }
+</script>

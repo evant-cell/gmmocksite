@@ -1,0 +1,320 @@
+{
+  "title": "Marketing attribution that doesn't flatter the last click",
+  "seoDescription": "Marketing attribution that doesn't hand every win to the last click. Impression tracking, multi-touch attribution, viewability, impression to conversion.",
+  "sections": [
+    {
+      "type": "meta",
+      "draftLabel": "Measurement and validation page, V2 draft (V1 preserved at platform-measurement-validation.md)",
+      "url": "/platform/measurement-validation",
+      "metaTitle": "Marketing Attribution & Campaign Measurement | Genius Monkey",
+      "notes": "Register note. Guardrails lifted roughly a third toward Loud and Outspoken, Playful held back because the subject is technical and the reader is skeptical. Primary keyword still opens the H1. All four named SEO sections, the definition block, and the verbatim key-term definitions are locked and unchanged from V1."
+    },
+    {
+      "type": "hero",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Last-click attribution hands the trophy to whoever happened to be standing nearest the finish line. It's tidy. It's popular. It's mostly wrong, and it has quietly defunded more good advertising than any bad campaign ever managed. We track the whole path, from the first impression a person saw to the moment they acted, and we report what we find on the weeks it doesn't suit us."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What marketing attribution is",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Marketing attribution is the process of identifying which ad touchpoints contributed to a conversion. Good attribution tells the true story of what's actually working. It stops you from funding channels that look good on paper but don't move the needle. Genius Monkey attributes across every impression, not only the final click."
+        },
+        {
+          "kind": "p",
+          "text": "That definition carries a promise, the true story. The rest of this page is what keeping it costs."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "How good advertising gets cancelled",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Your report says search closed the deal. Search was the last thing they clicked, which is a different sentence. It says nothing about the six weeks of display and streaming that put your name in their head, so at the next planning meeting you cut the six weeks. Next quarter search gets worse and nobody can explain why."
+        },
+        {
+          "kind": "p",
+          "text": "That's the machinery of it. Credit goes to the closer, budget follows credit, and the top of the funnel starves for doing its job invisibly. Nobody decided to kill the campaign that was working. The measurement did it for them."
+        },
+        {
+          "kind": "p",
+          "text": "The window makes it worse. A 5 to 10 day attribution window declares victory or defeat before most real buyers have made up their minds, so everything they do after day ten happens off the books."
+        },
+        {
+          "kind": "p",
+          "text": "And underneath both sits the quietest problem. Served is not seen. An impression that loaded below the fold for a bot counts the same as one a person actually watched, right up until somebody checks."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Multi-touch attribution, from impression to conversion",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Multi-touch attribution assigns conversion credit across every ad interaction on the path to purchase, rather than giving it all to the final click. It connects the display ad someone saw three weeks ago to the search they ran yesterday, so budget decisions reflect the whole journey instead of its last step."
+        },
+        {
+          "kind": "p",
+          "text": "In practice, we track conversion type, device, interaction level, timing, and the referral path, across every screen a buyer uses. Conversion tracking that stops at one device loses the thread the moment someone moves from phone to laptop, which is most buyers. Cross-device identity is what keeps the path whole.",
+          "links": [
+            "/platform/device-agnostic-targeting"
+          ]
+        },
+        {
+          "kind": "p",
+          "text": "Ashley Furniture's Senior Marketing Specialist, Rex Debord, put a number on it. More than 40% of their customers take 90 days to convert, so a 5 to 10 day attribution plan just didn't make sense. Their buyers took three months. Their reporting window was ten days. Everything after day ten was invisible, which is a polite way of saying most of it.",
+          "links": [
+            "/programmatic-case-studies",
+            "Ashley Furniture case study"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Impression tracking, not just click tracking",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Ad impression tracking records the ads a person was served, not only the ones they clicked, and connects those impressions to what the person later did. It's how an ad that never earned a click still gets counted when it demonstrably moved someone toward a conversion."
+        },
+        {
+          "kind": "p",
+          "text": "Most display ads are never clicked, and plenty of the people who saw them show up weeks later through search or direct. An impression that never earned a click can still be the reason someone converted three weeks on, and a model that can't see it will happily recommend switching it off. That recommendation gets followed every day, in planning meetings full of smart people looking at confident, incomplete numbers."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Viewability and validation",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Ad viewability is a measurement standard confirming that an ad was actually seen by a real person, not just technically served. We optimize for real eyes, not bot traffic or ads buried below the fold."
+        },
+        {
+          "kind": "p",
+          "text": "Served is not seen. Attribution is only honest if the inventory underneath it is real, because a beautiful attribution model sitting on fraudulent impressions is just a well-organized lie. So impressions get verified before they get credited, and the ones that fail don't make it into your numbers.",
+          "links": [
+            "Ad Fraud & Brand Safety cluster"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "ROAS, MER, CPM, and which one is lying to you",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Every metric answers one question and gets misused for the others. Here's what each is worth, and where it misleads."
+        }
+      ],
+      "subsections": [
+        {
+          "heading": "ROAS",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Return on ad spend, the revenue earned for every dollar spent on advertising. We track ROAS obsessively because it's the most honest measure of whether advertising is actually working. It misleads when it's read per channel, because a channel that closes deals can post a beautiful ROAS while harvesting demand that display and streaming created. Country Thunder's 2300% ROAS, $230 for every $1 in, meant something because it was measured across the whole path."
+            }
+          ],
+          "links": [
+            "/glossary ROAS entry",
+            "Country Thunder case study"
+          ]
+        },
+        {
+          "heading": "MER",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Marketing efficiency ratio, total revenue divided by total marketing spend. It's the whole-business sanity check, and it can't flatter one channel because it doesn't look at channels. That's also its limit. MER tells you the machine is working, and nothing about which part. The full MER vs ROAS breakdown is in the glossary."
+            }
+          ],
+          "links": [
+            "/glossary MER entry",
+            "MER vs ROAS post"
+          ]
+        },
+        {
+          "heading": "CPM",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Cost per mille, the cost per 1,000 ad impressions. It's a baseline metric for comparing media costs across channels, useful for planning, but never the whole story. We look at CPM in context of real conversion data, not in isolation. Cheap CPMs are the easiest number in advertising to win, and the easiest to win dishonestly. Buy junk inventory nobody sees and your CPM looks great, right up until you check what it bought. If you're comparing programmatic CPM trends by channel, our published benchmarks are on the pricing page."
+            }
+          ],
+          "links": [
+            "/pricing",
+            "/glossary CPM entry"
+          ]
+        },
+        {
+          "heading": "CPA",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Cost per acquisition, a pricing model that charges only when a desired action, a purchase, form fill, or signup, is completed. You pay for results, not just exposure. A lower CPA means more customers for the same budget. It misleads only when it becomes the only number, because the cheapest conversions are not always the buyers worth having."
+            }
+          ],
+          "links": [
+            "/glossary CPA entry"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "We shipped this in 2016, while the industry argued about last click",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Pixel Monkey launched in 2016, and we still describe it as the industry's first full programmatic attribution and performance tracking system. That's not a feature we added when measurement became fashionable."
+        },
+        {
+          "kind": "p",
+          "text": "Genius Monkey has run its own platform since 2009 and helped coin the term programmatic advertising in 2010. A programmatic attribution platform is the thing the company was built on. The measurement came first, and everything else had to live up to it."
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "What honest measurement changes",
+      "content": [
+        {
+          "kind": "p",
+          "text": "A university discovered that 63% of its conversions were taking more than 90 days. Short-window reporting had never once shown them that. Once they could see it, they added OTT, and the share of conversions taking over 90 days fell to 35%, while conversions arriving within two days rose from 5% to 22.6%. The campaign didn't get better. The measurement did, and then the campaign followed."
+        },
+        {
+          "kind": "p",
+          "text": "The pattern repeats. GM-attributed placements accounted for 23.15% of onsemi's conversions, a figure precise enough to plan around. Freed-Hardeman University watched its cost per conversion fall 89% in nine months.",
+          "links": [
+            "/programmatic-case-studies",
+            "university OTT case study",
+            "onsemi case study",
+            "Freed-Hardeman case study"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "heading": "Questions buyers actually ask",
+      "content": [],
+      "subsections": [
+        {
+          "heading": "What is marketing attribution?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Marketing attribution is the process of identifying which ad touchpoints contributed to a conversion. Good attribution tells the true story of what's actually working. It stops you from funding channels that look good on paper but don't move the needle. Without it, budget flows to whatever happened to touch the buyer last."
+            }
+          ]
+        },
+        {
+          "heading": "What is multi-touch attribution?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Multi-touch attribution splits conversion credit across every ad interaction on the path to purchase, instead of giving it all to the last click. It recognizes that the display ad from week one and the streaming spot from week four both moved the buyer, so budget decisions can reflect the whole journey."
+            }
+          ]
+        },
+        {
+          "heading": "How is ad viewability measured?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Viewability is a measurement standard confirming that an ad was actually seen by a real person, not just technically served. In practice that means verifying the ad rendered on screen, in view, for a real human, and filtering out bot traffic and ads buried below the fold before they're counted."
+            }
+          ]
+        },
+        {
+          "heading": "What is the difference between MER and ROAS?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "ROAS measures revenue per advertising dollar for a specific campaign or channel. MER, marketing efficiency ratio, divides total revenue by total marketing spend across everything. ROAS tells you what a given channel returned, MER tells you whether the whole program pays for itself. Strong measurement reads them together.",
+              "links": [
+                "/glossary"
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "How long is your attribution window?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Long enough to match how your buyers actually behave. Fixed 5 to 10 day windows write off slow buyers. One university client found that 63% of its conversions took more than 90 days, which a short window would never have shown. We set the window to the buying cycle, not to a default."
+            }
+          ]
+        },
+        {
+          "heading": "Can I check your attribution against my own analytics?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "Yes. The dashboard includes full Google Analytics integration, so our attribution sits next to a data source we don't control. You can compare the two whenever you want, without asking us first. If they disagree, we'd rather find out why with you than present numbers you can't verify.",
+              "links": [
+                "/platform/the-dashboard"
+              ]
+            }
+          ]
+        },
+        {
+          "heading": "Do you track individual people?",
+          "content": [
+            {
+              "kind": "p",
+              "text": "No. Our measurement works on aggregated behavioral data through established partnerships, not files on individual people. For the people who see the ads, the goal is relevant advertising, ads that make sense, and a measurement system that counts outcomes without building a profile of anyone's life."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "Bring us the report you already don't believe",
+      "content": [
+        {
+          "kind": "p",
+          "text": "Bring us the report you already don't believe. We'll tell you what it left out, and you can do whatever you like with that. Request a demo."
+        },
+        {
+          "kind": "cta",
+          "text": "Request a demo"
+        }
+      ]
+    },
+    {
+      "type": "draftNotes",
+      "items": [
+        "Voice cues used: Loud and Outspoken up hard, Playful held back, say-it-plainly still governing the technical explanations. Practices criticized, no company named. Contractions free.",
+        "Intentional guardrail exception: \"It's tidy. It's popular. It's mostly wrong.\" in the hero is the anaphoric triad V1 cut to obey the service-page rule. Restored deliberately because the rhythm is the argument. Flag as an exception, not an oversight.",
+        "Guesses flagged for the capture loop: \"quietly defunded more good advertising than any bad campaign ever managed\" (strongest line in the V2 set), \"How good advertising gets cancelled\", \"Nobody decided to kill the campaign that was working. The measurement did it for them.\", \"which is a polite way of saying most of it\", \"a well-organized lie\", \"which one is lying to you\", \"confident, incomplete numbers\", \"The campaign didn't get better. The measurement did, and then the campaign followed.\" (the page's thesis, best pull-quote candidate), and the closing CTA.",
+        "Named SEO sections all present and locked, identical placement to V1: multi-touch attribution (H2), impression tracking (exact-match H2 with \"ad impression tracking\" worked in), viewability (\"ad viewability\" opens the direct answer), MER vs ROAS and programmatic CPM trends (metrics section). \"Marketing attribution\" opens the H1 and sits in the first 100 words; \"conversion tracking\" and \"programmatic attribution platform\" each worked in once.",
+        "Verbatim GM key-term definitions preserved exactly as in V1: attribution (definition block), viewability, CPM, CPA. ROAS kept close to verbatim with Country Thunder's real 2300% replacing the banned illustrative \"$1 to $5, 5x\" arithmetic.",
+        "\"Industry's first\" attributed as GM's claim (\"we still describe it as\"). The outline notes V2's louder register makes an unattributed version riskier, so attribution held even here.",
+        "Facts: identical set to V1, all from brand/facts.md and case-study-proof.md. No new claims in V2.",
+        "AEO: definition block, direct-answer openers, and all seven FAQ answers identical to V1 by design.",
+        "Word count: page copy runs ~1,690 words against the outline's 1,100 to 1,400 target, same structural reason as V1 (locked sections plus seven FAQs), plus V2's longer hero and problem sections. Flagged rather than cut silently.",
+        "OPEN ITEM (blocking publish): attribution window length, same as V1. The FAQ drafts around it and needs the real number or confirmation."
+      ]
+    }
+  ]
+}
