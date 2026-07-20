@@ -7,6 +7,8 @@ import Button from "../components/ui/Button.astro";
 import TextLink from "../components/ui/TextLink.astro";
 import Icon from "../components/ui/Icon.astro";
 import FAQAccordion from "../components/blocks/FAQAccordion.astro";
+import DemoForm from "../components/blocks/DemoForm.astro";
+import ChatWidget from "../components/blocks/ChatWidget.astro";
 
 const page = await getEntry("pages", "home");
 if (!page) throw new Error("Missing content: src/content/pages/home.json");
@@ -35,7 +37,6 @@ const [answer, receipts, why, engagement] = proseSecs;
 const heroParas = hero?.content?.filter((c) => c.kind === "p") ?? [];
 const heroCta = hero?.content?.find((c) => c.kind === "cta");
 const ctaParas = ctaSec?.content?.filter((c) => c.kind === "p") ?? [];
-const ctaBtn = ctaSec?.content?.find((c) => c.kind === "cta");
 
 const faqItems = (faq?.subsections ?? []).map((s, i) => ({
   question: s.heading,
@@ -97,6 +98,19 @@ const navLinks = [
   { label: "Resources", href: "#" },
 ];
 
+// Chat concierge: chip labels are shorthand, answers are the FAQ copy verbatim
+const chatLabels = ["DSP or agency?", "What does it cost?", "Which channels?", "Is it working?"];
+const chatLinks: Record<number, { href: string; linkLabel: string }> = {
+  1: { href: "/pricing", linkLabel: "See published rates" },
+  3: { href: "/platform/measurement-validation", linkLabel: "How we measure" },
+};
+const chatItems = (faq?.subsections ?? []).map((s, i) => ({
+  label: chatLabels[i] ?? s.heading,
+  text: s.content?.[0]?.text ?? "",
+  ...chatLinks[i],
+}));
+const chatIntro = "Done guessing? Pick a question, or request a demo.";
+
 const siteUrl = Astro.site?.href ?? "https://geniusmonkey.com/";
 const pageUrl = siteUrl;
 
@@ -141,7 +155,7 @@ const jsonLd = {
 <BaseLayout title={meta?.metaTitle ?? data.title} description={data.seoDescription} path="/">
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
   <script is:inline>document.documentElement.classList.add("js");</script>
-  <Navbar links={navLinks} class="bg-hole!" />
+  <Navbar links={navLinks} cta={{ label: "Request a demo", href: "#demo" }} class="bg-hole!" />
 
   <!-- Hero -->
   <section id="hero" class="relative isolate flex flex-col overflow-hidden bg-hole text-white">
@@ -186,7 +200,7 @@ const jsonLd = {
       <div class="mt-12 grid gap-10 md:mt-16 lg:grid-cols-[minmax(0,36rem)_1fr]">
         <p class="rise text-lead text-white/70" style="animation-delay: 420ms">{heroParas[0]?.text}</p>
         <div class="rise flex flex-wrap items-center gap-x-8 gap-y-5 self-start lg:justify-end" style="animation-delay: 520ms">
-          {heroCta && <Button id="hero-cta" size="lg" href="/request-a-demo" icon="arrow-right">{heroCta.text}</Button>}
+          {heroCta && <Button id="hero-cta" size="lg" href="#demo" icon="arrow-right">{heroCta.text}</Button>}
           <TextLink href="#receipts" class="text-white hover:text-white/70">See the receipts</TextLink>
         </div>
       </div>
@@ -403,6 +417,7 @@ const jsonLd = {
             <p class="gm-label text-slate">05 / Process</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{engagement.heading}</h2>
             <p class="mt-6 max-w-xl text-lead text-slate">{engProcess?.text}</p>
+            <DemoForm uid="mid" theme="light" layout="row" class="mt-10 max-w-xl" />
           </div>
           <div class="flex flex-col justify-between gap-8 border border-line p-8 md:p-10" data-reveal style="transition-delay: 120ms">
             <p class="gm-label text-[10px] text-slate">Cenvar Roofing &amp; Solar</p>
@@ -450,7 +465,7 @@ const jsonLd = {
   <!-- Done guessing -->
   {
     ctaSec && (
-      <section class="relative overflow-hidden bg-hole text-white">
+      <section id="demo" class="relative overflow-hidden bg-hole text-white">
         <div
           aria-hidden="true"
           class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_120%,rgb(247_0_78/0.45),transparent_55%)]"
@@ -467,9 +482,7 @@ const jsonLd = {
           </h2>
           <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]" data-reveal style="transition-delay: 100ms">
             <p class="text-lead text-white/75">{ctaParas[0]?.text}</p>
-            <div class="flex items-start lg:justify-end">
-              {ctaBtn && <Button size="lg" href="/request-a-demo" icon="arrow-right">{ctaBtn.text}</Button>}
-            </div>
+            <DemoForm uid="cta" theme="dark" layout="stack" class="w-full max-w-md lg:justify-self-end" />
           </div>
         </div>
       </section>
@@ -477,9 +490,40 @@ const jsonLd = {
   }
 
   <Footer />
+
+  <!-- Sticky CTA bar: slides in after the hero, hides at the demo section -->
+  <div
+    id="sticky-cta"
+    inert
+    class="fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-white/10 bg-hole/95 backdrop-blur transition-transform duration-300"
+  >
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3 lg:px-20">
+      <p class="hidden font-display text-lg font-extrabold tracking-tight text-white sm:block">
+        We solve advertising<span class="text-raspberry">.</span>
+      </p>
+      <p class="gm-label hidden text-[10px] text-white/55 md:block">No long-term contracts</p>
+      <div class="flex grow items-center justify-end gap-3 sm:grow-0">
+        <Button size="md" href="#demo" icon="arrow-right" class="grow sm:grow-0">Request a demo</Button>
+        <button
+          type="button"
+          id="sticky-dismiss"
+          aria-label="Dismiss"
+          class="grid size-9 shrink-0 place-items-center text-white/60 transition-colors hover:text-white"
+        >
+          <Icon name="close" size={16} />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ChatWidget items={chatItems} intro={chatIntro} />
 </BaseLayout>
 
 <style is:global>
+  #sticky-cta.show {
+    translate: 0 0;
+  }
+
   /* Hero load-in */
   @keyframes gm-rise {
     from {
@@ -777,6 +821,69 @@ const jsonLd = {
       }, 40);
     }, 750);
   }
+
+  // Sticky CTA bar: in view after the hero, gone at the demo form, dismissible
+  const bar = document.getElementById("sticky-cta");
+  const demoSection = document.getElementById("demo");
+  const heroForBar = document.getElementById("hero");
+  if (bar && demoSection && heroForBar) {
+    let pastHero = false;
+    let demoOnScreen = false;
+    let dismissed = false;
+    const update = () => {
+      const show = pastHero && !demoOnScreen && !dismissed;
+      bar.classList.toggle("show", show);
+      if (show) bar.removeAttribute("inert");
+      else bar.setAttribute("inert", "");
+      document.body.classList.toggle("gm-bar-up", show);
+    };
+    new IntersectionObserver(([entry]) => {
+      pastHero = !entry.isIntersecting;
+      update();
+    }).observe(heroForBar);
+    new IntersectionObserver(([entry]) => {
+      demoOnScreen = entry.isIntersecting;
+      update();
+    }).observe(demoSection);
+    document.getElementById("sticky-dismiss")?.addEventListener("click", () => {
+      dismissed = true;
+      update();
+    });
+  }
+
+  // #demo links: eased scroll to the closing form, then focus its email field.
+  // Hand-rolled instead of CSS smooth scroll so focus timing is deterministic.
+  const demoTarget = document.getElementById("demo");
+  const scrollToY = (top: number) =>
+    new Promise<void>((resolve) => {
+      if (reduceMotion) {
+        window.scrollTo(0, top);
+        resolve();
+        return;
+      }
+      const from = window.scrollY;
+      const dist = top - from;
+      const duration = Math.min(1100, 350 + Math.abs(dist) * 0.12);
+      const t0 = performance.now();
+      const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+      const step = (now: number) => {
+        const t = Math.min((now - t0) / duration, 1);
+        window.scrollTo(0, from + dist * ease(t));
+        if (t < 1) requestAnimationFrame(step);
+        else resolve();
+      };
+      requestAnimationFrame(step);
+    });
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#demo"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      if (!demoTarget) return;
+      e.preventDefault();
+      history.pushState(null, "", "#demo");
+      scrollToY(demoTarget.getBoundingClientRect().top + window.scrollY).then(() => {
+        document.getElementById("cta-email")?.focus({ preventScroll: true });
+      });
+    });
+  });
 
   // Magnetic CTA: the demo button leans toward the cursor
   const cta = document.getElementById("hero-cta");
