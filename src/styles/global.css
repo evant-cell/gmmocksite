@@ -12,6 +12,13 @@
   --font-display: "Bricolage Grotesque Variable", "Arial Black", sans-serif;
   --font-label: "Unbounded Variable", sans-serif;
   --font-sans: "Outfit Variable", "Helvetica Neue", sans-serif;
+  /* Flexible variable font (wght, wdth, opsz, slnt, GRAD, ROND axes) - not tied to a fixed
+     role like the three above. opsz lets the browser pick optically-correct letterforms per
+     rendered size, so this one family can stand in for display, heading, or body duty wherever
+     a component opts in. wght/wdth map to font-weight/font-stretch; slnt/GRAD/ROND have no
+     standard CSS property and need font-variation-settings, e.g.
+     [font-variation-settings:'GRAD'_60,'ROND'_40]. */
+  --font-flex: "Google Sans Flex Variable", "Helvetica Neue", sans-serif;
 
   /* Primary */
   --color-raspberry: #f7004e;
