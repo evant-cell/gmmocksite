@@ -1,0 +1,233 @@
+---
+/**
+ * Mock chat concierge: floating launcher + scripted panel. No backend, no free
+ * text input; visitors pick from question chips whose answers are the page's
+ * own FAQ copy (passed in as props), plus a demo-request email capture.
+ */
+import Icon from "../ui/Icon.astro";
+
+interface ChatItem {
+  label: string;
+  text: string;
+  href?: string;
+  linkLabel?: string;
+}
+
+interface Props {
+  items: ChatItem[];
+  intro: string;
+}
+
+const { items, intro } = Astro.props;
+---
+
+<div class="gm-chat-root fixed right-5 bottom-5 z-50">
+  <section
+    id="gm-chat-panel"
+    hidden
+    aria-label="Chat"
+    class="absolute right-0 bottom-[4.5rem] flex h-[min(28rem,calc(100dvh-8rem))] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden border border-line bg-white shadow-2xl"
+  >
+    <header class="flex items-center justify-between bg-hole px-5 py-4 text-white">
+      <div>
+        <p class="gm-label text-xs">Genius Monkey</p>
+        <p class="mt-1 text-caption font-normal text-white/60">Questions buyers actually ask</p>
+      </div>
+      <button
+        type="button"
+        id="gm-chat-close"
+        aria-label="Close chat"
+        class="grid size-8 place-items-center text-white/70 transition-colors hover:text-white"
+      >
+        <Icon name="close" size={18} />
+      </button>
+    </header>
+    <div id="gm-chat-msgs" class="flex flex-1 flex-col gap-3 overflow-y-auto bg-cloud/60 p-4"></div>
+  </section>
+
+  <button
+    type="button"
+    id="gm-chat-launcher"
+    aria-expanded="false"
+    aria-controls="gm-chat-panel"
+    aria-label="Open chat"
+    class="grid size-14 place-items-center rounded-full bg-raspberry text-white shadow-lg shadow-hole/30 transition-colors hover:bg-raspberry-deep"
+  >
+    <span data-chat-open><Icon name="message" size={24} /></span>
+    <span data-chat-shut hidden><Icon name="close" size={24} /></span>
+  </button>
+</div>
+
+<script type="application/json" id="gm-chat-data" set:html={JSON.stringify({ items, intro })} />
+
+<style is:global>
+  body.gm-bar-up .gm-chat-root {
+    bottom: 5.75rem;
+  }
+  .gm-chat-root {
+    transition: bottom 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .gm-chat-dots span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: currentColor;
+    animation: gm-chat-dot 1s infinite both;
+  }
+  .gm-chat-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .gm-chat-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes gm-chat-dot {
+    0%,
+    60%,
+    100% {
+      opacity: 0.25;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gm-chat-dots span {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  type ChatItem = { label: string; text: string; href?: string; linkLabel?: string };
+  const dataEl = document.getElementById("gm-chat-data");
+  const launcher = document.getElementById("gm-chat-launcher");
+  const panel = document.getElementById("gm-chat-panel");
+  const msgs = document.getElementById("gm-chat-msgs");
+  const closeBtn = document.getElementById("gm-chat-close");
+
+  if (dataEl && launcher && panel && msgs && closeBtn) {
+    const { items, intro } = JSON.parse(dataEl.textContent ?? "{}") as { items: ChatItem[]; intro: string };
+    let booted = false;
+    const asked = new Set<string>();
+
+    const scrollDown = () => {
+      msgs.scrollTop = msgs.scrollHeight;
+    };
+
+    const bubble = (who: "bot" | "user") => {
+      const el = document.createElement("div");
+      el.className =
+        who === "bot"
+          ? "max-w-[85%] self-start border border-line bg-white p-3 text-sm text-ink"
+          : "max-w-[85%] self-end bg-ink p-3 text-sm text-white";
+      msgs.appendChild(el);
+      scrollDown();
+      return el;
+    };
+
+    const typing = () => {
+      const el = bubble("bot");
+      el.innerHTML = '<span class="gm-chat-dots inline-flex gap-1 text-slate"><span></span><span></span><span></span></span>';
+      return el;
+    };
+
+    const say = (item: { text: string; href?: string; linkLabel?: string }, after?: () => void) => {
+      const t = typing();
+      window.setTimeout(() => {
+        t.textContent = item.text;
+        if (item.href) {
+          const a = document.createElement("a");
+          a.href = item.href;
+          a.textContent = item.linkLabel ?? item.href;
+          a.className = "mt-2 block font-semibold text-raspberry underline underline-offset-2";
+          t.appendChild(a);
+        }
+        scrollDown();
+        after?.();
+      }, 700);
+    };
+
+    let chips: HTMLDivElement | null = null;
+
+    const renderChips = () => {
+      chips?.remove();
+      chips = document.createElement("div");
+      chips.className = "mt-1 flex flex-wrap gap-2";
+      for (const item of items) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = item.label;
+        b.className =
+          "gm-label border px-3 py-2 text-[10px] transition-colors " +
+          (asked.has(item.label)
+            ? "border-line text-mist"
+            : "border-ink/25 text-ink hover:border-raspberry hover:text-raspberry");
+        b.addEventListener("click", () => {
+          asked.add(item.label);
+          bubble("user").textContent = item.label;
+          chips?.remove();
+          say(item, renderChips);
+        });
+        chips.appendChild(b);
+      }
+      const demo = document.createElement("button");
+      demo.type = "button";
+      demo.textContent = "Request a demo";
+      demo.className =
+        "gm-label bg-raspberry px-3 py-2 text-[10px] text-white transition-colors hover:bg-raspberry-deep";
+      demo.addEventListener("click", () => {
+        bubble("user").textContent = "Request a demo";
+        chips?.remove();
+        demoForm();
+      });
+      chips.appendChild(demo);
+      msgs.appendChild(chips);
+      scrollDown();
+    };
+
+    const demoForm = () => {
+      const t = typing();
+      window.setTimeout(() => {
+        t.textContent = "Drop your work email and a real expert will take it from there.";
+        const form = document.createElement("form");
+        form.className = "mt-3 flex gap-2";
+        form.innerHTML =
+          '<input type="email" required placeholder="you@company.com" aria-label="Work email"' +
+          ' class="h-10 w-full min-w-0 border-2 border-line px-3 text-sm font-medium outline-none transition-colors focus:border-cobalt" />' +
+          '<button type="submit" class="gm-label h-10 shrink-0 bg-raspberry px-4 text-[10px] text-white transition-colors hover:bg-raspberry-deep">Send</button>';
+        // Mock submit: no endpoint yet, mirrors the page forms
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          form.remove();
+          say(
+            { text: "Got it. A real expert will follow up and walk you through the platform with your numbers in it." },
+            renderChips,
+          );
+        });
+        t.appendChild(form);
+        scrollDown();
+      }, 700);
+    };
+
+    const setOpen = (open: boolean) => {
+      panel.hidden = !open;
+      launcher.setAttribute("aria-expanded", String(open));
+      launcher.setAttribute("aria-label", open ? "Close chat" : "Open chat");
+      launcher.querySelector<HTMLElement>("[data-chat-open]")!.hidden = open;
+      launcher.querySelector<HTMLElement>("[data-chat-shut]")!.hidden = !open;
+      if (open && !booted) {
+        booted = true;
+        say({ text: intro }, renderChips);
+      }
+    };
+
+    launcher.addEventListener("click", () => setOpen(panel.hidden));
+    closeBtn.addEventListener("click", () => setOpen(false));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !panel.hidden) setOpen(false);
+    });
+  }
+</script>

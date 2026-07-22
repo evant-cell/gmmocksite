@@ -1,0 +1,118 @@
+---
+/**
+ * Short demo-request form: work email + optional budget range, mock submit.
+ * No backend wired yet; the submit handler swaps in a success state client-side.
+ * Copy reuses approved home.json lines ("a real expert", "your numbers in it",
+ * "No long-term contracts"). Never add a phone field here.
+ */
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+
+interface Props {
+  /** unique per instance, prefixes input ids so the form can repeat on a page */
+  uid: string;
+  theme?: "dark" | "light";
+  /** stack: fields full-width in a column. row: fields side by side on sm+ */
+  layout?: "stack" | "row";
+  class?: string;
+}
+
+const { uid, theme = "light", layout = "stack", class: className = "" } = Astro.props;
+const dark = theme === "dark";
+
+const labelCls = ["gm-label", dark ? "text-white/70" : "text-ink"];
+const fieldCls = [
+  "h-13 w-full border-2 px-4 font-medium outline-none transition-colors",
+  dark
+    ? "border-white/25 bg-white/10 text-white placeholder:text-white/40 focus:border-raspberry"
+    : "border-line bg-white text-ink placeholder:text-mist focus:border-cobalt",
+];
+
+const budgets = ["Under $5,000", "$5,000 to $15,000", "$15,000 to $50,000", "$50,000 or more"];
+---
+
+<div class:list={["gm-demo-form", className]}>
+  <form data-demo-form class:list={["grid gap-4", layout === "row" && "sm:grid-cols-2"]}>
+    <div class="flex flex-col gap-2">
+      <label for={`${uid}-email`} class:list={labelCls}>Work email</label>
+      <input
+        id={`${uid}-email`}
+        name="email"
+        type="email"
+        required
+        placeholder="you@company.com"
+        autocomplete="email"
+        class:list={fieldCls}
+      />
+    </div>
+    <div class="flex flex-col gap-2">
+      <label for={`${uid}-budget`} class:list={labelCls}>Monthly budget</label>
+      <div class="relative">
+        <select
+          id={`${uid}-budget`}
+          name="budget"
+          class:list={["appearance-none pr-11 [&>option]:text-ink", fieldCls]}
+        >
+          <option value="">Pick a range</option>
+          {budgets.map((b) => <option value={b}>{b}</option>)}
+        </select>
+        <Icon
+          name="chevron-down"
+          size={18}
+          class:list={[
+            "pointer-events-none absolute top-1/2 right-4 -translate-y-1/2",
+            dark ? "text-white/70" : "text-ink",
+          ]}
+        />
+      </div>
+    </div>
+    <div class:list={[layout === "row" && "sm:col-span-2"]}>
+      <Button type="submit" size="lg" icon="arrow-right" class="w-full sm:w-auto">Request a demo</Button>
+    </div>
+  </form>
+
+  <p
+    data-demo-note
+    class:list={[
+      "mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption font-normal",
+      dark ? "text-white/55" : "text-slate",
+    ]}
+  >
+    <Icon name="check" size={14} class="text-mint" />
+    <span>No long-term contracts</span>
+    <Icon name="check" size={14} class="ml-4 text-mint" />
+    <span>Published rates</span>
+  </p>
+
+  <div
+    data-demo-success
+    class:list={["hidden items-start gap-4 border-2 p-6", dark ? "border-white/20" : "border-line"]}
+  >
+    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-raspberry text-white">
+      <Icon name="check" size={20} />
+    </span>
+    <div>
+      <p class:list={["gm-label", dark ? "text-white" : "text-ink"]}>Request received</p>
+      <p class:list={["mt-2 text-body", dark ? "text-white/75" : "text-slate"]}>
+        A real expert will follow up and walk you through the platform with your numbers in it.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mock submit: no endpoint yet. When one exists, POST the FormData here.
+  document.querySelectorAll<HTMLFormElement>("[data-demo-form]").forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const root = form.closest<HTMLElement>(".gm-demo-form");
+      if (!root) return;
+      form.style.display = "none";
+      root.querySelector<HTMLElement>("[data-demo-note]")!.style.display = "none";
+      const success = root.querySelector<HTMLElement>("[data-demo-success]")!;
+      success.style.display = "flex";
+      success.setAttribute("tabindex", "-1");
+      success.focus({ preventScroll: true });
+    });
+  });
+</script>

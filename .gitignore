@@ -22,6 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+GM Section Designss/
 
 # Ignore hidden macOS folder icon files
 Icon[[:cntrl:]]

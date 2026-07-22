@@ -111,4 +111,13 @@
   .gm-label {
     @apply font-label text-[11px] font-semibold uppercase tracking-[0.08em];
   }
+
+  /* Section eyebrow: short raspberry rule then the label, per the section mockups */
+  .gm-eyebrow {
+    @apply flex items-center gap-3 font-label text-[11px] font-semibold tracking-[0.08em] uppercase;
+  }
+  .gm-eyebrow::before {
+    content: "";
+    @apply h-px w-6 shrink-0 bg-raspberry;
+  }
 }

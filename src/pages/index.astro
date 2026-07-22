@@ -7,6 +7,8 @@ import Button from "../components/ui/Button.astro";
 import TextLink from "../components/ui/TextLink.astro";
 import Icon from "../components/ui/Icon.astro";
 import FAQAccordion from "../components/blocks/FAQAccordion.astro";
+import DemoForm from "../components/blocks/DemoForm.astro";
+import ChatWidget from "../components/blocks/ChatWidget.astro";
 
 const page = await getEntry("pages", "home");
 if (!page) throw new Error("Missing content: src/content/pages/home.json");
@@ -35,7 +37,6 @@ const [answer, receipts, why, engagement] = proseSecs;
 const heroParas = hero?.content?.filter((c) => c.kind === "p") ?? [];
 const heroCta = hero?.content?.find((c) => c.kind === "cta");
 const ctaParas = ctaSec?.content?.filter((c) => c.kind === "p") ?? [];
-const ctaBtn = ctaSec?.content?.find((c) => c.kind === "cta");
 
 const faqItems = (faq?.subsections ?? []).map((s, i) => ({
   question: s.heading,
@@ -85,10 +86,10 @@ const tickerItems = [
   "Founded in 2009",
 ];
 
-// Sentence two ends on "guessing." which gets the perpetual scramble treatment
-const tbWords = titleB.split(" ");
-const tbLast = tbWords.pop() ?? "";
-const tbRest = tbWords.join(" ");
+// Sentence one gets the marker treatment: the last word sits on a raspberry block
+const taWords = titleA.split(" ");
+const taLast = taWords.pop() ?? "";
+const taRest = taWords.join(" ");
 
 const navLinks = [
   { label: "Platform", href: "/platform" },
@@ -96,6 +97,19 @@ const navLinks = [
   { label: "Pricing", href: "#" },
   { label: "Resources", href: "#" },
 ];
+
+// Chat concierge: chip labels are shorthand, answers are the FAQ copy verbatim
+const chatLabels = ["DSP or agency?", "What does it cost?", "Which channels?", "Is it working?"];
+const chatLinks: Record<number, { href: string; linkLabel: string }> = {
+  1: { href: "/pricing", linkLabel: "See published rates" },
+  3: { href: "/platform/measurement-validation", linkLabel: "How we measure" },
+};
+const chatItems = (faq?.subsections ?? []).map((s, i) => ({
+  label: chatLabels[i] ?? s.heading,
+  text: s.content?.[0]?.text ?? "",
+  ...chatLinks[i],
+}));
+const chatIntro = "Done guessing? Pick a question, or request a demo.";
 
 const siteUrl = Astro.site?.href ?? "https://geniusmonkey.com/";
 const pageUrl = siteUrl;
@@ -141,67 +155,124 @@ const jsonLd = {
 <BaseLayout title={meta?.metaTitle ?? data.title} description={data.seoDescription} path="/">
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
   <script is:inline>document.documentElement.classList.add("js");</script>
-  <Navbar links={navLinks} class="bg-hole!" />
+  <Navbar theme="light" links={navLinks} cta={{ label: "Request a demo", href: "#demo" }} />
 
-  <!-- Hero -->
-  <section id="hero" class="relative isolate flex flex-col overflow-hidden bg-hole text-white">
+  <!-- Hero: light, product-forward. Graph-paper field, marker-highlighted headline,
+       floating published-rates card as the "product shot". -->
+  <section id="hero" class="relative isolate flex flex-col overflow-hidden bg-white text-ink">
+    <!-- Graph paper -->
     <div
       aria-hidden="true"
-      class="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(90deg,rgb(255_255_255/0.03)_0_1px,transparent_1px_160px)]"
+      class="pointer-events-none absolute inset-0 bg-[linear-gradient(rgb(16_19_26/0.045)_1px,transparent_1px),linear-gradient(90deg,rgb(16_19_26/0.045)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_60%_35%,black_35%,transparent_78%)]"
     >
     </div>
-    <div
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_-15%,rgb(247_0_78/0.2),transparent_55%)]"
-    >
-    </div>
-    <!-- The bidstream: a live auction network, won bids fire in raspberry -->
-    <canvas id="bidnet" class="pointer-events-none absolute inset-0 size-full" aria-hidden="true"></canvas>
 
     <div
-      class="relative z-10 mx-auto flex min-h-[calc(100dvh-9.5rem)] w-full max-w-7xl grow flex-col justify-center px-6 py-16 lg:px-20"
+      class="relative z-10 mx-auto grid w-full max-w-7xl grow content-center gap-14 px-6 py-16 md:py-20 lg:min-h-[calc(100dvh-9.5rem)] lg:grid-cols-[1.25fr_1fr] lg:items-center lg:gap-10 lg:px-20"
     >
-      <p class="gm-label rise text-raspberry">Programmatic Advertising</p>
+      <div>
+        <p class="gm-eyebrow rise text-slate">Programmatic Advertising</p>
 
-      <h1 class="mt-7 font-display font-extrabold tracking-tight">
-        <span class="mask block">
-          <span class="line-up block text-[clamp(3.1rem,8.75vw,8rem)] leading-[0.94]">
-            {titleA.endsWith(".") ? <>{titleA.slice(0, -1)}<span class="text-raspberry">.</span></> : titleA}
-          </span>
-        </span>
-        {
-          titleB && (
-            <span class="mask mt-4 block">
-              <span
-                class="line-up block text-[clamp(1.9rem,5vw,4.25rem)] leading-[1.02] text-white/45"
-                style="animation-delay: 160ms"
-              >
-                {tbRest} <span data-scramble>{tbLast}</span>
-              </span>
+        <h1 class="mt-7 font-display font-extrabold tracking-tight">
+          <span class="mask block">
+            <span class="line-up block text-[clamp(2.9rem,6.5vw,5.75rem)] leading-[0.98]">
+              {taRest}{taRest && " "}
+              <span class="gm-marker">
+                {taLast.endsWith(".") ? taLast.slice(0, -1) : taLast}</span>{taLast.endsWith(".") ? "." : ""}
             </span>
-          )
-        }
-      </h1>
+          </span>
+          {
+            titleB && (
+              <span class="mask mt-4 block">
+                <span
+                  class="line-up block font-display text-[clamp(1.6rem,3.4vw,3rem)] leading-[1.05] font-extrabold tracking-tight text-slate/60"
+                  style="animation-delay: 140ms"
+                >
+                  {titleB}
+                </span>
+              </span>
+            )
+          }
+        </h1>
 
-      <div class="mt-12 grid gap-10 md:mt-16 lg:grid-cols-[minmax(0,36rem)_1fr]">
-        <p class="rise text-lead text-white/70" style="animation-delay: 420ms">{heroParas[0]?.text}</p>
-        <div class="rise flex flex-wrap items-center gap-x-8 gap-y-5 self-start lg:justify-end" style="animation-delay: 520ms">
-          {heroCta && <Button id="hero-cta" size="lg" href="/request-a-demo" icon="arrow-right">{heroCta.text}</Button>}
-          <TextLink href="#receipts" class="text-white hover:text-white/70">See the receipts</TextLink>
+        <p class="rise mt-8 max-w-xl text-lead text-slate" style="animation-delay: 380ms">{heroParas[0]?.text}</p>
+
+        <div class="rise mt-9 flex flex-wrap items-center gap-x-8 gap-y-5" style="animation-delay: 480ms">
+          {heroCta && <Button id="hero-cta" size="lg" href="#demo" icon="arrow-right">{heroCta.text}</Button>}
+          <TextLink href="#receipts">See the receipts</TextLink>
         </div>
+
+        <!-- Proof row, from the case studies on this page -->
+        <dl class="rise mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-line pt-6" style="animation-delay: 580ms">
+          <div>
+            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">$230</dd>
+            <dt class="mt-1 text-caption font-normal text-slate">back per $1, Country Thunder</dt>
+          </div>
+          <div>
+            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">+887%</dd>
+            <dt class="mt-1 text-caption font-normal text-slate">site visitors, Canales</dt>
+          </div>
+          <div>
+            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">&lt;$1</dd>
+            <dt class="mt-1 text-caption font-normal text-slate">per conversion, onsemi</dt>
+          </div>
+        </dl>
       </div>
 
+      <!-- The product shot: published rates as a live card -->
+      <div class="rise relative mx-auto w-full max-w-sm lg:mx-0 lg:justify-self-end" style="animation-delay: 300ms">
+        <div class="gm-float relative z-10 border border-line bg-white p-6 pb-11 shadow-card md:p-7 md:pb-12">
+          <div class="flex items-center justify-between gap-4">
+            <p class="gm-label text-[10px] text-slate">Published rates</p>
+            <span class="inline-flex items-center gap-1.5 bg-mint-100 px-2.5 py-1 gm-label text-[9px] text-success">
+              <span class="relative flex size-1.5">
+                <span class="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60"></span>
+                <span class="relative inline-flex size-1.5 rounded-full bg-success"></span>
+              </span>
+              Public
+            </span>
+          </div>
+          <ul class="mt-5 divide-y divide-line">
+            {
+              rates.map((rate) => (
+                <li class="flex items-baseline justify-between gap-4 py-3.5">
+                  <span class="text-body font-medium">{rate.channel}</span>
+                  <span class="font-display text-xl font-extrabold tracking-tighter md:text-2xl">
+                    {rate.value}
+                    <span class="ml-1 text-caption font-normal tracking-normal text-mist">CPM</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="mt-4 border-t border-line pt-4 text-caption font-normal text-slate">
+            Effective CPMs, published for anyone to read. Ask your current vendor to do the same.
+          </p>
+        </div>
+
+        <!-- Floating chips, the two facts buyers ask about first -->
+        <div class="gm-float absolute -top-5 -right-3 z-20 flex items-center gap-2 border border-line bg-white py-2 pr-4 pl-2 shadow-card md:-right-8" style="animation-delay: 1.2s">
+          <span class="grid size-7 place-items-center bg-raspberry text-white"><Icon name="check" size={14} /></span>
+          <span class="gm-label text-[9px]">No long-term contracts</span>
+        </div>
+        <div class="gm-float absolute -bottom-5 -left-3 z-20 flex items-center gap-2 border border-line bg-white py-2 pr-4 pl-2 shadow-card md:-left-8" style="animation-delay: 2.1s">
+          <span class="grid size-7 place-items-center bg-hole text-white"><Icon name="user" size={14} /></span>
+          <span class="gm-label text-[9px]">A real expert on every account</span>
+        </div>
+        <!-- Offset raspberry plate behind the card -->
+        <div aria-hidden="true" class="absolute inset-0 z-0 translate-x-3 translate-y-3 bg-raspberry"></div>
+      </div>
     </div>
 
-    <!-- Published-rates ticker -->
-    <div class="relative overflow-hidden border-t border-white/10">
+    <!-- Published-facts ticker -->
+    <div class="relative overflow-hidden border-t border-line bg-cloud">
       <div class="ticker flex w-max">
         {
           [0, 1].map((dup) => (
             <ul class="flex shrink-0 items-center py-4" aria-hidden={dup === 1 ? "true" : undefined}>
               {tickerItems.map((item) => (
                 <li class="flex items-center">
-                  <span class="gm-label text-[10px] whitespace-nowrap text-white/55">{item}</span>
+                  <span class="gm-label text-[10px] whitespace-nowrap text-slate">{item}</span>
                   <span class="mx-10 size-1 shrink-0 rounded-full bg-raspberry/80" />
                 </li>
               ))}
@@ -218,7 +289,7 @@ const jsonLd = {
       <section class="bg-white">
         <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:py-24 lg:grid-cols-[1fr_2fr] lg:px-20">
           <div data-reveal>
-            <p class="gm-label text-slate">01 / What we do</p>
+            <p class="gm-eyebrow text-slate">01 / What we do</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{answer.heading}</h2>
           </div>
           <div class="lg:pt-12" data-reveal style="transition-delay: 90ms">
@@ -243,7 +314,7 @@ const jsonLd = {
       <section id="receipts" class="bg-ink text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
           <div data-reveal>
-            <p class="gm-label text-white/60">02 / Proof</p>
+            <p class="gm-eyebrow text-white/60">02 / Proof</p>
             <h2 class="mt-4 text-h2 tracking-tight">{receipts.heading}</h2>
             <p class="mt-5 max-w-xl text-lead text-white/70">{receiptsIntro}</p>
           </div>
@@ -307,7 +378,7 @@ const jsonLd = {
       <section class="bg-cloud">
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
           <div data-reveal>
-            <p class="gm-label text-slate">03 / Solutions</p>
+            <p class="gm-eyebrow text-slate">03 / Solutions</p>
             <h2 class="mt-4 max-w-xl text-h2 tracking-tight text-balance">{budget.heading}</h2>
           </div>
           <div class="mt-12 grid gap-4 md:grid-cols-2">
@@ -359,7 +430,7 @@ const jsonLd = {
       <section class="bg-gradient-dark-raspberry text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
           <div data-reveal>
-            <p class="gm-label text-white/60">04 / The difference</p>
+            <p class="gm-eyebrow text-white/60">04 / The difference</p>
             <h2 class="mt-4 text-h2 tracking-tight">{why.heading}</h2>
             <p class="mt-8 max-w-3xl font-display text-[clamp(1.75rem,3.8vw,3rem)] leading-[1.1] font-extrabold tracking-tight text-balance">
               {whyThesis?.text}
@@ -397,32 +468,52 @@ const jsonLd = {
   <!-- How an engagement runs -->
   {
     engagement && (
-      <section class="bg-white">
-        <div class="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:py-24 lg:grid-cols-[1.2fr_1fr] lg:px-20">
+      <section class="relative isolate overflow-hidden bg-white">
+        <!-- Split field: the right half drops to a dark plate the proof card sits over -->
+        <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 right-0 hidden w-[38%] bg-ink lg:block"></div>
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute -right-6 bottom-4 hidden font-display text-[13rem] leading-none font-extrabold tracking-tighter text-white/5 select-none lg:block"
+        >
+          GM.
+        </div>
+        <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-[1.15fr_1fr] lg:gap-20 lg:px-20">
           <div data-reveal>
-            <p class="gm-label text-slate">05 / Process</p>
+            <p class="gm-eyebrow text-slate">05 / Process</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{engagement.heading}</h2>
             <p class="mt-6 max-w-xl text-lead text-slate">{engProcess?.text}</p>
+            <DemoForm uid="mid" theme="light" layout="row" class="mt-10 max-w-xl" />
           </div>
-          <div class="flex flex-col justify-between gap-8 border border-line p-8 md:p-10" data-reveal style="transition-delay: 120ms">
-            <p class="gm-label text-[10px] text-slate">Cenvar Roofing &amp; Solar</p>
-            <div class="grid grid-cols-2 divide-x divide-line">
-              <div class="pr-6">
-                <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter text-raspberry">
-                  +<span data-countup data-target="44">44</span>%
-                </p>
-                <p class="mt-3 text-caption font-normal text-slate">Website leads, first 45 days</p>
-              </div>
-              <div class="pl-6">
-                <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter">
-                  +<span data-countup data-target="30">30</span>%
-                </p>
-                <p class="mt-3 text-caption font-normal text-slate">Gross billing, a year in</p>
-              </div>
+
+          <div class="relative lg:-mr-8" data-reveal style="transition-delay: 120ms">
+            <!-- Floating stat chip, per the split mockups -->
+            <div class="absolute -top-5 -left-4 z-10 flex items-center gap-3 bg-raspberry px-4 py-3 text-white shadow-card sm:-left-6">
+              <span class="font-display text-2xl leading-none font-extrabold tracking-tighter">
+                <span data-countup data-target="27">27</span>
+              </span>
+              <span class="gm-label max-w-[7rem] text-[9px] leading-tight">Published case studies</span>
             </div>
-            <div>
-              <p class="text-body text-slate">{engCenvar?.text}</p>
-              <TextLink href="/programmatic-case-studies" arrow class="mt-4">Cenvar case study</TextLink>
+
+            <div class="flex flex-col justify-between gap-8 border border-line bg-white p-8 shadow-card md:p-10 lg:border-0">
+              <p class="gm-label text-[10px] text-slate">Cenvar Roofing &amp; Solar</p>
+              <div class="grid grid-cols-2 divide-x divide-line">
+                <div class="pr-6">
+                  <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter text-raspberry">
+                    +<span data-countup data-target="44">44</span>%
+                  </p>
+                  <p class="mt-3 text-caption font-normal text-slate">Website leads, first 45 days</p>
+                </div>
+                <div class="pl-6">
+                  <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter">
+                    +<span data-countup data-target="30">30</span>%
+                  </p>
+                  <p class="mt-3 text-caption font-normal text-slate">Gross billing, a year in</p>
+                </div>
+              </div>
+              <div>
+                <p class="text-body text-slate">{engCenvar?.text}</p>
+                <TextLink href="/programmatic-case-studies" arrow class="mt-4">Cenvar case study</TextLink>
+              </div>
             </div>
           </div>
         </div>
@@ -435,12 +526,15 @@ const jsonLd = {
     faq && (
       <section class="bg-cloud">
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
-          <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
-            <div data-reveal>
-              <p class="gm-label text-slate">06 / FAQ</p>
-              <h2 class="mt-4 text-h2 tracking-tight text-balance">{faq.heading}</h2>
+          <div class="grid gap-10 lg:grid-cols-[1fr_1.9fr] lg:gap-16">
+            <div class="lg:sticky lg:top-24 lg:self-start" data-reveal>
+              <p class="gm-eyebrow text-slate">06 / FAQ</p>
+              <h2 class="mt-4 font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1.05] font-extrabold tracking-tight text-balance">
+                {faq.heading}
+              </h2>
+              <TextLink href="#demo" arrow class="mt-6">Request a demo</TextLink>
             </div>
-            <FAQAccordion items={faqItems} class="lg:mt-2" />
+            <FAQAccordion items={faqItems} variant="numbered" />
           </div>
         </div>
       </section>
@@ -450,7 +544,7 @@ const jsonLd = {
   <!-- Done guessing -->
   {
     ctaSec && (
-      <section class="relative overflow-hidden bg-hole text-white">
+      <section id="demo" class="relative overflow-hidden bg-hole text-white">
         <div
           aria-hidden="true"
           class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_120%,rgb(247_0_78/0.45),transparent_55%)]"
@@ -467,9 +561,7 @@ const jsonLd = {
           </h2>
           <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]" data-reveal style="transition-delay: 100ms">
             <p class="text-lead text-white/75">{ctaParas[0]?.text}</p>
-            <div class="flex items-start lg:justify-end">
-              {ctaBtn && <Button size="lg" href="/request-a-demo" icon="arrow-right">{ctaBtn.text}</Button>}
-            </div>
+            <DemoForm uid="cta" theme="dark" layout="stack" class="w-full max-w-md lg:justify-self-end" />
           </div>
         </div>
       </section>
@@ -477,9 +569,40 @@ const jsonLd = {
   }
 
   <Footer />
+
+  <!-- Sticky CTA bar: slides in after the hero, hides at the demo section -->
+  <div
+    id="sticky-cta"
+    inert
+    class="fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-white/10 bg-hole/95 backdrop-blur transition-transform duration-300"
+  >
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3 lg:px-20">
+      <p class="hidden font-display text-lg font-extrabold tracking-tight text-white sm:block">
+        We solve advertising<span class="text-raspberry">.</span>
+      </p>
+      <p class="gm-label hidden text-[10px] text-white/55 md:block">No long-term contracts</p>
+      <div class="flex grow items-center justify-end gap-3 sm:grow-0">
+        <Button size="md" href="#demo" icon="arrow-right" class="grow sm:grow-0">Request a demo</Button>
+        <button
+          type="button"
+          id="sticky-dismiss"
+          aria-label="Dismiss"
+          class="grid size-9 shrink-0 place-items-center text-white/60 transition-colors hover:text-white"
+        >
+          <Icon name="close" size={16} />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ChatWidget items={chatItems} intro={chatIntro} />
 </BaseLayout>
 
 <style is:global>
+  #sticky-cta.show {
+    translate: 0 0;
+  }
+
   /* Hero load-in */
   @keyframes gm-rise {
     from {
@@ -503,6 +626,47 @@ const jsonLd = {
     to {
       transform: translateY(0);
     }
+  }
+
+  /* Marker highlight: a raspberry block behind the key word, slightly skewed
+     like a hand swipe, revealed left-to-right after the line lands */
+  .gm-marker {
+    position: relative;
+    z-index: 0;
+    display: inline-block;
+    padding: 0 0.12em;
+    color: var(--color-ink);
+    animation: gm-marker-ink 0.01s linear 1.15s forwards;
+  }
+  .gm-marker::before {
+    content: "";
+    position: absolute;
+    inset: 0.04em -0.06em 0.02em;
+    z-index: -1;
+    background: var(--color-raspberry);
+    transform: skew(-4deg) rotate(-1.2deg) scaleX(0);
+    transform-origin: left center;
+    animation: gm-marker-sweep 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.9s forwards;
+  }
+  @keyframes gm-marker-sweep {
+    to {
+      transform: skew(-4deg) rotate(-1.2deg) scaleX(1);
+    }
+  }
+  @keyframes gm-marker-ink {
+    to {
+      color: #fff;
+    }
+  }
+
+  /* Floating cards bob gently, out of phase */
+  @keyframes gm-bob {
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  .gm-float {
+    animation: gm-bob 5.5s ease-in-out infinite;
   }
 
   /* Published-rates ticker */
@@ -533,15 +697,22 @@ const jsonLd = {
 
   @media (prefers-reduced-motion: reduce) {
     .rise,
-    .ticker {
+    .ticker,
+    .gm-float {
       animation: none;
+    }
+    .gm-marker::before {
+      animation: none;
+      transform: skew(-4deg) rotate(-1.2deg) scaleX(1);
+    }
+    .gm-marker {
+      color: #fff;
+      animation: none;
+      transition: none;
     }
     .line-up {
       animation: none;
       transform: none;
-    }
-    #bidnet {
-      display: none;
     }
     .js [data-reveal] {
       opacity: 1;
@@ -596,187 +767,68 @@ const jsonLd = {
     document.querySelectorAll<HTMLElement>("[data-countup]").forEach((el) => counter.observe(el));
   }
 
-  // The bidstream: drifting impression nodes, connections by proximity,
-  // and a raspberry pulse every couple of seconds when a bid is won.
-  const canvas = document.getElementById("bidnet") as HTMLCanvasElement | null;
-  const heroSection = document.getElementById("hero");
-  if (canvas && heroSection && !reduceMotion) {
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      type Node = { x: number; y: number; vx: number; vy: number; r: number };
-      type Pulse = { i: number; t: number };
-      let w = 0;
-      let h = 0;
-      let nodes: Node[] = [];
-      let pulses: Pulse[] = [];
-      let nextPulse = 900;
-      let last = performance.now();
-      let running = true;
-      const LINK = 130;
-      const mouse = { x: -9999, y: -9999 };
-
-      const resize = () => {
-        const rect = canvas.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        w = rect.width;
-        h = rect.height;
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        const count = Math.min(120, Math.round((w * h) / 15000));
-        nodes = Array.from({ length: count }, () => ({
-          // denser toward the right, away from the headline
-          x: w * Math.pow(Math.random(), 0.62),
-          y: h * Math.random(),
-          vx: (Math.random() - 0.5) * 0.22,
-          vy: (Math.random() - 0.5) * 0.22,
-          r: 1 + Math.random() * 0.9,
-        }));
-        pulses = [];
-      };
-
-      const frame = (now: number) => {
-        if (!running) return;
-        const dt = Math.min(now - last, 50);
-        last = now;
-
-        nextPulse -= dt;
-        if (nextPulse <= 0 && nodes.length) {
-          pulses.push({ i: Math.floor(Math.random() * nodes.length), t: 0 });
-          nextPulse = 1500 + Math.random() * 1800;
-        }
-        pulses.forEach((p) => (p.t += dt / 950));
-        pulses = pulses.filter((p) => p.t < 1);
-
-        for (const n of nodes) {
-          const dx = mouse.x - n.x;
-          const dy = mouse.y - n.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < 24000 && d2 > 1) {
-            const d = Math.sqrt(d2);
-            n.vx += (dx / d) * 0.012;
-            n.vy += (dy / d) * 0.012;
-          }
-          const speed = Math.hypot(n.vx, n.vy);
-          if (speed > 0.4) {
-            n.vx *= 0.4 / speed;
-            n.vy *= 0.4 / speed;
-          }
-          n.x += n.vx * (dt / 16.7);
-          n.y += n.vy * (dt / 16.7);
-          if (n.x < -20) n.x = w + 20;
-          if (n.x > w + 20) n.x = -20;
-          if (n.y < -20) n.y = h + 20;
-          if (n.y > h + 20) n.y = -20;
-        }
-
-        ctx.clearRect(0, 0, w, h);
-
-        const pulseByNode = new Map(pulses.map((p) => [p.i, p.t]));
-        for (let i = 0; i < nodes.length; i++) {
-          for (let j = i + 1; j < nodes.length; j++) {
-            const a = nodes[i];
-            const b = nodes[j];
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 > LINK * LINK) continue;
-            const d = Math.sqrt(d2);
-            const pt = pulseByNode.get(i) ?? pulseByNode.get(j);
-            if (pt !== undefined) {
-              ctx.strokeStyle = `rgb(247 0 78 / ${(1 - d / LINK) * (1 - pt) * 0.55})`;
-            } else {
-              ctx.strokeStyle = `rgb(255 255 255 / ${(1 - d / LINK) * 0.08})`;
-            }
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        }
-
-        for (let i = 0; i < nodes.length; i++) {
-          const n = nodes[i];
-          const pt = pulseByNode.get(i);
-          if (pt !== undefined) {
-            ctx.fillStyle = "#f7004e";
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r + 1.6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = `rgb(247 0 78 / ${(1 - pt) * 0.6})`;
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, 4 + pt * 46, 0, Math.PI * 2);
-            ctx.stroke();
-          } else {
-            ctx.fillStyle = "rgb(255 255 255 / 0.3)";
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-
-        requestAnimationFrame(frame);
-      };
-
-      resize();
-      window.addEventListener("resize", resize);
-      heroSection.addEventListener(
-        "pointermove",
-        (e) => {
-          const rect = canvas.getBoundingClientRect();
-          mouse.x = e.clientX - rect.left;
-          mouse.y = e.clientY - rect.top;
-        },
-        { passive: true },
-      );
-      heroSection.addEventListener("pointerleave", () => {
-        mouse.x = -9999;
-        mouse.y = -9999;
-      });
-      document.addEventListener("visibilitychange", () => {
-        running = !document.hidden;
-        if (running) {
-          last = performance.now();
-          requestAnimationFrame(frame);
-        }
-      });
-      requestAnimationFrame(frame);
-    }
-  }
-
-  // "guessing." never settles: decode on load, then a letter misfires every few seconds
-  const scrambleEl = document.querySelector<HTMLElement>("[data-scramble]");
-  if (scrambleEl && !reduceMotion) {
-    const target = scrambleEl.textContent ?? "";
-    const glyphs = "abcdefghjkmnopqrstuvwxyz#%?!*$";
-    const rand = () => glyphs[Math.floor(Math.random() * glyphs.length)];
-    const flickerLoop = () => {
-      window.setInterval(() => {
-        const i = Math.floor(Math.random() * (target.length - 1));
-        const chars = target.split("");
-        chars[i] = rand();
-        scrambleEl.textContent = chars.join("");
-        window.setTimeout(() => {
-          scrambleEl.textContent = target;
-        }, 150);
-      }, 3400);
+  // Sticky CTA bar: in view after the hero, gone at the demo form, dismissible
+  const bar = document.getElementById("sticky-cta");
+  const demoSection = document.getElementById("demo");
+  const heroForBar = document.getElementById("hero");
+  if (bar && demoSection && heroForBar) {
+    let pastHero = false;
+    let demoOnScreen = false;
+    let dismissed = false;
+    const update = () => {
+      const show = pastHero && !demoOnScreen && !dismissed;
+      bar.classList.toggle("show", show);
+      if (show) bar.removeAttribute("inert");
+      else bar.setAttribute("inert", "");
+      document.body.classList.toggle("gm-bar-up", show);
     };
-    window.setTimeout(() => {
-      let tick = 0;
-      const decode = window.setInterval(() => {
-        tick++;
-        scrambleEl.textContent = target
-          .split("")
-          .map((ch, i) => (tick > i * 2 + 4 ? ch : rand()))
-          .join("");
-        if (tick > target.length * 2 + 4) {
-          window.clearInterval(decode);
-          scrambleEl.textContent = target;
-          flickerLoop();
-        }
-      }, 40);
-    }, 750);
+    new IntersectionObserver(([entry]) => {
+      pastHero = !entry.isIntersecting;
+      update();
+    }).observe(heroForBar);
+    new IntersectionObserver(([entry]) => {
+      demoOnScreen = entry.isIntersecting;
+      update();
+    }).observe(demoSection);
+    document.getElementById("sticky-dismiss")?.addEventListener("click", () => {
+      dismissed = true;
+      update();
+    });
   }
+
+  // #demo links: eased scroll to the closing form, then focus its email field.
+  // Hand-rolled instead of CSS smooth scroll so focus timing is deterministic.
+  const demoTarget = document.getElementById("demo");
+  const scrollToY = (top: number) =>
+    new Promise<void>((resolve) => {
+      if (reduceMotion) {
+        window.scrollTo(0, top);
+        resolve();
+        return;
+      }
+      const from = window.scrollY;
+      const dist = top - from;
+      const duration = Math.min(1100, 350 + Math.abs(dist) * 0.12);
+      const t0 = performance.now();
+      const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+      const step = (now: number) => {
+        const t = Math.min((now - t0) / duration, 1);
+        window.scrollTo(0, from + dist * ease(t));
+        if (t < 1) requestAnimationFrame(step);
+        else resolve();
+      };
+      requestAnimationFrame(step);
+    });
+  document.querySelectorAll<HTMLAnchorElement>('a[href="#demo"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      if (!demoTarget) return;
+      e.preventDefault();
+      history.pushState(null, "", "#demo");
+      scrollToY(demoTarget.getBoundingClientRect().top + window.scrollY).then(() => {
+        document.getElementById("cta-email")?.focus({ preventScroll: true });
+      });
+    });
+  });
 
   // Magnetic CTA: the demo button leans toward the cursor
   const cta = document.getElementById("hero-cta");
