@@ -22,3 +22,14 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Ignore hidden macOS folder icon files
+Icon[[:cntrl:]]
+Icon?
+Icon
+
+# Ignore standard macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
