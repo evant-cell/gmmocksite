@@ -1,27 +1,89 @@
 ---
-/** Expandable FAQ rows with state-based chevron controls (native details/summary). */
+/**
+ * Expandable FAQ rows (native details/summary).
+ * variant="default"  - compact rows with a chevron pill
+ * variant="numbered" - the creative-director accordion: 01/02/03 numeral, display-size
+ *                      question, plus/minus rule. Set theme="dark" on dark sections.
+ */
 import Icon from "../ui/Icon.astro";
 
 interface Props {
   items: { question: string; answer: string; open?: boolean }[];
+  variant?: "default" | "numbered";
+  theme?: "light" | "dark";
   class?: string;
 }
 
-const { items, class: className = "" } = Astro.props;
+const { items, variant = "default", theme = "light", class: className = "" } = Astro.props;
+const dark = theme === "dark";
 ---
 
-<div class:list={["divide-y divide-line border-y border-line", className]}>
-  {
-    items.map((item) => (
-      <details class="group py-1" open={item.open}>
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 [&::-webkit-details-marker]:hidden">
-          <h3 class="text-base font-bold">{item.question}</h3>
-          <span class="grid size-8 shrink-0 place-items-center rounded-full bg-cloud text-ink transition-colors group-open:bg-raspberry group-open:text-white">
-            <Icon name="chevron-down" size={15} class="transition-transform duration-200 group-open:rotate-180" />
-          </span>
-        </summary>
-        <p class="max-w-3xl pb-5 text-sm leading-relaxed text-slate">{item.answer}</p>
-      </details>
-    ))
-  }
-</div>
+{
+  variant === "numbered" ? (
+    <div
+      class:list={[
+        "divide-y border-y",
+        dark ? "divide-white/15 border-white/15" : "divide-line border-line",
+        className,
+      ]}
+    >
+      {items.map((item, i) => (
+        <details class="group" open={item.open}>
+          <summary class="flex cursor-pointer list-none items-start gap-5 py-7 [&::-webkit-details-marker]:hidden md:gap-8">
+            <span
+              class:list={[
+                "font-display text-[clamp(1.1rem,2vw,1.5rem)] leading-none font-extrabold tracking-tighter tabular-nums transition-colors",
+                dark ? "text-white/30" : "text-slate/35",
+                "group-open:text-raspberry",
+              ]}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3
+              class:list={[
+                "grow font-display text-[clamp(1.25rem,2.6vw,2rem)] leading-[1.15] font-extrabold tracking-tight text-balance transition-colors",
+                dark ? "text-white/70 group-hover:text-white" : "text-slate group-hover:text-ink",
+                dark ? "group-open:text-white" : "group-open:text-ink",
+              ]}
+            >
+              {item.question}
+            </h3>
+            <span
+              class:list={[
+                "relative mt-1 grid size-8 shrink-0 place-items-center rounded-full border transition-colors",
+                dark
+                  ? "border-white/25 text-white group-open:border-raspberry group-open:bg-raspberry"
+                  : "border-line text-ink group-open:border-raspberry group-open:bg-raspberry group-open:text-white",
+              ]}
+            >
+              <span class="absolute h-px w-3 bg-current" />
+              <span class="absolute h-3 w-px bg-current transition-transform duration-200 group-open:scale-y-0" />
+            </span>
+          </summary>
+          <p
+            class:list={[
+              "max-w-3xl pb-8 text-body md:pl-15",
+              dark ? "text-white/70" : "text-slate",
+            ]}
+          >
+            {item.answer}
+          </p>
+        </details>
+      ))}
+    </div>
+  ) : (
+    <div class:list={["divide-y divide-line border-y border-line", className]}>
+      {items.map((item) => (
+        <details class="group py-1" open={item.open}>
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 [&::-webkit-details-marker]:hidden">
+            <h3 class="text-base font-bold">{item.question}</h3>
+            <span class="grid size-8 shrink-0 place-items-center rounded-full bg-cloud text-ink transition-colors group-open:bg-raspberry group-open:text-white">
+              <Icon name="chevron-down" size={15} class="transition-transform duration-200 group-open:rotate-180" />
+            </span>
+          </summary>
+          <p class="max-w-3xl pb-5 text-sm leading-relaxed text-slate">{item.answer}</p>
+        </details>
+      ))}
+    </div>
+  )
+}
