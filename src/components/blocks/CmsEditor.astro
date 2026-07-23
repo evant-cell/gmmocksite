@@ -1,10 +1,12 @@
 ---
 /**
- * Inline CMS edit-mode shell: fixed banner + side panel drawer, rendered by
- * BaseLayout only when a page opts in via `cmsPage`. Completely inert unless
- * the URL carries `?edit=1` - regular page loads render this markup but the
- * module script below does nothing beyond that check, so there is zero
- * visible/behavioral difference for normal visitors.
+ * Inline CMS edit-mode shell: fixed banner + a "Sections" menu that opens
+ * one floating, draggable, resizable window per section, each holding only
+ * that section's fields. Rendered by BaseLayout only when a page opts in via
+ * `cmsPage`. Completely inert unless the URL carries `?edit=1` - regular
+ * page loads render this markup but the module script below does nothing
+ * beyond that check, so there is zero visible/behavioral difference for
+ * normal visitors.
  *
  * See the CMS spec, section 4, for the full activation gate and state
  * machine this component's script implements.
@@ -47,13 +49,23 @@ const { page, seed } = Astro.props;
       </span>
     </div>
     <div class="flex shrink-0 items-center gap-2">
-      <button
-        type="button"
-        data-cms-toggle-panel
-        class="gm-label border border-white/25 px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-white/10"
-      >
-        Fields
-      </button>
+      <div class="relative">
+        <button
+          type="button"
+          data-cms-sections-toggle
+          aria-haspopup="true"
+          aria-expanded="false"
+          class="gm-label border border-white/25 px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-white/10"
+        >
+          Sections
+        </button>
+        <div
+          data-cms-sections-menu
+          hidden
+          class="absolute top-full right-0 z-[210] mt-2 max-h-80 w-64 overflow-y-auto border border-line bg-white text-ink shadow-toast"
+        >
+        </div>
+      </div>
       <button
         type="button"
         data-cms-save
@@ -68,14 +80,14 @@ const { page, seed } = Astro.props;
       >
         Discard
       </button>
-      <button
+      <!-- <button
         type="button"
         data-cms-reset
         hidden
         class="gm-label border border-warning/50 px-3 py-1.5 text-[10px] whitespace-nowrap text-warning-100 transition-colors hover:bg-white/10"
       >
         Reset to built-in
-      </button>
+      </button> -->
       <button
         type="button"
         data-cms-exit
@@ -86,26 +98,19 @@ const { page, seed } = Astro.props;
     </div>
   </div>
 
-  <aside
-    data-cms-panel
-    hidden
-    class="fixed top-11 right-0 bottom-0 z-[190] w-[360px] max-w-[90vw] overflow-y-auto border-l border-line bg-white text-ink shadow-toast"
-  >
-    <div data-cms-groups class="divide-y divide-line"></div>
-  </aside>
+  <div data-cms-windows class="pointer-events-none fixed inset-0 z-[150]"></div>
 </div>
 
 <style>
-  .cms-group-summary {
-    cursor: pointer;
-    list-style: none;
-  }
-  .cms-group-summary::-webkit-details-marker {
-    display: none;
-  }
   .cms-field textarea {
     resize: none;
     overflow: hidden;
+  }
+  .cms-window {
+    touch-action: none;
+  }
+  .cms-section-menu-item[data-open="true"] {
+    background: var(--color-cloud);
   }
 </style>
 
@@ -173,12 +178,30 @@ const { page, seed } = Astro.props;
       return JSON.stringify(a) === JSON.stringify(b);
     }
 
+    function closeIcon(): SVGSVGElement {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", "14");
+      svg.setAttribute("height", "14");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "2");
+      svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", "M6 6l12 12M18 6 6 18");
+      svg.appendChild(path);
+      return svg;
+    }
+
     function boot(ctx: { mode: "dev" | "live"; user: import("firebase/auth").User | null }) {
       document.documentElement.classList.add("gm-edit");
 
       const banner = root!.querySelector<HTMLElement>("[data-cms-banner]")!;
-      const panel = root!.querySelector<HTMLElement>("[data-cms-panel]")!;
-      const groupsEl = root!.querySelector<HTMLElement>("[data-cms-groups]")!;
+      const windowsLayer = root!.querySelector<HTMLElement>("[data-cms-windows]")!;
+      const sectionsToggle = root!.querySelector<HTMLButtonElement>("[data-cms-sections-toggle]")!;
+      const sectionsMenu = root!.querySelector<HTMLElement>("[data-cms-sections-menu]")!;
       const statusEl = root!.querySelector<HTMLElement>("[data-cms-status]")!;
       const remoteNoteEl = root!.querySelector<HTMLElement>("[data-cms-remote-note]")!;
       const slugEl = root!.querySelector<HTMLElement>("[data-cms-slug]")!;
@@ -186,7 +209,6 @@ const { page, seed } = Astro.props;
 
       slugEl.textContent = slug;
       banner.removeAttribute("hidden");
-      panel.removeAttribute("hidden");
 
       // Reset to built-in is destructive and admin-only, and only meaningful
       // once there is a live Firestore doc to reset.
@@ -201,6 +223,13 @@ const { page, seed } = Astro.props;
       let dirty = false;
       let initializedFromRemote = false;
       let unsubscribeRemote: (() => void) | null = null;
+
+      // One floating window per section, keyed by group name. A window stays
+      // open (position/size preserved) until its close button is clicked;
+      // opening the same section again just brings it to front.
+      const openWindows = new Map<string, { el: HTMLElement; body: HTMLElement }>();
+      let topZ = 150;
+      let cascadeCount = 0;
 
       function setStatus(text: string, tone: "ok" | "dirty" | "saving" | "error") {
         statusEl.textContent = text;
@@ -233,16 +262,6 @@ const { page, seed } = Astro.props;
         el.scrollIntoView({ behavior: "smooth", block: "center" });
         el.classList.add("gm-cms-highlight");
         window.setTimeout(() => el.classList.remove("gm-cms-highlight"), 900);
-      }
-
-      function focusFieldForPath(path: string) {
-        const input = groupsEl.querySelector<HTMLElement>(`[data-cms-field-path="${cssEscape(path)}"]`);
-        if (!input) return;
-        const details = input.closest("details");
-        if (details) details.open = true;
-        panel.removeAttribute("hidden");
-        input.scrollIntoView({ behavior: "smooth", block: "center" });
-        input.focus();
       }
 
       function onFieldInput(path: string, value: string) {
@@ -285,33 +304,158 @@ const { page, seed } = Astro.props;
         return row;
       }
 
-      function renderPanel() {
-        groupsEl.innerHTML = "";
-        const fields = enumerateFields(working);
-        const groups = new Map<string, CmsField[]>();
-        for (const f of fields) {
-          if (!groups.has(f.group)) groups.set(f.group, []);
-          groups.get(f.group)!.push(f);
+      /** Group names in first-seen order, e.g. for the Sections menu list. */
+      function groupsInOrder(doc: PageDoc): string[] {
+        const seenGroups: string[] = [];
+        const seen = new Set<string>();
+        for (const f of enumerateFields(doc)) {
+          if (!seen.has(f.group)) {
+            seen.add(f.group);
+            seenGroups.push(f.group);
+          }
         }
-        for (const [group, groupFields] of groups) {
-          const details = document.createElement("details");
-          details.open = true;
-          const summary = document.createElement("summary");
-          summary.className = "cms-group-summary gm-label bg-cloud px-4 py-2.5 text-[10px] text-ink";
-          summary.textContent = group;
-          details.appendChild(summary);
-          const body = document.createElement("div");
-          body.className = "divide-y divide-line";
-          for (const f of groupFields) body.appendChild(buildFieldRow(f));
-          details.appendChild(body);
-          groupsEl.appendChild(details);
+        return seenGroups;
+      }
+
+      function fieldsForGroup(doc: PageDoc, group: string): CmsField[] {
+        return enumerateFields(doc).filter((f) => f.group === group);
+      }
+
+      function bringToFront(el: HTMLElement) {
+        topZ += 1;
+        el.style.zIndex = String(topZ);
+      }
+
+      function renderWindowBody(group: string, body: HTMLElement) {
+        body.innerHTML = "";
+        for (const f of fieldsForGroup(working, group)) body.appendChild(buildFieldRow(f));
+      }
+
+      function closeWindow(group: string) {
+        const win = openWindows.get(group);
+        if (!win) return;
+        win.el.remove();
+        openWindows.delete(group);
+      }
+
+      function wireDrag(handle: HTMLElement, win: HTMLElement) {
+        handle.addEventListener("pointerdown", (e: PointerEvent) => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          bringToFront(win);
+          const startX = e.clientX;
+          const startY = e.clientY;
+          const rect = win.getBoundingClientRect();
+          const startLeft = rect.left;
+          const startTop = rect.top;
+
+          const onMove = (ev: PointerEvent) => {
+            const maxLeft = window.innerWidth - 60;
+            const maxTop = window.innerHeight - 40;
+            const nextLeft = startLeft + (ev.clientX - startX);
+            const nextTop = startTop + (ev.clientY - startY);
+            win.style.left = `${Math.min(Math.max(nextLeft, -(win.offsetWidth - 60)), maxLeft)}px`;
+            win.style.top = `${Math.min(Math.max(nextTop, 0), maxTop)}px`;
+          };
+          const onUp = () => {
+            document.removeEventListener("pointermove", onMove);
+            document.removeEventListener("pointerup", onUp);
+          };
+          document.addEventListener("pointermove", onMove);
+          document.addEventListener("pointerup", onUp);
+        });
+      }
+
+      function createWindow(group: string): { el: HTMLElement; body: HTMLElement } {
+        const el = document.createElement("div");
+        el.className =
+          "cms-window pointer-events-auto fixed flex resize flex-col overflow-hidden border border-line bg-white text-ink shadow-toast min-w-[280px] min-h-[220px] max-w-[92vw] max-h-[85vh]";
+        const offset = 24 * (cascadeCount % 8);
+        cascadeCount += 1;
+        el.style.left = `${88 + offset}px`;
+        el.style.top = `${64 + offset}px`;
+        el.style.width = "380px";
+        el.style.height = "420px";
+        bringToFront(el);
+
+        const header = document.createElement("div");
+        header.className =
+          "flex shrink-0 cursor-move items-center justify-between gap-2 border-b border-line bg-cloud px-3 py-2";
+        const title = document.createElement("span");
+        title.className = "gm-label truncate text-[10px] text-ink";
+        title.textContent = group;
+        const closeBtn = document.createElement("button");
+        closeBtn.type = "button";
+        closeBtn.setAttribute("aria-label", "Close section");
+        closeBtn.className = "grid size-5 shrink-0 place-items-center text-slate transition-colors hover:text-ink";
+        closeBtn.appendChild(closeIcon());
+        closeBtn.addEventListener("click", () => closeWindow(group));
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+
+        const body = document.createElement("div");
+        body.className = "min-h-0 flex-1 divide-y divide-line overflow-y-auto bg-white";
+
+        el.appendChild(header);
+        el.appendChild(body);
+
+        el.addEventListener("pointerdown", () => bringToFront(el));
+        wireDrag(header, el);
+
+        return { el, body };
+      }
+
+      function openSectionWindow(group: string, focusPath?: string) {
+        let win = openWindows.get(group);
+        if (!win) {
+          win = createWindow(group);
+          openWindows.set(group, win);
+          windowsLayer.appendChild(win.el);
+          renderWindowBody(group, win.body);
+        } else {
+          bringToFront(win.el);
         }
+        if (focusPath) {
+          const input = win.body.querySelector<HTMLElement>(`[data-cms-field-path="${cssEscape(focusPath)}"]`);
+          if (input) {
+            input.scrollIntoView({ behavior: "smooth", block: "center" });
+            input.focus();
+          }
+        }
+      }
+
+      function focusFieldForPath(path: string) {
+        const field = enumerateFields(working).find((f) => f.path === path);
+        if (!field) return;
+        openSectionWindow(field.group, path);
+      }
+
+      function renderSectionsMenu() {
+        sectionsMenu.innerHTML = "";
+        for (const group of groupsInOrder(working)) {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className =
+            "cms-section-menu-item block w-full truncate px-4 py-2.5 text-left text-sm font-medium text-ink hover:bg-cloud";
+          item.dataset.open = String(openWindows.has(group));
+          item.textContent = group;
+          item.addEventListener("click", () => {
+            openSectionWindow(group);
+            sectionsMenu.setAttribute("hidden", "");
+            sectionsToggle.setAttribute("aria-expanded", "false");
+          });
+          sectionsMenu.appendChild(item);
+        }
+      }
+
+      function refreshOpenWindows() {
+        for (const [group, win] of openWindows) renderWindowBody(group, win.body);
       }
 
       function doDiscard() {
         working = structuredClone(saved);
         patchAll();
-        renderPanel();
+        refreshOpenWindows();
         markDirty(false);
         remoteNoteEl.setAttribute("hidden", "");
       }
@@ -353,23 +497,44 @@ const { page, seed } = Astro.props;
         }
       }
 
-      root!.querySelector("[data-cms-toggle-panel]")!.addEventListener("click", () => {
-        panel.toggleAttribute("hidden");
+      sectionsToggle.addEventListener("click", () => {
+        const willOpen = sectionsMenu.hasAttribute("hidden");
+        if (willOpen) renderSectionsMenu();
+        sectionsMenu.toggleAttribute("hidden", !willOpen);
+        sectionsToggle.setAttribute("aria-expanded", String(willOpen));
       });
+      document.addEventListener("pointerdown", (e) => {
+        if (sectionsMenu.hasAttribute("hidden")) return;
+        const target = e.target as Node;
+        if (sectionsMenu.contains(target) || sectionsToggle.contains(target)) return;
+        sectionsMenu.setAttribute("hidden", "");
+        sectionsToggle.setAttribute("aria-expanded", "false");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !sectionsMenu.hasAttribute("hidden")) {
+          sectionsMenu.setAttribute("hidden", "");
+          sectionsToggle.setAttribute("aria-expanded", "false");
+        }
+      });
+
       root!.querySelector("[data-cms-save]")!.addEventListener("click", () => void doSave());
       root!.querySelector("[data-cms-discard]")!.addEventListener("click", doDiscard);
       root!.querySelector("[data-cms-exit]")!.addEventListener("click", doExit);
       resetBtn.addEventListener("click", () => void doReset());
 
-      // Reverse link: clicking a bound page node focuses its panel field.
-      // preventDefault so clicking editable text inside a card/link doesn't
-      // navigate away while in edit mode.
+      // Reverse link: clicking a bound page node opens/focuses its section
+      // window and that field within it. stopPropagation (not just
+      // preventDefault) so the click is fully intercepted in edit mode -
+      // otherwise a page's own click behavior on that same element (e.g. the
+      // smooth-scroll-to-demo script on CTA links, or an accordion toggle)
+      // would still fire alongside our editor.
       document.addEventListener(
         "click",
         (e) => {
           const target = (e.target as HTMLElement).closest<HTMLElement>("[data-cms-path]");
           if (!target) return;
           e.preventDefault();
+          e.stopPropagation();
           focusFieldForPath(target.dataset.cmsPath!);
         },
         { capture: true },
@@ -382,7 +547,7 @@ const { page, seed } = Astro.props;
       });
 
       patchAll();
-      renderPanel();
+      renderSectionsMenu();
       markDirty(false);
 
       if (ctx.mode === "live") {
@@ -394,7 +559,8 @@ const { page, seed } = Astro.props;
             working = structuredClone(remote);
             saved = structuredClone(remote);
             patchAll();
-            renderPanel();
+            refreshOpenWindows();
+            renderSectionsMenu();
             markDirty(false);
             return;
           }
@@ -406,7 +572,8 @@ const { page, seed } = Astro.props;
           working = structuredClone(remote);
           saved = structuredClone(remote);
           patchAll();
-          renderPanel();
+          refreshOpenWindows();
+          renderSectionsMenu();
         });
         window.addEventListener("pagehide", () => unsubscribeRemote?.(), { once: true });
       }
