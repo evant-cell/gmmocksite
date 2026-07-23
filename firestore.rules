@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Security rules for the mock site. Client-side route guards are UX only; these
+// rules are the real access boundary for the mocksite-user collection.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /mocksite-user/{userId} {
+      // A signed-in user can read their own profile document.
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      // On signup a user may create only their own doc, and only as a `member`.
+      // This prevents a client from self-assigning `editor` or `admin`.
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.role == 'member';
+
+      // A user may update their own doc but may NOT change their role.
+      // Role changes (editor/admin) are done out-of-band (console / trusted admin).
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && request.resource.data.role == resource.data.role;
+
+      allow delete: if false;
+    }
+  }
+}

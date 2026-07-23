@@ -19,6 +19,7 @@
     "@fontsource-variable/unbounded": "^5.2.8",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.0.8",
+    "firebase": "^12.16.0",
     "tailwindcss": "^4.3.3"
   }
 }

@@ -1,13 +1,18 @@
 ---
-/** Responsive top navigation - dark or light variant, mobile disclosure menu. */
+/** Responsive top navigation - dark or light variant, mobile disclosure menu.
+ *  When `auth` is on it swaps the Login link for a real auth control: a modal
+ *  opener when signed out, a role-aware user menu when signed in. */
 import Logo from "../ui/Logo.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
+import AuthModal from "./AuthModal.astro";
 
 interface Props {
   theme?: "dark" | "light";
   links?: { label: string; href: string }[];
   cta?: { label: string; href: string };
+  /** Render the live auth UI + modal. Off for design demos to avoid duplicate dialogs. */
+  auth?: boolean;
   class?: string;
 }
 
@@ -20,14 +25,21 @@ const {
     { label: "Pricing", href: "#" },
   ],
   cta,
+  auth = true,
   class: className = "",
 } = Astro.props;
 
 const dark = theme === "dark";
 const navId = `nav-${Math.random().toString(36).slice(2, 8)}`;
+const linkStd = dark ? "text-white/80 hover:text-white" : "text-slate hover:text-ink";
+const linkStrong = dark ? "text-white/90" : "text-ink";
 ---
 
-<header class:list={[dark ? "bg-ink text-white" : "bg-white text-ink", className]} data-navbar>
+<header
+  class:list={[dark ? "bg-ink text-white" : "bg-white text-ink", className]}
+  data-navbar
+  data-auth={auth ? "" : undefined}
+>
   <nav class="mx-auto flex h-18 max-w-7xl items-center justify-between px-6 lg:px-10">
     <a href="/" class="shrink-0"><Logo class="text-lg" variant="inline" width={250} inverted={dark} /></a>
 
@@ -37,10 +49,7 @@ const navId = `nav-${Math.random().toString(36).slice(2, 8)}`;
           <li>
             <a
               href={link.href}
-              class:list={[
-                "text-sm font-semibold transition-colors",
-                dark ? "text-white/80 hover:text-white" : "text-slate hover:text-ink",
-              ]}
+              class:list={["text-sm font-semibold transition-colors", linkStd]}
             >
               {link.label}
             </a>
@@ -50,13 +59,55 @@ const navId = `nav-${Math.random().toString(36).slice(2, 8)}`;
     </ul>
 
     <div class="hidden items-center gap-6 md:flex">
-      <a
-        href="#"
-        class:list={[
-          "text-sm font-semibold transition-colors",
-          dark ? "text-white/80 hover:text-white" : "text-slate hover:text-ink",
-        ]}>Login</a
-      >
+      {
+        auth ? (
+          <>
+            <div data-auth-when="out">
+              <button type="button" data-auth-open class:list={["text-sm font-semibold transition-colors", linkStd]}>
+                Login
+              </button>
+            </div>
+            <div data-auth-when="in" class="relative">
+              <button
+                type="button"
+                data-auth-menu-toggle
+                aria-haspopup="true"
+                aria-expanded="false"
+                class:list={["flex items-center gap-2 text-sm font-semibold transition-colors", linkStd]}
+              >
+                <Icon name="user" size={18} />
+                <span data-auth-user-label>Account</span>
+                <Icon name="chevron-down" size={16} />
+              </button>
+              <div
+                data-auth-menu
+                class="absolute right-0 top-full z-50 mt-3 hidden w-56 border border-line bg-white py-2 text-ink shadow-toast"
+              >
+                <p class="px-4 py-2 text-xs text-slate">
+                  Signed in as <span class="font-semibold text-ink capitalize" data-auth-role-label>member</span>
+                </p>
+                <div class="my-1 border-t border-line" />
+                <a href="/account" class="block px-4 py-2 text-sm font-medium hover:bg-cloud">Account</a>
+                <a href="/admin" data-requires-role="admin" class="px-4 py-2 text-sm font-medium hover:bg-cloud">
+                  Admin
+                </a>
+                <div class="my-1 border-t border-line" />
+                <button
+                  type="button"
+                  data-auth-logout
+                  class="block w-full px-4 py-2 text-left text-sm font-medium text-error hover:bg-error-100"
+                >
+                  Log out
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <a href="#" class:list={["text-sm font-semibold transition-colors", linkStd]}>
+            Login
+          </a>
+        )
+      }
       {cta ? <Button size="sm" href={cta.href}>{cta.label}</Button> : <Button size="sm">Get Started</Button>}
     </div>
 
@@ -77,27 +128,127 @@ const navId = `nav-${Math.random().toString(36).slice(2, 8)}`;
       {
         links.map((link) => (
           <li>
-            <a href={link.href} class:list={["text-base font-semibold", dark ? "text-white/90" : "text-ink"]}>
+            <a href={link.href} class:list={["text-base font-semibold", linkStrong]}>
               {link.label}
             </a>
           </li>
         ))
       }
-      <li class="mt-2 flex items-center gap-5">
-        <a href="#" class:list={["text-base font-semibold", dark ? "text-white/90" : "text-ink"]}>Login</a>
+      {
+        auth ? (
+          <>
+            <li data-auth-when="out" class="mt-2">
+              <button type="button" data-auth-open class:list={["text-base font-semibold", linkStrong]}>
+                Login
+              </button>
+            </li>
+            <li data-auth-when="in" class="mt-2 flex-col gap-3">
+              <p class:list={["text-sm", dark ? "text-white/70" : "text-slate"]}>
+                Signed in as <span class="font-semibold capitalize" data-auth-role-label>member</span>
+              </p>
+              <a href="/account" class:list={["block text-base font-semibold", linkStrong]}>Account</a>
+              <a href="/admin" data-requires-role="admin" class:list={["text-base font-semibold", linkStrong]}>
+                Admin
+              </a>
+              <button type="button" data-auth-logout class="block text-left text-base font-semibold text-error">
+                Log out
+              </button>
+            </li>
+          </>
+        ) : (
+          <li class="mt-2">
+            <a href="#" class:list={["text-base font-semibold", linkStrong]}>
+              Login
+            </a>
+          </li>
+        )
+      }
+      <li class="mt-1 flex items-center gap-5">
         {cta ? <Button size="sm" href={cta.href}>{cta.label}</Button> : <Button size="sm">Get Started</Button>}
       </li>
     </ul>
   </div>
 </header>
 
+{auth && <AuthModal />}
+
+<style>
+  /* Auth clusters stay hidden until the client resolves auth state (no flicker). */
+  [data-auth-when] {
+    display: none;
+  }
+  [data-navbar][data-auth-state="out"] [data-auth-when="out"] {
+    display: flex;
+  }
+  [data-navbar][data-auth-state="in"] [data-auth-when="in"] {
+    display: flex;
+  }
+  /* Role-gated items: hidden unless the resolved role matches. */
+  [data-requires-role] {
+    display: none;
+  }
+  [data-requires-role].is-visible {
+    display: block;
+  }
+</style>
+
 <script>
-  document.querySelectorAll<HTMLElement>("[data-navbar]").forEach((nav) => {
+  import { watchAuth, logOut } from "../../lib/auth";
+
+  const navbars = document.querySelectorAll<HTMLElement>("[data-navbar]");
+
+  navbars.forEach((nav) => {
+    // Mobile disclosure menu (unchanged behaviour).
     const toggle = nav.querySelector<HTMLButtonElement>("[data-nav-toggle]");
     const menu = nav.querySelector<HTMLElement>("[data-nav-menu]");
     toggle?.addEventListener("click", () => {
       const open = menu?.classList.toggle("hidden") === false;
       toggle.setAttribute("aria-expanded", String(open));
+    });
+
+    // Skip auth wiring for demo navbars (auth={false}).
+    if (!nav.querySelector("[data-auth-when]")) return;
+
+    // User-menu dropdown open/close.
+    nav.querySelectorAll<HTMLButtonElement>("[data-auth-menu-toggle]").forEach((btn) => {
+      const panel = btn.parentElement?.querySelector<HTMLElement>("[data-auth-menu]");
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = panel?.classList.toggle("hidden") === false;
+        btn.setAttribute("aria-expanded", String(open));
+      });
+    });
+    document.addEventListener("click", (e) => {
+      nav.querySelectorAll<HTMLElement>("[data-auth-menu]").forEach((panel) => {
+        if (!panel.classList.contains("hidden") && !panel.parentElement?.contains(e.target as Node)) {
+          panel.classList.add("hidden");
+        }
+      });
+    });
+
+    // Log out.
+    nav.querySelectorAll<HTMLButtonElement>("[data-auth-logout]").forEach((btn) =>
+      btn.addEventListener("click", () => logOut()),
+    );
+  });
+
+  // One subscription drives every auth-enabled navbar on the page.
+  watchAuth(({ user, role }) => {
+    navbars.forEach((nav) => {
+      if (!nav.querySelector("[data-auth-when]")) return;
+      nav.setAttribute("data-auth-state", user ? "in" : "out");
+
+      if (user) {
+        const label = user.displayName || (user.email ? user.email.split("@")[0] : "Account");
+        nav.querySelectorAll<HTMLElement>("[data-auth-user-label]").forEach((el) => (el.textContent = label));
+        nav.querySelectorAll<HTMLElement>("[data-auth-role-label]").forEach((el) => (el.textContent = role ?? "member"));
+        nav.querySelectorAll<HTMLElement>("[data-requires-role]").forEach((el) => {
+          const allowed = (el.getAttribute("data-requires-role") ?? "").split(",").map((s) => s.trim());
+          el.classList.toggle("is-visible", !!role && allowed.includes(role));
+        });
+      } else {
+        nav.querySelectorAll<HTMLElement>("[data-auth-menu]").forEach((p) => p.classList.add("hidden"));
+      }
     });
   });
 </script>

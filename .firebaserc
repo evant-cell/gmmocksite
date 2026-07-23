@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "site-design-tests",
+    "Design Selector": "site-design-tests"
+  },
+  "targets": {},
+  "etags": {}
+}

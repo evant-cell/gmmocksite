@@ -1,0 +1,221 @@
+---
+/**
+ * Login / sign-up dialog. Opened by any element with [data-auth-open].
+ * Client-side only: talks to Firebase via src/lib/auth. On success it closes;
+ * the navbar's watchAuth listener updates the UI. Include once per page.
+ */
+import Icon from "../ui/Icon.astro";
+import Input from "../ui/Input.astro";
+import Button from "../ui/Button.astro";
+---
+
+<dialog
+  id="auth-modal"
+  class="m-auto w-full max-w-md bg-white p-8 shadow-toast backdrop:bg-ink/60 open:animate-[gm-modal-in_0.2s_ease-out]"
+  data-auth-modal
+>
+  <div class="flex items-start justify-between gap-6">
+    <div class="flex gap-1 rounded-full bg-cloud p-1" role="tablist" aria-label="Login or sign up">
+      <button type="button" class="gm-label rounded-full px-4 py-2 text-[10px] transition-colors" data-auth-tab="login">
+        Log in
+      </button>
+      <button type="button" class="gm-label rounded-full px-4 py-2 text-[10px] transition-colors" data-auth-tab="signup">
+        Sign up
+      </button>
+    </div>
+    <button
+      type="button"
+      class="mt-1 shrink-0 text-slate transition-colors hover:text-ink"
+      aria-label="Close"
+      data-auth-close
+    >
+      <Icon name="close" size={18} />
+    </button>
+  </div>
+
+  <div
+    class="mt-5 hidden items-center gap-3 border-l-4 border-error-deep bg-error-100 px-4 py-3 text-sm font-medium text-error-deep"
+    role="alert"
+    data-auth-error
+  >
+    <Icon name="alert-circle" size={18} class="shrink-0" />
+    <span data-auth-error-text></span>
+  </div>
+
+  <button
+    type="button"
+    class="gm-label mt-6 flex h-13 w-full items-center justify-center gap-3 border-2 border-line text-ink transition-colors hover:bg-cloud disabled:pointer-events-none disabled:opacity-60"
+    data-auth-google
+  >
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.87 2.7-6.62Z" />
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18Z" />
+      <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33Z" />
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58Z" />
+    </svg>
+    <span data-auth-google-label>Continue with Google</span>
+  </button>
+
+  <div class="my-6 flex items-center gap-3 text-xs text-slate">
+    <div class="h-px flex-1 bg-line"></div>
+    <span class="gm-label">or</span>
+    <div class="h-px flex-1 bg-line"></div>
+  </div>
+
+  <!-- Log in -->
+  <form class="flex flex-col gap-4" data-auth-panel="login" novalidate>
+    <Input label="Email" name="login-email" type="email" placeholder="you@company.com" />
+    <Input label="Password" name="login-password" type="password" placeholder="Your password" />
+    <Button type="submit" class="mt-1 w-full" data-auth-submit>Log in</Button>
+    <p class="text-center text-sm text-slate">
+      No account yet?
+      <button type="button" class="font-semibold text-raspberry hover:text-raspberry-deep" data-auth-tab="signup">
+        Sign up
+      </button>
+    </p>
+  </form>
+
+  <!-- Sign up -->
+  <form class="mt-6 hidden flex-col gap-4" data-auth-panel="signup" novalidate>
+    <Input label="Name" name="signup-name" type="text" placeholder="Your name" hint="Optional" />
+    <Input label="Email" name="signup-email" type="email" placeholder="you@company.com" />
+    <Input label="Password" name="signup-password" type="password" placeholder="At least 6 characters" />
+    <Input label="Confirm password" name="signup-confirm" type="password" placeholder="Re-enter password" />
+    <Button type="submit" class="mt-1 w-full" data-auth-submit>Create account</Button>
+    <p class="text-center text-sm text-slate">
+      Already have an account?
+      <button type="button" class="font-semibold text-raspberry hover:text-raspberry-deep" data-auth-tab="login">
+        Log in
+      </button>
+    </p>
+  </form>
+</dialog>
+
+<style>
+  @keyframes gm-modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  [data-auth-tab] {
+    color: var(--color-slate);
+  }
+  [data-auth-tab][aria-selected="true"] {
+    background: #fff;
+    color: var(--color-ink);
+    box-shadow: 0 1px 2px rgb(2 1 18 / 0.08);
+  }
+</style>
+
+<script>
+  import { logIn, signUp, signInWithGoogle, friendlyAuthError } from "../../lib/auth";
+
+  // Thrown for client-side validation failures we want shown verbatim.
+  class AuthValidationError extends Error {}
+
+  const dialog = document.querySelector<HTMLDialogElement>("[data-auth-modal]");
+  if (dialog) {
+    const errorBox = dialog.querySelector<HTMLElement>("[data-auth-error]");
+    const errorText = dialog.querySelector<HTMLElement>("[data-auth-error-text]");
+    const tabs = dialog.querySelectorAll<HTMLButtonElement>("[data-auth-tab]");
+    const panels = dialog.querySelectorAll<HTMLFormElement>("[data-auth-panel]");
+
+    const clearError = () => errorBox?.classList.add("hidden");
+    const showError = (msg: string) => {
+      if (errorText) errorText.textContent = msg;
+      errorBox?.classList.remove("hidden");
+    };
+
+    const selectTab = (name: string) => {
+      clearError();
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.authTab === name)));
+      panels.forEach((p) => p.classList.toggle("hidden", p.dataset.authPanel !== name));
+      panels.forEach((p) => p.classList.toggle("flex", p.dataset.authPanel === name));
+    };
+
+    tabs.forEach((tab) => tab.addEventListener("click", () => selectTab(tab.dataset.authTab ?? "login")));
+    selectTab("login");
+
+    // Open from any [data-auth-open] trigger on the page (e.g. navbar Login button).
+    document.querySelectorAll<HTMLElement>("[data-auth-open]").forEach((trigger) => {
+      trigger.addEventListener("click", (e) => {
+        e.preventDefault();
+        clearError();
+        selectTab(trigger.dataset.authOpen === "signup" ? "signup" : "login");
+        dialog.showModal();
+      });
+    });
+
+    dialog.querySelector("[data-auth-close]")?.addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    const googleBtn = dialog.querySelector<HTMLButtonElement>("[data-auth-google]");
+    const googleLabel = dialog.querySelector<HTMLElement>("[data-auth-google-label]");
+    googleBtn?.addEventListener("click", async () => {
+      clearError();
+      googleBtn.disabled = true;
+      if (googleLabel) googleLabel.textContent = "Connecting to Google";
+      try {
+        await signInWithGoogle();
+        dialog.close();
+      } catch (err: any) {
+        showError(friendlyAuthError(err?.code ?? ""));
+      } finally {
+        googleBtn.disabled = false;
+        if (googleLabel) googleLabel.textContent = "Continue with Google";
+      }
+    });
+
+    const val = (form: HTMLFormElement, name: string) =>
+      (form.querySelector<HTMLInputElement>(`[name="${name}"]`)?.value ?? "").trim();
+
+    const withSubmitting = async (form: HTMLFormElement, run: () => Promise<void>) => {
+      const btn = form.querySelector<HTMLButtonElement>("[data-auth-submit]");
+      const label = btn?.textContent;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Please wait";
+      }
+      try {
+        await run();
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = label ?? "";
+        }
+      }
+    };
+
+    const handle = (name: string, run: (form: HTMLFormElement) => Promise<void>) => {
+      const form = dialog.querySelector<HTMLFormElement>(`[data-auth-panel="${name}"]`);
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearError();
+        await withSubmitting(form, async () => {
+          try {
+            await run(form);
+            form.reset();
+            dialog.close();
+          } catch (err: any) {
+            if (err instanceof AuthValidationError) showError(err.message);
+            else showError(friendlyAuthError(err?.code ?? ""));
+          }
+        });
+      });
+    };
+
+    handle("login", async (form) => {
+      await logIn(val(form, "login-email"), val(form, "login-password"));
+    });
+
+    handle("signup", async (form) => {
+      const password = val(form, "signup-password");
+      const confirm = val(form, "signup-confirm");
+      if (password !== confirm) throw new AuthValidationError("Passwords do not match.");
+      await signUp(val(form, "signup-email"), password, val(form, "signup-name") || undefined);
+    });
+  }
+</script>

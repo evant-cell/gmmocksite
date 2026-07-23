@@ -1,0 +1,70 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/blocks/Navbar.astro";
+import Footer from "../components/blocks/Footer.astro";
+import Icon from "../components/ui/Icon.astro";
+
+const navLinks = [
+  { label: "Home", href: "/" },
+  { label: "Platform", href: "/platform" },
+];
+
+const tiles = [
+  { icon: "user", title: "Users", body: "Review members, editors and admins in the mocksite-user collection." },
+  { icon: "settings", title: "Site settings", body: "Placeholder for site-wide configuration controls." },
+  { icon: "target", title: "Content", body: "Placeholder for managing page content and drafts." },
+] as const;
+---
+
+<BaseLayout title="Admin" description="Genius Monkey admin area." noindex>
+  <script is:inline>document.documentElement.classList.add("js");</script>
+  <Navbar theme="light" links={navLinks} />
+
+  <main id="main-content" class="bg-cloud">
+    <section class="mx-auto flex min-h-[60vh] max-w-5xl flex-col justify-center px-6 py-20">
+      <!-- Auth gate placeholder -->
+      <div data-auth-loading class="flex items-center gap-3 text-slate">
+        <Icon name="clock" size={20} class="animate-pulse" />
+        <p class="text-lead">Verifying admin access</p>
+      </div>
+
+      <!-- Revealed only for admins (non-admins are redirected before this shows) -->
+      <div data-auth-content class="hidden">
+        <div class="flex items-center gap-3">
+          <span class="gm-label bg-cobalt-100 px-3 py-1 text-cobalt">Admin</span>
+        </div>
+        <h1 class="mt-4 text-h1 font-display font-extrabold text-ink">Admin area</h1>
+        <p class="mt-3 max-w-2xl text-lead text-slate">
+          Restricted to the <span class="font-semibold text-ink">admin</span> role. This is a scaffold for
+          admin-only tooling on the mock site.
+        </p>
+
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            tiles.map((tile) => (
+              <div class="border border-line bg-white p-6 shadow-card">
+                <Icon name={tile.icon} size={24} class="text-raspberry" />
+                <h2 class="mt-4 text-h5 font-bold text-ink">{tile.title}</h2>
+                <p class="mt-2 text-sm text-slate">{tile.body}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  import { guardPage } from "../lib/auth";
+
+  const loading = document.querySelector<HTMLElement>("[data-auth-loading]");
+  const content = document.querySelector<HTMLElement>("[data-auth-content]");
+
+  guardPage({ roles: ["admin"], redirectTo: "/account" }).then(() => {
+    loading?.classList.add("hidden");
+    content?.classList.remove("hidden");
+  });
+</script>
