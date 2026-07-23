@@ -23,5 +23,16 @@ service cloud.firestore {
 
       allow delete: if false;
     }
+
+    // Inline CMS content overlay for the home and platform pages. Content is
+    // public regardless (it mirrors the built-in JSON), so reads stay open -
+    // that also lets onSnapshot run for anonymous visitors. Writes require an
+    // editor/admin role, resolved from the caller's own mocksite-user doc.
+    match /pages-main/{slug} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+                    && get(/databases/$(database)/documents/mocksite-user/$(request.auth.uid)).data.role in ['editor', 'admin'];
+      allow delete: if false;
+    }
   }
 }

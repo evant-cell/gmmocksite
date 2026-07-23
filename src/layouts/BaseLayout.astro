@@ -4,6 +4,7 @@ import "@fontsource-variable/unbounded";
 import "@fontsource-variable/outfit";
 import "@fontsource-variable/google-sans-flex/full.css";
 import "../styles/global.css";
+import CmsEditor from "../components/blocks/CmsEditor.astro";
 
 interface Props {
   title: string;
@@ -12,6 +13,10 @@ interface Props {
   path?: string;
   /** set true on internal pages (styleguide) to keep them out of search */
   noindex?: boolean;
+  /** Inline CMS: page slug (e.g. "home", "platform"). Omit to leave the page uneditable. */
+  cmsPage?: string;
+  /** Inline CMS: the page's built-in content, used as the seed/fallback doc. */
+  cmsSeed?: unknown;
 }
 
 const {
@@ -19,6 +24,8 @@ const {
   description = "Genius Monkey - next generation programmatic ad platform.",
   path,
   noindex = false,
+  cmsPage,
+  cmsSeed,
 } = Astro.props;
 
 const canonical = path && Astro.site ? new URL(path, Astro.site).href : undefined;
@@ -43,7 +50,8 @@ const canonical = path && Astro.site ? new URL(path, Astro.site).href : undefine
     <meta name="twitter:description" content={description} />
     <slot name="head" />
   </head>
-  <body>
+  <body data-cms-page={cmsPage}>
+    {cmsPage && <CmsEditor page={cmsPage} seed={cmsSeed} />}
     <a
       href="#main-content"
       class="gm-label sr-only bg-ink px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
@@ -53,3 +61,17 @@ const canonical = path && Astro.site ? new URL(path, Astro.site).href : undefine
     <slot />
   </body>
 </html>
+
+<style is:global>
+  /* Inline CMS edit mode: room for the fixed banner, plus the shared
+     highlight used to flash a bound page node when its panel field focuses.
+     Both are no-ops unless a page opts in via cmsPage AND ?edit=1 resolves. */
+  html.gm-edit body {
+    padding-top: 2.75rem;
+  }
+  .gm-cms-highlight {
+    outline: 2px solid var(--color-cobalt);
+    outline-offset: 2px;
+    transition: outline-color 0.2s ease;
+  }
+</style>

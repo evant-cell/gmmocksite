@@ -12,9 +12,12 @@ interface Props {
   variant?: "default" | "numbered";
   theme?: "light" | "dark";
   class?: string;
+  /** Inline CMS: path to the FAQ section's subsections array, e.g. `sections.7.subsections`.
+   *  When set, each item's question/answer gets a data-cms-path binding. Omit to skip. */
+  basePath?: string;
 }
 
-const { items, variant = "default", theme = "light", class: className = "" } = Astro.props;
+const { items, variant = "default", theme = "light", class: className = "", basePath } = Astro.props;
 const dark = theme === "dark";
 ---
 
@@ -46,7 +49,7 @@ const dark = theme === "dark";
                 dark ? "group-open:text-white" : "group-open:text-ink",
               ]}
             >
-              {item.question}
+              <span data-cms-path={basePath ? `${basePath}.${i}.heading` : undefined}>{item.question}</span>
             </h3>
             <span
               class:list={[
@@ -65,6 +68,7 @@ const dark = theme === "dark";
               "max-w-3xl pb-8 text-body md:pl-15",
               dark ? "text-white/70" : "text-slate",
             ]}
+            data-cms-path={basePath ? `${basePath}.${i}.content.0.text` : undefined}
           >
             {item.answer}
           </p>
@@ -73,15 +77,22 @@ const dark = theme === "dark";
     </div>
   ) : (
     <div class:list={["divide-y divide-line border-y border-line", className]}>
-      {items.map((item) => (
+      {items.map((item, i) => (
         <details class="group py-1" open={item.open}>
           <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-4 [&::-webkit-details-marker]:hidden">
-            <h3 class="text-base font-bold">{item.question}</h3>
+            <h3 class="text-base font-bold">
+              <span data-cms-path={basePath ? `${basePath}.${i}.heading` : undefined}>{item.question}</span>
+            </h3>
             <span class="grid size-8 shrink-0 place-items-center rounded-full bg-cloud text-ink transition-colors group-open:bg-raspberry group-open:text-white">
               <Icon name="chevron-down" size={15} class="transition-transform duration-200 group-open:rotate-180" />
             </span>
           </summary>
-          <p class="max-w-3xl pb-5 text-sm leading-relaxed text-slate">{item.answer}</p>
+          <p
+            class="max-w-3xl pb-5 text-sm leading-relaxed text-slate"
+            data-cms-path={basePath ? `${basePath}.${i}.content.0.text` : undefined}
+          >
+            {item.answer}
+          </p>
         </details>
       ))}
     </div>

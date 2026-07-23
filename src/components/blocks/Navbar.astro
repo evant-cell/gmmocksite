@@ -88,6 +88,15 @@ const linkStrong = dark ? "text-white/90" : "text-ink";
                 </p>
                 <div class="my-1 border-t border-line" />
                 <a href="/account" class="block px-4 py-2 text-sm font-medium hover:bg-cloud">Account</a>
+                <a
+                  href="#"
+                  data-cms-edit-link
+                  data-requires-role="editor,admin"
+                  hidden
+                  class="px-4 py-2 text-sm font-medium hover:bg-cloud"
+                >
+                  Edit this page
+                </a>
                 <a href="/admin" data-requires-role="admin" class="px-4 py-2 text-sm font-medium hover:bg-cloud">
                   Admin
                 </a>
@@ -147,6 +156,15 @@ const linkStrong = dark ? "text-white/90" : "text-ink";
                 Signed in as <span class="font-semibold capitalize" data-auth-role-label>member</span>
               </p>
               <a href="/account" class:list={["block text-base font-semibold", linkStrong]}>Account</a>
+              <a
+                href="#"
+                data-cms-edit-link
+                data-requires-role="editor,admin"
+                hidden
+                class:list={["block text-base font-semibold", linkStrong]}
+              >
+                Edit this page
+              </a>
               <a href="/admin" data-requires-role="admin" class:list={["text-base font-semibold", linkStrong]}>
                 Admin
               </a>

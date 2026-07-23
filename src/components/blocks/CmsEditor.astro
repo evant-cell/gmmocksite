@@ -1,0 +1,415 @@
+---
+/**
+ * Inline CMS edit-mode shell: fixed banner + side panel drawer, rendered by
+ * BaseLayout only when a page opts in via `cmsPage`. Completely inert unless
+ * the URL carries `?edit=1` - regular page loads render this markup but the
+ * module script below does nothing beyond that check, so there is zero
+ * visible/behavioral difference for normal visitors.
+ *
+ * See the CMS spec, section 4, for the full activation gate and state
+ * machine this component's script implements.
+ */
+interface Props {
+  /** Page slug, e.g. "home" or "platform". Matches the pages-main doc id. */
+  page: string;
+  /** The page's built-in content (same shape as the Firestore doc). */
+  seed: unknown;
+}
+
+const { page, seed } = Astro.props;
+---
+
+<div data-cms-editor data-cms-page={page}>
+  <script type="application/json" data-cms-seed set:html={JSON.stringify(seed)} />
+
+  <div
+    data-cms-banner
+    hidden
+    class="fixed inset-x-0 top-0 z-[200] flex h-11 items-center justify-between gap-4 border-b border-line-dark bg-ink px-4 text-white"
+  >
+    <div class="flex min-w-0 items-center gap-3 overflow-hidden">
+      <span class="gm-label shrink-0 whitespace-nowrap text-[10px] text-white/70">
+        Edit mode &middot; <span data-cms-slug>page</span>
+      </span>
+      <span
+        data-cms-status
+        data-tone="ok"
+        class="gm-label shrink-0 rounded-full bg-white/10 px-2.5 py-1 text-[10px] whitespace-nowrap"
+      >
+        Saved
+      </span>
+      <span
+        data-cms-remote-note
+        hidden
+        class="gm-label shrink-0 truncate text-[10px] text-warning-100"
+      >
+        Remote changed, your edits are unsaved
+      </span>
+    </div>
+    <div class="flex shrink-0 items-center gap-2">
+      <button
+        type="button"
+        data-cms-toggle-panel
+        class="gm-label border border-white/25 px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-white/10"
+      >
+        Fields
+      </button>
+      <button
+        type="button"
+        data-cms-save
+        class="gm-label bg-raspberry px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-raspberry-deep"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        data-cms-discard
+        class="gm-label border border-white/25 px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-white/10"
+      >
+        Discard
+      </button>
+      <button
+        type="button"
+        data-cms-reset
+        hidden
+        class="gm-label border border-warning/50 px-3 py-1.5 text-[10px] whitespace-nowrap text-warning-100 transition-colors hover:bg-white/10"
+      >
+        Reset to built-in
+      </button>
+      <button
+        type="button"
+        data-cms-exit
+        class="gm-label border border-white/25 px-3 py-1.5 text-[10px] whitespace-nowrap text-white transition-colors hover:bg-white/10"
+      >
+        Exit
+      </button>
+    </div>
+  </div>
+
+  <aside
+    data-cms-panel
+    hidden
+    class="fixed top-11 right-0 bottom-0 z-[190] w-[360px] max-w-[90vw] overflow-y-auto border-l border-line bg-white text-ink shadow-toast"
+  >
+    <div data-cms-groups class="divide-y divide-line"></div>
+  </aside>
+</div>
+
+<style>
+  .cms-group-summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  .cms-group-summary::-webkit-details-marker {
+    display: none;
+  }
+  .cms-field textarea {
+    resize: none;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import { watchAuth } from "../../lib/auth";
+  import type { AuthState } from "../../lib/auth";
+  import {
+    getByPath,
+    setByPath,
+    enumerateFields,
+    subscribePage,
+    savePage,
+    seedPageIfMissing,
+    type CmsField,
+    type PageDoc,
+  } from "../../lib/cms";
+
+  const root = document.querySelector<HTMLElement>("[data-cms-editor]");
+
+  if (root) {
+    const slug = root.dataset.cmsPage ?? "";
+    const seedScript = root.querySelector<HTMLScriptElement>("[data-cms-seed]");
+    const seed: PageDoc = seedScript ? (JSON.parse(seedScript.textContent ?? "null") as PageDoc) : {};
+
+    // Reveal + wire the navbar "Edit this page" entry point unconditionally
+    // (its own role-gated visibility is handled by Navbar's existing
+    // data-requires-role logic). Runs regardless of ?edit=1, so a signed-in
+    // editor can reach edit mode from a normal page load.
+    document.querySelectorAll<HTMLAnchorElement>("[data-cms-edit-link]").forEach((a) => {
+      a.removeAttribute("hidden");
+      a.href = `${location.pathname}?edit=1`;
+    });
+
+    const params = new URLSearchParams(location.search);
+    if (params.has("edit")) {
+      const devBypass = import.meta.env.DEV && params.has("devcms");
+      if (devBypass) {
+        boot({ mode: "dev", user: null });
+      } else {
+        const unsub = watchAuth((state: AuthState) => {
+          unsub();
+          if (state.user && (state.role === "editor" || state.role === "admin")) {
+            boot({ mode: "live", user: state.user });
+          } else {
+            stripEditParams();
+          }
+        });
+      }
+    }
+
+    function stripEditParams() {
+      const p = new URLSearchParams(location.search);
+      p.delete("edit");
+      p.delete("devcms");
+      const qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? `?${qs}` : "") + location.hash);
+    }
+
+    function cssEscape(value: string): string {
+      if (typeof CSS !== "undefined" && CSS.escape) return CSS.escape(value);
+      return value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    }
+
+    function deepEqual(a: unknown, b: unknown): boolean {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function boot(ctx: { mode: "dev" | "live"; user: import("firebase/auth").User | null }) {
+      document.documentElement.classList.add("gm-edit");
+
+      const banner = root!.querySelector<HTMLElement>("[data-cms-banner]")!;
+      const panel = root!.querySelector<HTMLElement>("[data-cms-panel]")!;
+      const groupsEl = root!.querySelector<HTMLElement>("[data-cms-groups]")!;
+      const statusEl = root!.querySelector<HTMLElement>("[data-cms-status]")!;
+      const remoteNoteEl = root!.querySelector<HTMLElement>("[data-cms-remote-note]")!;
+      const slugEl = root!.querySelector<HTMLElement>("[data-cms-slug]")!;
+      const resetBtn = root!.querySelector<HTMLButtonElement>("[data-cms-reset]")!;
+
+      slugEl.textContent = slug;
+      banner.removeAttribute("hidden");
+      panel.removeAttribute("hidden");
+
+      // Reset to built-in is destructive and admin-only, and only meaningful
+      // once there is a live Firestore doc to reset.
+      if (ctx.mode === "live") {
+        watchAuth((state) => {
+          resetBtn.toggleAttribute("hidden", state.role !== "admin");
+        });
+      }
+
+      let working: PageDoc = structuredClone(seed);
+      let saved: PageDoc = structuredClone(seed);
+      let dirty = false;
+      let initializedFromRemote = false;
+      let unsubscribeRemote: (() => void) | null = null;
+
+      function setStatus(text: string, tone: "ok" | "dirty" | "saving" | "error") {
+        statusEl.textContent = text;
+        statusEl.dataset.tone = tone;
+      }
+
+      function markDirty(next: boolean) {
+        dirty = next;
+        setStatus(next ? "Unsaved changes" : "Saved", next ? "dirty" : "ok");
+      }
+
+      function patchAll() {
+        document.querySelectorAll<HTMLElement>("[data-cms-path]").forEach((el) => {
+          const path = el.dataset.cmsPath;
+          if (!path) return;
+          const v = getByPath(working, path);
+          if (typeof v === "string") el.textContent = v;
+        });
+      }
+
+      function patchOne(path: string, value: string) {
+        document
+          .querySelectorAll<HTMLElement>(`[data-cms-path="${cssEscape(path)}"]`)
+          .forEach((el) => (el.textContent = value));
+      }
+
+      function highlightPageNode(path: string) {
+        const el = document.querySelector<HTMLElement>(`[data-cms-path="${cssEscape(path)}"]`);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("gm-cms-highlight");
+        window.setTimeout(() => el.classList.remove("gm-cms-highlight"), 900);
+      }
+
+      function focusFieldForPath(path: string) {
+        const input = groupsEl.querySelector<HTMLElement>(`[data-cms-field-path="${cssEscape(path)}"]`);
+        if (!input) return;
+        const details = input.closest("details");
+        if (details) details.open = true;
+        panel.removeAttribute("hidden");
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+        input.focus();
+      }
+
+      function onFieldInput(path: string, value: string) {
+        working = setByPath(working, path, value);
+        patchOne(path, value);
+        markDirty(!deepEqual(working, saved));
+      }
+
+      function buildFieldRow(field: CmsField): HTMLElement {
+        const row = document.createElement("label");
+        row.className = "cms-field flex flex-col gap-1.5 px-4 py-3";
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "gm-label text-[10px] text-slate";
+        labelSpan.textContent = field.label;
+        row.appendChild(labelSpan);
+
+        const isTextarea = field.kind === "textarea";
+        const input: HTMLInputElement | HTMLTextAreaElement = isTextarea
+          ? document.createElement("textarea")
+          : document.createElement("input");
+        if (input instanceof HTMLInputElement) input.type = "text";
+        input.value = field.value;
+        input.dataset.cmsFieldPath = field.path;
+        input.className =
+          "w-full border border-line bg-white px-3 py-2 text-sm text-ink focus:border-cobalt focus:outline-none";
+
+        if (input instanceof HTMLTextAreaElement) {
+          input.rows = 2;
+          const autosize = () => {
+            input.style.height = "auto";
+            input.style.height = `${input.scrollHeight}px`;
+          };
+          input.addEventListener("input", autosize);
+          window.requestAnimationFrame(autosize);
+        }
+
+        input.addEventListener("input", () => onFieldInput(field.path, input.value));
+        input.addEventListener("focus", () => highlightPageNode(field.path));
+        row.appendChild(input);
+        return row;
+      }
+
+      function renderPanel() {
+        groupsEl.innerHTML = "";
+        const fields = enumerateFields(working);
+        const groups = new Map<string, CmsField[]>();
+        for (const f of fields) {
+          if (!groups.has(f.group)) groups.set(f.group, []);
+          groups.get(f.group)!.push(f);
+        }
+        for (const [group, groupFields] of groups) {
+          const details = document.createElement("details");
+          details.open = true;
+          const summary = document.createElement("summary");
+          summary.className = "cms-group-summary gm-label bg-cloud px-4 py-2.5 text-[10px] text-ink";
+          summary.textContent = group;
+          details.appendChild(summary);
+          const body = document.createElement("div");
+          body.className = "divide-y divide-line";
+          for (const f of groupFields) body.appendChild(buildFieldRow(f));
+          details.appendChild(body);
+          groupsEl.appendChild(details);
+        }
+      }
+
+      function doDiscard() {
+        working = structuredClone(saved);
+        patchAll();
+        renderPanel();
+        markDirty(false);
+        remoteNoteEl.setAttribute("hidden", "");
+      }
+
+      async function doSave() {
+        setStatus("Saving", "saving");
+        if (ctx.mode === "dev") {
+          saved = structuredClone(working);
+          markDirty(false);
+          console.log("[cms:dev] save (local only, Firestore disabled)", saved);
+          return;
+        }
+        try {
+          await savePage(slug, working, ctx.user!);
+          saved = structuredClone(working);
+          markDirty(false);
+        } catch (err) {
+          console.error("[cms] save failed", err);
+          setStatus("Error", "error");
+        }
+      }
+
+      function doExit() {
+        const p = new URLSearchParams(location.search);
+        p.delete("edit");
+        p.delete("devcms");
+        const qs = p.toString();
+        location.href = location.pathname + (qs ? `?${qs}` : "") + location.hash;
+      }
+
+      async function doReset() {
+        if (ctx.mode !== "live") return;
+        if (!window.confirm("Reset this page to the built-in content? This overwrites any saved edits.")) return;
+        try {
+          await savePage(slug, seed, ctx.user!);
+        } catch (err) {
+          console.error("[cms] reset failed", err);
+          setStatus("Error", "error");
+        }
+      }
+
+      root!.querySelector("[data-cms-toggle-panel]")!.addEventListener("click", () => {
+        panel.toggleAttribute("hidden");
+      });
+      root!.querySelector("[data-cms-save]")!.addEventListener("click", () => void doSave());
+      root!.querySelector("[data-cms-discard]")!.addEventListener("click", doDiscard);
+      root!.querySelector("[data-cms-exit]")!.addEventListener("click", doExit);
+      resetBtn.addEventListener("click", () => void doReset());
+
+      // Reverse link: clicking a bound page node focuses its panel field.
+      // preventDefault so clicking editable text inside a card/link doesn't
+      // navigate away while in edit mode.
+      document.addEventListener(
+        "click",
+        (e) => {
+          const target = (e.target as HTMLElement).closest<HTMLElement>("[data-cms-path]");
+          if (!target) return;
+          e.preventDefault();
+          focusFieldForPath(target.dataset.cmsPath!);
+        },
+        { capture: true },
+      );
+
+      window.addEventListener("beforeunload", (e) => {
+        if (!dirty) return;
+        e.preventDefault();
+        e.returnValue = "";
+      });
+
+      patchAll();
+      renderPanel();
+      markDirty(false);
+
+      if (ctx.mode === "live") {
+        seedPageIfMissing(slug, seed, ctx.user!).catch((err) => console.error("[cms] seed failed", err));
+        unsubscribeRemote = subscribePage(slug, (remote) => {
+          if (!remote) return;
+          if (!initializedFromRemote) {
+            initializedFromRemote = true;
+            working = structuredClone(remote);
+            saved = structuredClone(remote);
+            patchAll();
+            renderPanel();
+            markDirty(false);
+            return;
+          }
+          if (deepEqual(remote, saved)) return;
+          if (dirty) {
+            remoteNoteEl.removeAttribute("hidden");
+            return;
+          }
+          working = structuredClone(remote);
+          saved = structuredClone(remote);
+          patchAll();
+          renderPanel();
+        });
+        window.addEventListener("pagehide", () => unsubscribeRemote?.(), { once: true });
+      }
+    }
+  }
+</script>
