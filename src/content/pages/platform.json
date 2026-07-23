@@ -11,6 +11,7 @@
     },
     {
       "type": "hero",
+      "eyebrow": "The Platform",
       "content": [
         {
           "kind": "p",
@@ -18,13 +19,19 @@
         },
         {
           "kind": "cta",
-          "text": "Request a demo"
+          "text": "Request a demo",
+          "href": "/request-a-demo"
         }
       ]
     },
     {
       "type": "section",
+      "eyebrow": "01 / Definition",
       "heading": "What a programmatic advertising platform is",
+      "link": {
+        "text": "DSP, defined",
+        "href": "/glossary"
+      },
       "content": [
         {
           "kind": "p",
@@ -41,6 +48,7 @@
     },
     {
       "type": "section",
+      "eyebrow": "02 / The Problem",
       "heading": "Somewhere between your budget and the screen, the story goes dark",
       "content": [
         {
@@ -59,6 +67,7 @@
     },
     {
       "type": "section",
+      "eyebrow": "03 / The Platform",
       "heading": "What you get, and where to dig in",
       "content": [],
       "subsections": [
@@ -150,6 +159,7 @@
     },
     {
       "type": "section",
+      "eyebrow": "04 / The Choice",
       "heading": "Managed platform or self-serve DSP",
       "content": [
         {
@@ -158,6 +168,7 @@
         },
         {
           "kind": "table",
+          "srLabel": "Category",
           "headers": [
             "",
             "Self-serve DSP",
@@ -194,7 +205,28 @@
     },
     {
       "type": "section",
+      "eyebrow": "05 / Proof",
       "heading": "Proof, not promises",
+      "link": {
+        "text": "Read the case studies",
+        "href": "/programmatic-case-studies"
+      },
+      "stats": [
+        {
+          "label": "onsemi",
+          "before": "$2,000",
+          "value": "under $1",
+          "tag": "Cost per conversion",
+          "accent": "raspberry"
+        },
+        {
+          "label": "Country Thunder",
+          "before": "$1 in",
+          "value": "$230 back",
+          "tag": "Ticket sales",
+          "accent": "mint"
+        }
+      ],
       "content": [
         {
           "kind": "p",
@@ -213,6 +245,7 @@
     },
     {
       "type": "faq",
+      "eyebrow": "06 / FAQ",
       "heading": "Questions buyers actually ask",
       "content": [],
       "subsections": [
@@ -279,7 +312,8 @@
         },
         {
           "kind": "cta",
-          "text": "Request a demo"
+          "text": "Request a demo",
+          "href": "/request-a-demo"
         }
       ]
     },

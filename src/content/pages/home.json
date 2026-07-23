@@ -11,6 +11,7 @@
     },
     {
       "type": "hero",
+      "eyebrow": "Programmatic Advertising",
       "content": [
         {
           "kind": "p",
@@ -18,13 +19,50 @@
         },
         {
           "kind": "cta",
-          "text": "Request a demo"
+          "text": "Request a demo",
+          "href": "#demo"
         }
+      ],
+      "link": {
+        "text": "See the receipts",
+        "href": "#receipts"
+      },
+      "stats": [
+        { "value": "$230", "label": "back per $1, Country Thunder" },
+        { "value": "+887%", "label": "site visitors, Canales" },
+        { "value": "<$1", "label": "per conversion, onsemi" }
+      ],
+      "card": {
+        "label": "Published rates",
+        "badge": "Public",
+        "unit": "CPM",
+        "rates": [
+          { "channel": "Display", "value": "$2-$4" },
+          { "channel": "Video", "value": "$10-$22" },
+          { "channel": "OTT/CTV", "value": "$25-$40" }
+        ],
+        "footnote": "Effective CPMs, published for anyone to read. Ask your current vendor to do the same.",
+        "chips": ["No long-term contracts", "A real expert on every account"]
+      },
+      "ticker": [
+        "Our own DSP",
+        "A real expert behind every account",
+        "Display $2-$4 CPM",
+        "Video $10-$22 CPM",
+        "OTT/CTV $25-$40 CPM",
+        "No long-term contracts",
+        "27 published case studies",
+        "Founded in 2009"
       ]
     },
     {
       "type": "section",
+      "eyebrow": "01 / What we do",
       "heading": "What Genius Monkey does",
+      "link": {
+        "text": "About Genius Monkey",
+        "href": "/about"
+      },
       "content": [
         {
           "kind": "p",
@@ -41,7 +79,36 @@
     },
     {
       "type": "section",
+      "eyebrow": "02 / Proof",
       "heading": "The receipts, up front",
+      "link": {
+        "text": "Read the case studies",
+        "href": "/programmatic-case-studies"
+      },
+      "stats": [
+        {
+          "label": "onsemi",
+          "before": "$2,000",
+          "value": "under $1",
+          "tag": "Cost per conversion"
+        },
+        {
+          "label": "Country Thunder",
+          "before": "$1 in",
+          "valuePrefix": "$",
+          "countUp": 230,
+          "valueSuffix": " back",
+          "tag": "Ticket sales"
+        },
+        {
+          "label": "Canales Furniture",
+          "before": "Since 2018",
+          "valuePrefix": "+",
+          "countUp": 887,
+          "valueSuffix": "%",
+          "tag": "New website visitors"
+        }
+      ],
       "content": [
         {
           "kind": "p",
@@ -58,6 +125,7 @@
     },
     {
       "type": "section",
+      "eyebrow": "03 / Solutions",
       "heading": "Where to point your budget",
       "content": [],
       "subsections": [
@@ -125,7 +193,18 @@
     },
     {
       "type": "section",
+      "eyebrow": "04 / The difference",
       "heading": "Why Genius Monkey",
+      "rateLabel": "Effective CPM",
+      "rates": [
+        { "channel": "Display", "value": "$2-$4" },
+        { "channel": "Video", "value": "$10-$22" },
+        { "channel": "OTT/CTV", "value": "$25-$40" }
+      ],
+      "link": {
+        "text": "See published rates",
+        "href": "/pricing"
+      },
       "content": [
         {
           "kind": "p",
@@ -146,7 +225,32 @@
     },
     {
       "type": "section",
+      "eyebrow": "05 / Process",
       "heading": "How an engagement runs",
+      "cardLabel": "Cenvar Roofing & Solar",
+      "badge": {
+        "countUp": 27,
+        "label": "Published case studies"
+      },
+      "stats": [
+        {
+          "valuePrefix": "+",
+          "countUp": 44,
+          "valueSuffix": "%",
+          "label": "Website leads, first 45 days",
+          "accent": "raspberry"
+        },
+        {
+          "valuePrefix": "+",
+          "countUp": 30,
+          "valueSuffix": "%",
+          "label": "Gross billing, a year in"
+        }
+      ],
+      "link": {
+        "text": "Cenvar case study",
+        "href": "/programmatic-case-studies"
+      },
       "content": [
         {
           "kind": "p",
@@ -163,7 +267,12 @@
     },
     {
       "type": "faq",
+      "eyebrow": "06 / FAQ",
       "heading": "Questions buyers actually ask",
+      "link": {
+        "text": "Request a demo",
+        "href": "#demo"
+      },
       "content": [],
       "subsections": [
         {
@@ -233,5 +342,22 @@
         "AEO: answer block and all four FAQ answers identical to V1, 40 to 60 words each, standalone first sentences. Canonical \"How much\" and \"How do I know\" answers shared with /platform verbatim."
       ]
     }
-  ]
+  ],
+  "stickyCta": {
+    "text": "We solve advertising",
+    "note": "No long-term contracts",
+    "cta": {
+      "text": "Request a demo",
+      "href": "#demo"
+    }
+  },
+  "chat": {
+    "intro": "Done guessing? Pick a question, or request a demo.",
+    "prompts": [
+      { "label": "DSP or agency?" },
+      { "label": "What does it cost?", "href": "/pricing", "linkLabel": "See published rates" },
+      { "label": "Which channels?" },
+      { "label": "Is it working?", "href": "/platform/measurement-validation", "linkLabel": "How we measure" }
+    ]
+  }
 }

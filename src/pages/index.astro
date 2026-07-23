@@ -14,12 +14,40 @@ const page = await getEntry("pages", "home");
 if (!page) throw new Error("Missing content: src/content/pages/home.json");
 const data = page.data;
 
-type Block = { kind: string; text?: string; links?: string[] };
+type Rate = { channel: string; value: string };
+type Stat = {
+  value?: string;
+  label?: string;
+  before?: string;
+  valuePrefix?: string;
+  countUp?: number;
+  valueSuffix?: string;
+  tag?: string;
+  accent?: string;
+};
+type LinkRef = { text: string; href: string };
+type Block = { kind: string; text?: string; links?: string[]; href?: string };
 type Section = {
   type: string;
+  eyebrow?: string;
   heading?: string;
   content?: Block[];
   subsections?: { heading: string; content: Block[]; links?: string[] }[];
+  link?: LinkRef;
+  stats?: Stat[];
+  rates?: Rate[];
+  rateLabel?: string;
+  card?: {
+    label?: string;
+    badge?: string;
+    unit?: string;
+    rates?: Rate[];
+    footnote?: string;
+    chips?: string[];
+  };
+  ticker?: string[];
+  cardLabel?: string;
+  badge?: { countUp?: number; value?: string; label?: string };
   metaTitle?: string;
   [key: string]: unknown;
 };
@@ -67,24 +95,14 @@ const [engProcess, engCenvar] = engagement?.content ?? [];
 // First path-shaped link on a block, e.g. "/platform" out of the links array
 const pathOf = (links?: string[]) => links?.find((l) => l.startsWith("/"))?.split(" ")[0];
 
-// Published effective rates, from the differentiator copy on this page
-const rates = [
-  { channel: "Display", value: "$2-$4" },
-  { channel: "Video", value: "$10-$22" },
-  { channel: "OTT/CTV", value: "$25-$40" },
-];
-
-// Every ticker item is a fact stated in this page's copy
-const tickerItems = [
-  "Our own DSP",
-  "A real expert behind every account",
-  "Display $2-$4 CPM",
-  "Video $10-$22 CPM",
-  "OTT/CTV $25-$40 CPM",
-  "No long-term contracts",
-  "27 published case studies",
-  "Founded in 2009",
-];
+// Hero side-panel ("product shot"), proof-row stats, and published-facts
+// ticker all come from the hero section's JSON now (no page-level literals).
+const heroEyebrow = hero?.eyebrow;
+const heroLink = hero?.link;
+const heroStats = hero?.stats ?? [];
+const heroCard = hero?.card;
+const rates = heroCard?.rates ?? [];
+const tickerItems = hero?.ticker ?? [];
 
 // Sentence one gets the marker treatment: the last word sits on a raspberry block
 const taWords = titleA.split(" ");
@@ -98,18 +116,22 @@ const navLinks = [
   { label: "Resources", href: "#" },
 ];
 
-// Chat concierge: chip labels are shorthand, answers are the FAQ copy verbatim
-const chatLabels = ["DSP or agency?", "What does it cost?", "Which channels?", "Is it working?"];
-const chatLinks: Record<number, { href: string; linkLabel: string }> = {
-  1: { href: "/pricing", linkLabel: "See published rates" },
-  3: { href: "/platform/measurement-validation", linkLabel: "How we measure" },
-};
-const chatItems = (faq?.subsections ?? []).map((s, i) => ({
-  label: chatLabels[i] ?? s.heading,
-  text: s.content?.[0]?.text ?? "",
-  ...chatLinks[i],
-}));
-const chatIntro = "Done guessing? Pick a question, or request a demo.";
+// Sticky CTA bar copy, from the page JSON
+const stickyCta = (data as { stickyCta?: { text?: string; note?: string; cta?: LinkRef } }).stickyCta;
+
+// Chat concierge: prompt labels/links come from the page JSON; answers are the
+// FAQ copy verbatim, matched to prompts by order.
+type ChatPrompt = { label?: string; href?: string; linkLabel?: string };
+const chat = (data as { chat?: { intro?: string; prompts?: ChatPrompt[] } }).chat;
+const chatIntro = chat?.intro ?? "";
+const chatItems = (faq?.subsections ?? []).map((s, i) => {
+  const prompt = chat?.prompts?.[i];
+  return {
+    label: prompt?.label ?? s.heading,
+    text: s.content?.[0]?.text ?? "",
+    ...(prompt?.href ? { href: prompt.href, linkLabel: prompt.linkLabel } : {}),
+  };
+});
 
 const siteUrl = Astro.site?.href ?? "https://geniusmonkey.com/";
 const pageUrl = siteUrl;
@@ -172,7 +194,7 @@ const jsonLd = {
       class="relative z-10 mx-auto grid w-full max-w-7xl grow content-center gap-14 px-6 py-16 md:py-20 lg:min-h-[calc(100dvh-9.5rem)] lg:grid-cols-[1.25fr_1fr] lg:items-center lg:gap-10 lg:px-20"
     >
       <div>
-        <p class="gm-eyebrow rise text-slate">Programmatic Advertising</p>
+        <p class="gm-eyebrow rise text-slate">{heroEyebrow}</p>
 
         <h1 class="mt-7 font-display font-extrabold tracking-tight">
           <span class="mask block">
@@ -199,24 +221,20 @@ const jsonLd = {
         <p class="rise mt-8 max-w-xl text-lead text-slate" style="animation-delay: 380ms">{heroParas[0]?.text}</p>
 
         <div class="rise mt-9 flex flex-wrap items-center gap-x-8 gap-y-5" style="animation-delay: 480ms">
-          {heroCta && <Button id="hero-cta" size="lg" href="#demo" icon="arrow-right">{heroCta.text}</Button>}
-          <TextLink href="#receipts">See the receipts</TextLink>
+          {heroCta && <Button id="hero-cta" size="lg" href={heroCta.href ?? "#demo"} icon="arrow-right">{heroCta.text}</Button>}
+          {heroLink && <TextLink href={heroLink.href}>{heroLink.text}</TextLink>}
         </div>
 
         <!-- Proof row, from the case studies on this page -->
         <dl class="rise mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-line pt-6" style="animation-delay: 580ms">
-          <div>
-            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">$230</dd>
-            <dt class="mt-1 text-caption font-normal text-slate">back per $1, Country Thunder</dt>
-          </div>
-          <div>
-            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">+887%</dd>
-            <dt class="mt-1 text-caption font-normal text-slate">site visitors, Canales</dt>
-          </div>
-          <div>
-            <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">&lt;$1</dd>
-            <dt class="mt-1 text-caption font-normal text-slate">per conversion, onsemi</dt>
-          </div>
+          {
+            heroStats.map((stat) => (
+              <div>
+                <dd class="font-display text-2xl font-extrabold tracking-tighter md:text-3xl">{stat.value}</dd>
+                <dt class="mt-1 text-caption font-normal text-slate">{stat.label}</dt>
+              </div>
+            ))
+          }
         </dl>
       </div>
 
@@ -224,13 +242,13 @@ const jsonLd = {
       <div class="rise relative mx-auto w-full max-w-sm lg:mx-0 lg:justify-self-end" style="animation-delay: 300ms">
         <div class="gm-float relative z-10 border border-line bg-white p-6 pb-11 shadow-card md:p-7 md:pb-12">
           <div class="flex items-center justify-between gap-4">
-            <p class="gm-label text-[10px] text-slate">Published rates</p>
+            <p class="gm-label text-[10px] text-slate">{heroCard?.label}</p>
             <span class="inline-flex items-center gap-1.5 bg-mint-100 px-2.5 py-1 gm-label text-[9px] text-success">
               <span class="relative flex size-1.5">
                 <span class="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-60"></span>
                 <span class="relative inline-flex size-1.5 rounded-full bg-success"></span>
               </span>
-              Public
+              {heroCard?.badge}
             </span>
           </div>
           <ul class="mt-5 divide-y divide-line">
@@ -240,25 +258,25 @@ const jsonLd = {
                   <span class="text-body font-medium">{rate.channel}</span>
                   <span class="font-display text-xl font-extrabold tracking-tighter md:text-2xl">
                     {rate.value}
-                    <span class="ml-1 text-caption font-normal tracking-normal text-mist">CPM</span>
+                    <span class="ml-1 text-caption font-normal tracking-normal text-mist">{heroCard?.unit}</span>
                   </span>
                 </li>
               ))
             }
           </ul>
           <p class="mt-4 border-t border-line pt-4 text-caption font-normal text-slate">
-            Effective CPMs, published for anyone to read. Ask your current vendor to do the same.
+            {heroCard?.footnote}
           </p>
         </div>
 
         <!-- Floating chips, the two facts buyers ask about first -->
         <div class="gm-float absolute -top-5 -right-3 z-20 flex items-center gap-2 border border-line bg-white py-2 pr-4 pl-2 shadow-card md:-right-8" style="animation-delay: 1.2s">
           <span class="grid size-7 place-items-center bg-raspberry text-white"><Icon name="check" size={14} /></span>
-          <span class="gm-label text-[9px]">No long-term contracts</span>
+          <span class="gm-label text-[9px]">{heroCard?.chips?.[0]}</span>
         </div>
         <div class="gm-float absolute -bottom-5 -left-3 z-20 flex items-center gap-2 border border-line bg-white py-2 pr-4 pl-2 shadow-card md:-left-8" style="animation-delay: 2.1s">
           <span class="grid size-7 place-items-center bg-hole text-white"><Icon name="user" size={14} /></span>
-          <span class="gm-label text-[9px]">A real expert on every account</span>
+          <span class="gm-label text-[9px]">{heroCard?.chips?.[1]}</span>
         </div>
         <!-- Offset raspberry plate behind the card -->
         <div aria-hidden="true" class="absolute inset-0 z-0 translate-x-3 translate-y-3 bg-raspberry"></div>
@@ -290,7 +308,7 @@ const jsonLd = {
       <section class="bg-white">
         <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:py-24 lg:grid-cols-[1fr_2fr] lg:px-20">
           <div data-reveal>
-            <p class="gm-eyebrow text-slate">01 / What we do</p>
+            <p class="gm-eyebrow text-slate">{answer.eyebrow}</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{answer.heading}</h2>
           </div>
           <div class="lg:pt-12" data-reveal style="transition-delay: 90ms">
@@ -299,8 +317,8 @@ const jsonLd = {
             </div>
             <p class="mt-6 text-body text-slate">
               {answer.content?.[1]?.text}
-              {pathOf(answer.content?.[1]?.links) && (
-                <TextLink href={pathOf(answer.content?.[1]?.links)!} class="ml-2">About Genius Monkey</TextLink>
+              {answer.link && (
+                <TextLink href={answer.link.href} class="ml-2">{answer.link.text}</TextLink>
               )}
             </p>
           </div>
@@ -315,45 +333,45 @@ const jsonLd = {
       <section id="receipts" class="bg-ink text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
           <div data-reveal>
-            <p class="gm-eyebrow text-white/60">02 / Proof</p>
+            <p class="gm-eyebrow text-white/60">{receipts.eyebrow}</p>
             <h2 class="mt-4 text-h2 tracking-tight">{receipts.heading}</h2>
             <p class="mt-5 max-w-xl text-lead text-white/70">{receiptsIntro}</p>
           </div>
 
           <div class="mt-12 grid border-y border-white/12 lg:grid-cols-3 lg:divide-x lg:divide-white/12">
             <div class="flex flex-col items-start gap-5 border-b border-white/12 py-10 lg:border-b-0 lg:pr-10" data-reveal>
-              <p class="gm-label text-[10px] text-white/50">onsemi</p>
+              <p class="gm-label text-[10px] text-white/50">{receipts.stats?.[0]?.label}</p>
               <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
                 <span class="block text-[clamp(1.9rem,3vw,2.5rem)] text-white/30 line-through decoration-raspberry decoration-3">
-                  $2,000
+                  {receipts.stats?.[0]?.before}
                 </span>
-                <span class="block text-[clamp(3.25rem,5.5vw,4.75rem)] text-raspberry">under $1</span>
+                <span class="block text-[clamp(3.25rem,5.5vw,4.75rem)] text-raspberry">{receipts.stats?.[0]?.value}</span>
               </p>
-              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">Cost per conversion</p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">{receipts.stats?.[0]?.tag}</p>
               <p class="max-w-sm text-body text-white/70">{receiptOnsemi}</p>
             </div>
 
             <div class="flex flex-col items-start gap-5 border-b border-white/12 py-10 lg:border-b-0 lg:px-10" data-reveal style="transition-delay: 90ms">
-              <p class="gm-label text-[10px] text-white/50">Country Thunder</p>
+              <p class="gm-label text-[10px] text-white/50">{receipts.stats?.[1]?.label}</p>
               <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
-                <span class="block text-[clamp(1.9rem,3vw,2.5rem)] text-white/30">$1 in</span>
+                <span class="block text-[clamp(1.9rem,3vw,2.5rem)] text-white/30">{receipts.stats?.[1]?.before}</span>
                 <span class="block text-[clamp(3.25rem,5.5vw,4.75rem)] text-raspberry">
-                  $<span data-countup data-target="230">230</span> back
+                  {receipts.stats?.[1]?.valuePrefix}<span data-countup data-target={receipts.stats?.[1]?.countUp}>{receipts.stats?.[1]?.countUp}</span>{receipts.stats?.[1]?.valueSuffix}
                 </span>
               </p>
-              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">Ticket sales</p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">{receipts.stats?.[1]?.tag}</p>
               <p class="max-w-sm text-body text-white/70">{receiptThunder}</p>
             </div>
 
             <div class="flex flex-col items-start gap-5 py-10 lg:pl-10" data-reveal style="transition-delay: 180ms">
-              <p class="gm-label text-[10px] text-white/50">Canales Furniture</p>
+              <p class="gm-label text-[10px] text-white/50">{receipts.stats?.[2]?.label}</p>
               <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
-                <span class="block text-[clamp(1.9rem,3vw,2.5rem)] text-white/30">Since 2018</span>
+                <span class="block text-[clamp(1.9rem,3vw,2.5rem)] text-white/30">{receipts.stats?.[2]?.before}</span>
                 <span class="block text-[clamp(3.25rem,5.5vw,4.75rem)] text-raspberry">
-                  +<span data-countup data-target="887">887</span>%
+                  {receipts.stats?.[2]?.valuePrefix}<span data-countup data-target={receipts.stats?.[2]?.countUp}>{receipts.stats?.[2]?.countUp}</span>{receipts.stats?.[2]?.valueSuffix}
                 </span>
               </p>
-              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">New website visitors</p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">{receipts.stats?.[2]?.tag}</p>
               <p class="max-w-sm text-body text-white/70">{receiptCanales}</p>
             </div>
           </div>
@@ -361,9 +379,9 @@ const jsonLd = {
           {receiptsClose && (
             <div class="mt-10 flex flex-wrap items-center gap-x-3 gap-y-4" data-reveal>
               <p class="text-lead text-white/80">{receiptsClose.text}</p>
-              {pathOf(receiptsClose.links) && (
-                <TextLink href={pathOf(receiptsClose.links)!} arrow class="text-white hover:text-white/70">
-                  Read the case studies
+              {receipts.link && (
+                <TextLink href={receipts.link.href} arrow class="text-white hover:text-white/70">
+                  {receipts.link.text}
                 </TextLink>
               )}
             </div>
@@ -379,7 +397,7 @@ const jsonLd = {
       <section class="bg-cloud">
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
           <div data-reveal>
-            <p class="gm-eyebrow text-slate">03 / Solutions</p>
+            <p class="gm-eyebrow text-slate">{budget.eyebrow}</p>
             <h2 class="mt-4 max-w-xl text-h2 tracking-tight text-balance">{budget.heading}</h2>
           </div>
           <div class="mt-12 grid gap-4 md:grid-cols-2">
@@ -431,7 +449,7 @@ const jsonLd = {
       <section class="bg-gradient-dark-raspberry text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
           <div data-reveal>
-            <p class="gm-eyebrow text-white/60">04 / The difference</p>
+            <p class="gm-eyebrow text-white/60">{why.eyebrow}</p>
             <h2 class="mt-4 text-h2 tracking-tight">{why.heading}</h2>
             <p class="mt-8 max-w-3xl font-display text-[clamp(1.75rem,3.8vw,3rem)] leading-[1.1] font-extrabold tracking-tight text-balance">
               {whyThesis?.text}
@@ -439,13 +457,13 @@ const jsonLd = {
           </div>
 
           <div class="mt-14 grid border-y border-white/20 sm:grid-cols-3 sm:divide-x sm:divide-white/20" data-reveal>
-            {rates.map((rate) => (
+            {(why.rates ?? []).map((rate) => (
               <div class="border-b border-white/20 py-8 sm:border-b-0 sm:px-8 sm:first:pl-0 sm:last:pr-0">
                 <p class="gm-label text-[10px] text-white/60">{rate.channel}</p>
                 <p class="mt-3 font-display text-[clamp(2.5rem,4.5vw,3.75rem)] leading-none font-extrabold tracking-tighter">
                   {rate.value}
                 </p>
-                <p class="mt-3 text-caption font-normal text-white/55">Effective CPM</p>
+                <p class="mt-3 text-caption font-normal text-white/55">{why.rateLabel}</p>
               </div>
             ))}
           </div>
@@ -453,9 +471,9 @@ const jsonLd = {
           <div class="mt-10 grid gap-10 lg:grid-cols-2" data-reveal>
             <p class="text-body text-white/80">
               {whyRates?.text}
-              {pathOf(whyRates?.links) && (
-                <TextLink href={pathOf(whyRates?.links)!} class="ml-2 text-white hover:text-white/70">
-                  See published rates
+              {why.link && (
+                <TextLink href={why.link.href} class="ml-2 text-white hover:text-white/70">
+                  {why.link.text}
                 </TextLink>
               )}
             </p>
@@ -480,7 +498,7 @@ const jsonLd = {
         </div>
         <div class="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-[1.15fr_1fr] lg:gap-20 lg:px-20">
           <div data-reveal>
-            <p class="gm-eyebrow text-slate">05 / Process</p>
+            <p class="gm-eyebrow text-slate">{engagement.eyebrow}</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{engagement.heading}</h2>
             <p class="mt-6 max-w-xl text-lead text-slate">{engProcess?.text}</p>
             <DemoForm uid="mid" theme="light" layout="row" class="mt-10 max-w-xl" />
@@ -490,30 +508,32 @@ const jsonLd = {
             <!-- Floating stat chip, per the split mockups -->
             <div class="absolute -top-5 -left-4 z-10 flex items-center gap-3 bg-raspberry px-4 py-3 text-white shadow-card sm:-left-6">
               <span class="font-display text-2xl leading-none font-extrabold tracking-tighter">
-                <span data-countup data-target="27">27</span>
+                <span data-countup data-target={engagement.badge?.countUp}>{engagement.badge?.countUp}</span>
               </span>
-              <span class="gm-label max-w-[7rem] text-[9px] leading-tight">Published case studies</span>
+              <span class="gm-label max-w-[7rem] text-[9px] leading-tight">{engagement.badge?.label}</span>
             </div>
 
             <div class="flex flex-col justify-between gap-8 border border-line bg-white p-8 shadow-card md:p-10 lg:border-0">
-              <p class="gm-label text-[10px] text-slate">Cenvar Roofing &amp; Solar</p>
+              <p class="gm-label text-[10px] text-slate">{engagement.cardLabel}</p>
               <div class="grid grid-cols-2 divide-x divide-line">
                 <div class="pr-6">
                   <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter text-raspberry">
-                    +<span data-countup data-target="44">44</span>%
+                    {engagement.stats?.[0]?.valuePrefix}<span data-countup data-target={engagement.stats?.[0]?.countUp}>{engagement.stats?.[0]?.countUp}</span>{engagement.stats?.[0]?.valueSuffix}
                   </p>
-                  <p class="mt-3 text-caption font-normal text-slate">Website leads, first 45 days</p>
+                  <p class="mt-3 text-caption font-normal text-slate">{engagement.stats?.[0]?.label}</p>
                 </div>
                 <div class="pl-6">
                   <p class="font-display text-[clamp(2.75rem,4vw,3.5rem)] leading-none font-extrabold tracking-tighter">
-                    +<span data-countup data-target="30">30</span>%
+                    {engagement.stats?.[1]?.valuePrefix}<span data-countup data-target={engagement.stats?.[1]?.countUp}>{engagement.stats?.[1]?.countUp}</span>{engagement.stats?.[1]?.valueSuffix}
                   </p>
-                  <p class="mt-3 text-caption font-normal text-slate">Gross billing, a year in</p>
+                  <p class="mt-3 text-caption font-normal text-slate">{engagement.stats?.[1]?.label}</p>
                 </div>
               </div>
               <div>
                 <p class="text-body text-slate">{engCenvar?.text}</p>
-                <TextLink href="/programmatic-case-studies" arrow class="mt-4">Cenvar case study</TextLink>
+                {engagement.link && (
+                  <TextLink href={engagement.link.href} arrow class="mt-4">{engagement.link.text}</TextLink>
+                )}
               </div>
             </div>
           </div>
@@ -529,11 +549,11 @@ const jsonLd = {
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
           <div class="grid gap-10 lg:grid-cols-[1fr_1.9fr] lg:gap-16">
             <div class="lg:sticky lg:top-24 lg:self-start" data-reveal>
-              <p class="gm-eyebrow text-slate">06 / FAQ</p>
+              <p class="gm-eyebrow text-slate">{faq.eyebrow}</p>
               <h2 class="mt-4 font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1.05] font-extrabold tracking-tight text-balance">
                 {faq.heading}
               </h2>
-              <TextLink href="#demo" arrow class="mt-6">Request a demo</TextLink>
+              {faq.link && <TextLink href={faq.link.href} arrow class="mt-6">{faq.link.text}</TextLink>}
             </div>
             <FAQAccordion items={faqItems} variant="numbered" />
           </div>
@@ -581,11 +601,11 @@ const jsonLd = {
   >
     <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3 lg:px-20">
       <p class="hidden font-display text-lg font-extrabold tracking-tight text-white sm:block">
-        We solve advertising<span class="text-raspberry">.</span>
+        {stickyCta?.text}<span class="text-raspberry">.</span>
       </p>
-      <p class="gm-label hidden text-[10px] text-white/55 md:block">No long-term contracts</p>
+      <p class="gm-label hidden text-[10px] text-white/55 md:block">{stickyCta?.note}</p>
       <div class="flex grow items-center justify-end gap-3 sm:grow-0">
-        <Button size="md" href="#demo" icon="arrow-right" class="grow sm:grow-0">Request a demo</Button>
+        <Button size="md" href={stickyCta?.cta?.href ?? "#demo"} icon="arrow-right" class="grow sm:grow-0">{stickyCta?.cta?.text}</Button>
         <button
           type="button"
           id="sticky-dismiss"

@@ -12,12 +12,31 @@ const page = await getEntry("pages", "platform");
 if (!page) throw new Error("Missing content: src/content/pages/platform.json");
 const data = page.data;
 
-type Block = { kind: string; text?: string; links?: string[]; headers?: string[]; rows?: string[][] };
+type Stat = {
+  label?: string;
+  before?: string;
+  value?: string;
+  tag?: string;
+  accent?: string;
+};
+type LinkRef = { text: string; href: string };
+type Block = {
+  kind: string;
+  text?: string;
+  links?: string[];
+  headers?: string[];
+  rows?: string[][];
+  href?: string;
+  srLabel?: string;
+};
 type Section = {
   type: string;
+  eyebrow?: string;
   heading?: string;
   content?: Block[];
   subsections?: { heading: string; content: Block[]; links?: string[] }[];
+  link?: LinkRef;
+  stats?: Stat[];
   metaTitle?: string;
   [key: string]: unknown;
 };
@@ -132,14 +151,14 @@ const jsonLd = {
       GM.
     </p>
     <div class="relative mx-auto max-w-7xl px-6 pt-20 pb-24 md:pt-28 md:pb-32 lg:px-20">
-      <p class="gm-label rise text-raspberry">The Platform</p>
+      <p class="gm-label rise text-raspberry">{hero?.eyebrow}</p>
       <h1 class="rise mt-6 max-w-4xl font-display text-[clamp(2.5rem,6.5vw,5.5rem)] leading-[0.98] font-extrabold tracking-tight" style="animation-delay: 90ms">
         {titleA}{titleB && <> <span class="text-raspberry">{titleB}</span></>}
       </h1>
       <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]">
         <p class="rise text-lead text-white/70" style="animation-delay: 180ms">{heroParas[0]?.text}</p>
         <div class="rise flex items-start lg:justify-end" style="animation-delay: 260ms">
-          {heroCta && <Button size="lg" href="/request-a-demo" icon="arrow-right">{heroCta.text}</Button>}
+          {heroCta && <Button size="lg" href={heroCta.href ?? "/request-a-demo"} icon="arrow-right">{heroCta.text}</Button>}
         </div>
       </div>
     </div>
@@ -151,7 +170,7 @@ const jsonLd = {
       <section class="bg-white">
         <div class="mx-auto grid max-w-7xl gap-10 px-6 py-16 md:py-24 lg:grid-cols-[1fr_2fr] lg:px-20">
           <div>
-            <p class="gm-label text-slate">01 / Definition</p>
+            <p class="gm-label text-slate">{definition.eyebrow}</p>
             <h2 class="mt-4 text-h2 tracking-tight text-balance">{definition.heading}</h2>
           </div>
           <div class="lg:pt-12">
@@ -160,8 +179,8 @@ const jsonLd = {
             </div>
             <p class="mt-6 text-body text-slate">
               {definition.content?.[1]?.text}
-              {pathOf(definition.content?.[1]?.links) && (
-                <TextLink href={pathOf(definition.content?.[1]?.links)!} class="ml-2">DSP, defined</TextLink>
+              {definition.link && (
+                <TextLink href={definition.link.href} class="ml-2">{definition.link.text}</TextLink>
               )}
             </p>
           </div>
@@ -175,7 +194,7 @@ const jsonLd = {
     problem && (
       <section class="bg-gradient-dark-raspberry text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
-          <p class="gm-label text-white/60">02 / The Problem</p>
+          <p class="gm-label text-white/60">{problem.eyebrow}</p>
           <h2 class="mt-4 max-w-3xl font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.05] font-extrabold tracking-tight text-balance">
             {problem.heading}
           </h2>
@@ -194,7 +213,7 @@ const jsonLd = {
     features && (
       <section class="bg-cloud">
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
-          <p class="gm-label text-slate">03 / The Platform</p>
+          <p class="gm-label text-slate">{features.eyebrow}</p>
           <h2 class="mt-4 max-w-xl text-h2 tracking-tight text-balance">{features.heading}</h2>
           <div class="mt-12 grid gap-4 md:grid-cols-2">
             {features.subsections?.map((sub, i) => {
@@ -240,7 +259,7 @@ const jsonLd = {
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
           <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
             <div>
-              <p class="gm-label text-slate">04 / The Choice</p>
+              <p class="gm-label text-slate">{comparison.eyebrow}</p>
               <h2 class="mt-4 text-h2 tracking-tight text-balance">{comparison.heading}</h2>
               <p class="mt-6 text-body text-slate">{comparisonParas[0]?.text}</p>
               {comparisonParas[1] && (
@@ -264,7 +283,7 @@ const jsonLd = {
                               col === 1 && "text-slate",
                             ]}
                           >
-                            {h || <span class="sr-only">Category</span>}
+                            {h || <span class="sr-only">{table.srLabel}</span>}
                           </th>
                         );
                       })}
@@ -302,29 +321,29 @@ const jsonLd = {
     proof && (
       <section class="bg-ink text-white">
         <div class="mx-auto max-w-7xl px-6 py-20 md:py-28 lg:px-20">
-          <p class="gm-label text-white/60">05 / Proof</p>
+          <p class="gm-label text-white/60">{proof.eyebrow}</p>
           <h2 class="mt-4 text-h2 tracking-tight">{proof.heading}</h2>
 
           <div class="mt-12 grid border-y border-white/12 lg:grid-cols-2 lg:divide-x lg:divide-white/12">
             <div class="flex flex-col items-start gap-6 border-b border-white/12 py-12 lg:border-b-0 lg:pr-14">
-              <p class="gm-label text-[10px] text-white/50">onsemi</p>
+              <p class="gm-label text-[10px] text-white/50">{proof.stats?.[0]?.label}</p>
               <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
                 <span class="block text-[clamp(2.5rem,4.5vw,4rem)] text-white/30 line-through decoration-raspberry decoration-4">
-                  $2,000
+                  {proof.stats?.[0]?.before}
                 </span>
-                <span class="block text-[clamp(4rem,8vw,7rem)] text-raspberry">under $1</span>
+                <span class="block text-[clamp(4rem,8vw,7rem)] text-raspberry">{proof.stats?.[0]?.value}</span>
               </p>
-              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">Cost per conversion</p>
+              <p class="inline-block bg-raspberry px-3 py-1.5 gm-label text-[10px]">{proof.stats?.[0]?.tag}</p>
               <p class="max-w-md text-body text-white/70">{proofOnsemi}</p>
             </div>
 
             <div class="flex flex-col items-start gap-6 py-12 lg:pl-14">
-              <p class="gm-label text-[10px] text-white/50">Country Thunder</p>
+              <p class="gm-label text-[10px] text-white/50">{proof.stats?.[1]?.label}</p>
               <p class="font-display leading-[0.95] font-extrabold tracking-tighter">
-                <span class="block text-[clamp(2.5rem,4.5vw,4rem)] text-white">$1 in</span>
-                <span class="block text-[clamp(4rem,8vw,7rem)] text-mint">$230 back</span>
+                <span class="block text-[clamp(2.5rem,4.5vw,4rem)] text-white">{proof.stats?.[1]?.before}</span>
+                <span class="block text-[clamp(4rem,8vw,7rem)] text-mint">{proof.stats?.[1]?.value}</span>
               </p>
-              <p class="inline-block bg-mint px-3 py-1.5 gm-label text-[10px] text-ink">Ticket sales</p>
+              <p class="inline-block bg-mint px-3 py-1.5 gm-label text-[10px] text-ink">{proof.stats?.[1]?.tag}</p>
               <p class="max-w-md text-body text-white/70">{proofThunder}</p>
             </div>
           </div>
@@ -332,9 +351,9 @@ const jsonLd = {
           {proofClose && (
             <div class="mt-10 flex flex-wrap items-center gap-x-3 gap-y-4">
               <p class="text-lead text-white/80">{proofClose.text}</p>
-              {pathOf(proofClose.links) && (
-                <TextLink href={pathOf(proofClose.links)!} arrow class="text-white hover:text-white/70">
-                  Read the case studies
+              {proof.link && (
+                <TextLink href={proof.link.href} arrow class="text-white hover:text-white/70">
+                  {proof.link.text}
                 </TextLink>
               )}
             </div>
@@ -351,7 +370,7 @@ const jsonLd = {
         <div class="mx-auto max-w-7xl px-6 py-16 md:py-24 lg:px-20">
           <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
             <div>
-              <p class="gm-label text-slate">06 / FAQ</p>
+              <p class="gm-label text-slate">{faq.eyebrow}</p>
               <h2 class="mt-4 text-h2 tracking-tight text-balance">{faq.heading}</h2>
             </div>
             <FAQAccordion items={faqItems} class="lg:mt-2" />
@@ -376,7 +395,7 @@ const jsonLd = {
           <div class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,34rem)_1fr]">
             <p class="text-lead text-white/75">{ctaParas[0]?.text}</p>
             <div class="flex items-start lg:justify-end">
-              {ctaBtn && <Button size="lg" href="/request-a-demo" icon="arrow-right">{ctaBtn.text}</Button>}
+              {ctaBtn && <Button size="lg" href={ctaBtn.href ?? "/request-a-demo"} icon="arrow-right">{ctaBtn.text}</Button>}
             </div>
           </div>
         </div>
